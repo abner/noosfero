@@ -100,6 +100,7 @@ class PersonNotifierTest < ActiveSupport::TestCase
     @admin.notification_time = 0
     @admin.save!
     @member.save!
+    Delayed::Job.delete_all
     PersonNotifier.schedule_all_next_notification_mail
     process_delayed_job_queue
     assert_equal 1, Delayed::Job.count
@@ -125,9 +126,52 @@ class PersonNotifierTest < ActiveSupport::TestCase
     @member.save!
     assert_equal 1, Delayed::Job.count
     @member.notification_time = 12
-    @member.notifier.reschedule_next_notification_mail
+    @member.save!
     assert_equal 1, Delayed::Job.count
     assert_equal @member.notification_time, ((Delayed::Job.first.run_at - DateTime.now)/1.hour).round
+  end
+
+  should 'exists? method in NotifyAllJob return false if there is no instance of this class created' do
+    Delayed::Job.enqueue(PersonNotifier::NotifyJob.new)
+    assert !PersonNotifier::NotifyAllJob.exists?
+  end
+
+  should 'exists? method in NotifyAllJob return false if there is no jobs created' do
+    assert !PersonNotifier::NotifyAllJob.exists?
+  end
+
+  should 'exists? method in NotifyAllJob return true if there is at least one instance of this class' do
+    Delayed::Job.enqueue(PersonNotifier::NotifyAllJob.new)
+    assert PersonNotifier::NotifyAllJob.exists?
+  end
+
+  should 'perform create NotifyJob for all users with notification_time' do
+    Delayed::Job.enqueue(PersonNotifier::NotifyAllJob.new)
+    process_delayed_job_queue
+    assert_equal 2, Delayed::Job.count
+  end
+
+  should 'perform create NotifyJob for all users with notification_time defined greater than zero' do
+    @member.notification_time = 1
+    @admin.notification_time = 0
+    @admin.save!
+    @member.save!
+    Delayed::Job.delete_all
+    Delayed::Job.enqueue(PersonNotifier::NotifyAllJob.new)
+    process_delayed_job_queue
+    assert_equal 1, Delayed::Job.count
+  end
+
+  should 'NotifyJob failed jobs create a new NotifyJob on permanent failure' do
+    Delayed::Job.enqueue(PersonNotifier::NotifyJob.new(@member.id))
+
+    PersonNotifier.any_instance.stubs(:notify).raises('error')
+
+    process_delayed_job_queue
+    jobs = Delayed::Job.all
+
+    assert 1, jobs.select{|j| j.failed?}.size
+    assert 1, jobs.select{|j| !j.failed?}.size
   end
 
   def notify

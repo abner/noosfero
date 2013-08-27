@@ -9,10 +9,15 @@ class PersonNotifier
   end
 
   def schedule_next_notification_mail
-    Delayed::Job.enqueue(NotifyJob.new(@person.id), nil, @person.notification_time.hours.from_now) if @person.notification_time>0 && !NotifyJob.exists?(@person.id)
+    dispatch_notification_mail if !NotifyJob.exists?(@person.id)
+  end
+
+  def dispatch_notification_mail
+    Delayed::Job.enqueue(NotifyJob.new(@person.id), nil, @person.notification_time.hours.from_now) if @person.notification_time>0
   end
 
   def reschedule_next_notification_mail
+    return nil unless @person.setting_changed?(:notification_time)
     NotifyJob.find(@person.id).delete_all
     schedule_next_notification_mail
   end
@@ -33,7 +38,7 @@ class PersonNotifier
     end
 
     def perform
-      Person.all.collect{ |person| person.schedule_next_notification_mail }
+      Person.find_each {|person| person.notifier.schedule_next_notification_mail }
     end
   end
 
@@ -48,8 +53,14 @@ class PersonNotifier
     end
 
     def perform
-      Person.find(id).notifier.notify
+      Person.find(person_id).notifier.notify
     end
+
+    def on_permanent_failure
+      person = Person.find(person_id)
+      person.notifier.dispatch_notification_mail
+    end
+
   end
 
   class Mailer < ActionMailer::Base
