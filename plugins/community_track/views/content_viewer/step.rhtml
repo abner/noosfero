@@ -1,0 +1,20 @@
+<div id="step">
+  <div class="event-info">
+    <ul class="event-data">
+      <li class="event-dates">
+        <span><%= _('When:') %></span><%= show_period(step.start_date, step.end_date) %>
+      </li>
+    </ul>
+  </div>
+  <div>
+    <%= step.body %>
+  </div>
+  <h3><%= _("Tools") if !step.tools.empty? %></h3>
+  <div>
+    <% step.tools.each do |tool| %>
+      <div>
+        <%= link_to tool.name, tool.url %>
+      </div>
+    <% end %>
+  </div>
+</div>
