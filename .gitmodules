@@ -4,3 +4,6 @@
 [submodule "public/designs/themes/comigrar-theme"]
 	path = public/designs/themes/comigrar-theme
 	url = https://github.com/fga-unb/comigrar-theme
+[submodule "plugins/bsc/public/jquery.ui.spinner"]
+	path = plugins/bsc/public/jquery.ui.spinner
+	url = https://github.com/btburnett3/jquery.ui.spinner.git
