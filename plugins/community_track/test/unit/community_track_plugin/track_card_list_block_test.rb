@@ -1,0 +1,15 @@
+require File.dirname(__FILE__) + '/../../test_helper'
+
+class TrackCardListBlockTest < ActiveSupport::TestCase
+
+  def setup
+    @community = fast_create(Community)
+    box = fast_create(Box, :owner_id => @community.id, :owner_type => 'Community')
+    @block = CommunityTrackPlugin::TrackCardListBlock.create!(:box => box)
+  end
+
+  should 'return track_card as track partial' do
+    assert_equal 'track_card', @block.track_partial
+  end
+
+end

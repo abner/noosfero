@@ -1744,4 +1744,13 @@ class ArticleTest < ActiveSupport::TestCase
     assert_nil article.author_id
   end
 
+  should 'save image on create article' do
+    assert_difference Article, :count do
+      p = Article.create!(:name => 'test', :image_builder => {
+        :uploaded_data => fixture_file_upload('/files/rails.png', 'image/png')
+      }, :profile_id => @profile.id)
+      assert_equal p.image(true).filename, 'rails.png'
+    end
+  end
+
 end
