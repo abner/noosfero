@@ -11,6 +11,18 @@ class CommunityTrackPluginTest < ActiveSupport::TestCase
   
   attr_reader :profile, :params
 
+  should 'has name' do
+    assert CommunityTrackPlugin.plugin_name
+  end
+
+  should 'describe yourself' do
+    assert CommunityTrackPlugin.plugin_description
+  end
+
+  should 'has stylesheet' do
+    assert @plugin.stylesheet?
+  end
+
   should 'return Track as a content type if profile is a community' do
     assert_includes @plugin.content_types, CommunityTrackPlugin::Track
   end
@@ -40,6 +52,15 @@ class CommunityTrackPluginTest < ActiveSupport::TestCase
   
   should 'return track card as an extra block' do
     assert_includes CommunityTrackPlugin.extra_blocks, CommunityTrackPlugin::TrackListBlock
+  end
+
+  should 'return true at content_remove_new if page is a track' do
+    assert @plugin.content_remove_new(CommunityTrackPlugin::Track.new)
+  end
+
+  should 'return false at content_remove_new if page is not a track' do
+    assert !@plugin.content_remove_new(CommunityTrackPlugin::Step.new)
+    assert !@plugin.content_remove_new(Article.new)
   end
 
 end

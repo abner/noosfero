@@ -13,7 +13,20 @@ class CommunityTrackPlugin::Track < Folder
 
   def steps
     #XXX article default order is name (acts_as_filesystem) -> should use reorder (rails3)
-    steps_unsorted.sort_by(&:position)
+    steps_unsorted.sort_by(&:position).select{|s| !s.hidden}
+  end
+
+  def hidden_steps
+    steps_unsorted.select{|s| s.hidden}
+  end
+
+  def reorder_steps(step_ids)
+    transaction do
+      step_ids.each_with_index do |step_id, i|
+        step = steps_unsorted.find(step_id)
+        step.update_attribute(:position, step.position = i + 1)
+      end
+    end
   end
   
   def steps_unsorted
@@ -25,7 +38,11 @@ class CommunityTrackPlugin::Track < Folder
   end
 
   def comments_count
-    steps_unsorted.joins(:children => :comments).count
+    steps_unsorted.joins(:children).sum('childrens_articles.comments_count')
+  end
+
+  def css_class_name
+    "community-track-plugin-track"
   end
 
   #FIXME make this test

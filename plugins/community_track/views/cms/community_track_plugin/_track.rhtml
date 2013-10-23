@@ -7,6 +7,8 @@
   <%= render :partial => 'shared/lead_and_body', :locals => {:tiny_mce => true, :body_label => 'Description:'} %>
 </div>
 
+<%= render :partial => 'shared/lead_and_body', :locals => {:tiny_mce => true, :body_label => 'Description:'} %>
+
 <div>
   <% f.fields_for :image_builder, @article.image do |i| %>
     <%= file_field_or_thumbnail(_('Image:'), @article.image, i) %>

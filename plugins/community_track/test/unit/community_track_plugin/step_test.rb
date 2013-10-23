@@ -8,6 +8,14 @@ class StepTest < ActiveSupport::TestCase
     @step = CommunityTrackPlugin::Step.new(:name => 'Step', :body => 'body', :profile => @profile, :parent => @track, :published => false, :end_date => Date.today, :start_date => Date.today)
     Delayed::Job.destroy_all
   end
+
+  should 'describe yourself' do
+    assert CommunityTrackPlugin::Step.description
+  end
+
+  should 'has a short description' do
+    assert CommunityTrackPlugin::Step.short_description
+  end
   
   should 'set published to false on create' do
     today = Date.today
@@ -167,6 +175,86 @@ class StepTest < ActiveSupport::TestCase
     step2 = CommunityTrackPlugin::Step.new(:name => 'Step2', :body => 'body', :profile => @profile, :parent => @track, :published => false, :end_date => Date.today, :start_date => Date.today)
     step2.save!
     assert_equal 2, step2.position    
+  end
+
+  should 'publish step if it is active' do
+    @step.start_date = Date.today
+    @step.save!
+    assert !@step.published
+    @step.publish
+    @step.reload
+    assert @step.published
+  end
+
+  should 'do not publish step if it is not active' do
+    @step.start_date = Date.today + 2.days
+    @step.end_date = Date.today + 3.days
+    @step.save!
+    assert !@step.published
+    @step.publish
+    @step.reload
+    assert !@step.published
+  end
+
+  should 'unpublish step if it is not active anymore' do
+    @step.start_date = Date.today
+    @step.save!
+    @step.publish
+    @step.reload
+    assert @step.published
+
+    @step.start_date = Date.today - 2.days
+    @step.end_date = Date.today - 1.day
+    @step.save!
+    @step.publish
+    @step.reload
+    assert !@step.published
+  end
+
+  should 'set position to zero if step is hidden' do
+    @step.hidden = true
+    @step.save!
+    assert_equal 0, @step.position
+  end
+
+  should 'change position to zero if step becomes hidden' do
+    @step.save!
+    assert_equal 1, @step.position
+    @step.hidden = true
+    @step.save!
+    assert_equal 0, @step.position
+  end
+
+  should 'change position to botton if a hidden step becomes visible' do
+    step1 = CommunityTrackPlugin::Step.new(:name => 'Step1', :body => 'body', :profile => @profile, :parent => @track, :published => false, :end_date => Date.today, :start_date => Date.today)
+    step1.save!
+    @step.hidden = true
+    @step.save!
+    assert_equal 0, @step.position
+    @step.hidden = false
+    @step.save!
+    assert_equal 2, @step.position
+  end
+
+  should 'decrement lower items positions if a step becomes hidden' do
+    @step.save!
+    step1 = CommunityTrackPlugin::Step.new(:name => 'Step1', :body => 'body', :profile => @profile, :parent => @track, :published => false, :end_date => Date.today, :start_date => Date.today)
+    step1.save!
+    assert_equal 2, step1.position
+    @step.hidden = true
+    @step.save!
+    step1.reload
+    assert_equal 1, step1.position
+  end
+
+  should 'do not publish a hidden step' do
+    @step.start_date = Date.today
+    @step.hidden = true
+    @step.save!
+    assert !@step.published
+    @step.publish
+    @step.reload
+    assert !@step.published
   end
 
 end

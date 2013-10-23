@@ -6,8 +6,16 @@ class TrackListBlockTest < ActiveSupport::TestCase
     @community = fast_create(Community)
     @track = CommunityTrackPlugin::Track.create!(:abstract => 'abstract', :body => 'body', :name => 'track', :profile => @community)
 
-    box = fast_create(Box, :owner_id => @community.id, :owner_type => 'Community')
+    box = fast_create(Box, :owner_id => @community.id, :owner_type => @community.class.name)
     @block = CommunityTrackPlugin::TrackListBlock.create!(:box => box)
+  end
+
+  should 'describe yourself' do
+    assert CommunityTrackPlugin::TrackListBlock.description
+  end
+
+  should 'has title' do
+    assert @block.default_title
   end
 
   should 'return track as track partial' do
@@ -73,7 +81,7 @@ class TrackListBlockTest < ActiveSupport::TestCase
     track1 = CommunityTrackPlugin::Track.create!(:abstract => 'abstract', :body => 'body', :name => 'track1', :profile => @community)
     track2 = CommunityTrackPlugin::Track.create!(:abstract => 'abstract', :body => 'body', :name => 'track2', :profile => @community)
     track3 = CommunityTrackPlugin::Track.create!(:abstract => 'abstract', :body => 'body', :name => 'track3', :profile => @community)
-    track1.categories << category
+    track1.add_category(category)
     @block.category_ids = [category.id]
     assert_equal [track1], @block.all_tracks
   end
@@ -83,7 +91,7 @@ class TrackListBlockTest < ActiveSupport::TestCase
     category = fast_create(Category)
     track1 = CommunityTrackPlugin::Track.create!(:abstract => 'abstract', :body => 'body', :name => 'track1', :profile => @community)
     track2 = CommunityTrackPlugin::Track.create!(:abstract => 'abstract', :body => 'body', :name => 'track2', :profile => @community)
-    track1.categories << category
+    track1.add_category(category)
     assert_includes @block.all_tracks, track1
     assert_includes @block.all_tracks, track2
   end

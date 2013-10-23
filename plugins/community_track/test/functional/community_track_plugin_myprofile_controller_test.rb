@@ -14,9 +14,9 @@ class CommunityTrackPluginMyprofileControllerTest < ActionController::TestCase
     @profile = fast_create(Community)
     @track = CommunityTrackPlugin::Track.create!(:abstract => 'abstract', :body => 'body', :name => 'track', :profile => @profile)
 
-    person = create_user('testinguser').person
-    login_as(person.name)
-    @profile.add_admin(person)
+    user = create_user('testinguser')
+    login_as(user.login)
+    @profile.add_admin(user.person)
   end
 
   should 'redirect to track on save order' do
@@ -34,8 +34,8 @@ class CommunityTrackPluginMyprofileControllerTest < ActionController::TestCase
 
   should 'do not allow a user without permission to save order' do
     logout
-    person = create_user('intruder').person
-    login_as(person.name)
+    user = create_user('intruder')
+    login_as(user.login)
     get :save_order, :profile => @profile.identifier, :track => @track.id, :step_ids => []
     assert_response 403
   end

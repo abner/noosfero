@@ -6,7 +6,7 @@ class CommunityTrackPlugin::TrackCardListBlock < CommunityTrackPlugin::TrackList
     _('Track Card List')
   end
 
-  def default_tile
+  def default_title
     _('Relevant Tracks as cards')
   end
 

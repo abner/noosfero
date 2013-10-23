@@ -10,11 +10,7 @@ class CommunityTrackPluginMyprofileController < MyProfileController
   def save_order
     steps = params[:step_ids]
     track = profile.articles.find(params[:track])
-    steps.each_with_index do |step_id, i|
-      step = track.children.find(step_id)
-      step.position = i + 1
-      step.save!
-    end
+    track.reorder_steps(params[:step_ids])
     redirect_to track.url
   end
 

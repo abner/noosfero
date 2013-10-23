@@ -1,13 +1,16 @@
 class CommunityTrackPlugin::Step < Folder
 
-  validate :belong_to_track
+  settings_items :hidden, :type => :boolean, :default => false
+
+  alias :tools :children
 
   acts_as_list  :scope => :parent
 
   def belong_to_track
     errors.add(:parent, "Step not allowed at this parent.") if !parent.kind_of?(CommunityTrackPlugin::Track)
   end
-  
+
+  validate :belong_to_track
   validates_presence_of :start_date, :end_date
   validate :end_date_equal_or_after_start_date
   
@@ -16,6 +19,18 @@ class CommunityTrackPlugin::Step < Folder
   before_create do |step|
     step.published = false
     true
+  end
+
+  before_create :set_hidden_position
+  before_save :set_hidden_position
+  
+  def set_hidden_position
+    if hidden
+      decrement_positions_on_lower_items
+      self[:position] = 0
+    elsif position == 0
+      add_to_list_bottom 
+    end
   end
 
   def end_date_equal_or_after_start_date
@@ -69,6 +84,11 @@ class CommunityTrackPlugin::Step < Folder
     end
   end
 
+  def publish
+    self[:published] = active? && !hidden
+    save!
+  end
+
   class CommunityTrackPlugin::ActivationJob < Struct.new(:step_id)
 
     def self.find(step_id)
@@ -77,8 +97,7 @@ class CommunityTrackPlugin::Step < Folder
 
     def perform
       step = CommunityTrackPlugin::Step.find(step_id)
-      step.published = step.active? #FIXME create method at Step
-      step.save!
+      step.publish
     end
 
   end

@@ -112,7 +112,7 @@
   height: 250px;
 }
 
-#track #sortable {
+#track .step_list {
   list-style-type: none;
   margin: 0;
   padding: 0;
@@ -132,7 +132,7 @@
 
 #track .step .date {
   font-size: 12px;
-  color: #999;
+  color: #AAA;
 }
 
 #track .step .lead {
@@ -154,12 +154,12 @@
   padding-right: 5px;
 }
 
-.steps_actions .save_button {
+#track .actions .save_button {
   display: none;
 }
 
-.steps_actions {
-  margin-top: 20px;
+#track .actions, #step .actions {
+  margin-bottom: 20px;
 }
 
 #edit-track-list-block .categorie_box a {
@@ -169,3 +169,4 @@
 .all_tracks .more_button {
   text-align: center;
 }
+

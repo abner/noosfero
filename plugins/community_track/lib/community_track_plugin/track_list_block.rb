@@ -1,6 +1,6 @@
 class CommunityTrackPlugin::TrackListBlock < Block
 
-  include CommunityTrackPlugin::Helpers::StepHelper
+  include CommunityTrackPlugin::StepHelper
   
   settings_items :limit, :type => :integer, :default => 3
   settings_items :more_another_page, :type => :boolean, :default => false
@@ -10,7 +10,7 @@ class CommunityTrackPlugin::TrackListBlock < Block
     _('Track List')
   end
 
-  def default_tile
+  def default_title
     _('Relevant Tracks')
   end
 
@@ -35,9 +35,7 @@ class CommunityTrackPlugin::TrackListBlock < Block
   end
 
   def category_ids=(ids)
-    settings[:category_ids] = ids.uniq.map do |item|
-      item.to_i unless item.to_i.zero?
-    end.compact
+    settings[:category_ids] = ids.uniq.map{|item| item.to_i unless item.to_i.zero?}.compact
   end
                        
   def all_tracks

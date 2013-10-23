@@ -29,4 +29,8 @@ class CommunityTrackPlugin < Noosfero::Plugin
     { CommunityTrackPlugin::TrackListBlock => {:position => 1}, CommunityTrackPlugin::TrackCardListBlock => {} }
   end
 
+  def content_remove_new(page)
+    page.kind_of?(CommunityTrackPlugin::Track)
+  end
+
 end

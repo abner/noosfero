@@ -2,9 +2,12 @@
 
 <%= render :file => 'shared/tiny_mce' %>
 
-<%= required f.text_field('name', :size => '64', :maxlength => 150) %>
+<div>
+  <%= required f.text_field('name', :size => '64', :maxlength => 150) %>
+  <%= labelled_form_field(_('Start date'), pick_date(:article, :start_date)) %>
+  <%= labelled_form_field(_('End date'), pick_date(:article, :end_date)) %>
+</div>
 
-<%= labelled_form_field(_('Start date'), pick_date(:article, :start_date)) %>
-<%= labelled_form_field(_('End date'), pick_date(:article, :end_date)) %>
+<%= labelled_form_field check_box(:article, :hidden) + _('Hidden Step'), '' %>
 
 <%= render :partial => 'shared/lead_and_body', :locals => {:tiny_mce => true, :body_label => 'Description:'} %>
