@@ -34,6 +34,10 @@ class EnvironmentStatisticsBlock < Block
     _('This block presents some statistics about your environment.')
   end
 
+  def timeout
+    60.minutes
+  end
+
   def templates
     Community.templates(environment)
   end
@@ -63,7 +67,7 @@ class EnvironmentStatisticsBlock < Block
   end
 
   def tags
-    owner.tags.count
+    owner.tag_counts.count
   end
 
   def comments
