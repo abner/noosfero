@@ -13,17 +13,17 @@ class EnvironmentDesignControllerTest < ActionController::TestCase
     Environment.delete_all
 
     @environment = Environment.create(:name => 'testenv', :is_default => true)
-    @environment.enabled_plugins = ['EnvironmentStatisticsPlugin']
+    @environment.enabled_plugins = ['StatisticsPlugin']
     @environment.save!
 
     user = create_user('testinguser')
     @environment.add_admin(user.person)
 
-    EnvironmentStatisticsBlock.delete_all
+    StatisticsBlock.delete_all
     @box1 = Box.create!(:owner => @environment)
     @environment.boxes = [@box1]
 
-    @block = EnvironmentStatisticsBlock.new
+    @block = StatisticsBlock.new
     @block.box = @box1
     @block.save!
 
@@ -32,12 +32,12 @@ class EnvironmentDesignControllerTest < ActionController::TestCase
 
   attr_accessor :block
 
-  should 'be able to edit EnvironmentStatisticsBlock' do
+  should 'be able to edit StatisticsBlock' do
     get :edit, :id => @block.id
     assert_tag :tag => 'input', :attributes => { :id => 'block_title' }
   end
 
-  should 'be able to save EnvironmentStatisticsBlock' do
+  should 'be able to save StatisticsBlock' do
     get :edit, :id => @block.id
     post :save, :id => @block.id, :block => {:title => 'Statistics' }
     @block.reload
@@ -120,10 +120,11 @@ class EnvironmentDesignControllerTest < ActionController::TestCase
     assert_tag :input, :attributes => {:id => 'block_user_stat', :checked => 'checked'}
   end
   
-  should 'input community counter be checked by default' do
+  should 'not input community counter be checked by default' do
     get :edit, :id => @block.id
 
-    assert_tag :input, :attributes => {:id => 'block_community_stat', :checked => 'checked'}
+    assert_tag :input, :attributes => {:id => 'block_community_stat'}
+    assert_no_tag :input, :attributes => {:id => 'block_community_stat', :checked => 'checked'}
   end
   
   should 'not input enterprise counter be checked by default' do
@@ -140,24 +141,21 @@ class EnvironmentDesignControllerTest < ActionController::TestCase
     assert_no_tag :input, :attributes => {:id => 'block_category_stat', :checked => 'checked'}
   end
   
-    should 'not input tag counter be checked by default' do
+    should 'input tag counter be checked by default' do
     get :edit, :id => @block.id
 
-    assert_tag :input, :attributes => {:id => 'block_tag_stat'}
-    assert_no_tag :input, :attributes => {:id => 'block_tag_stat', :checked => 'checked'}
+    assert_tag :input, :attributes => {:id => 'block_tag_stat', :checked => 'checked'}
   end
   
-  should 'not input comment counter be checked by default' do
+  should 'input comment counter be checked by default' do
     get :edit, :id => @block.id
 
-    assert_tag :input, :attributes => {:id => 'block_comment_stat'}
-    assert_no_tag :input, :attributes => {:id => 'block_comment_stat', :checked => 'checked'}
+    assert_tag :input, :attributes => {:id => 'block_comment_stat', :checked => 'checked'}
   end
   
-  should 'not input hit counter be checked by default' do
+  should 'input hit counter be checked by default' do
     get :edit, :id => @block.id
 
-    assert_tag :input, :attributes => {:id => 'block_hit_stat'}
-    assert_no_tag :input, :attributes => {:id => 'block_hit_stat', :checked => 'checked'}
+    assert_tag :input, :attributes => {:id => 'block_hit_stat', :checked => 'checked'}
   end  
 end

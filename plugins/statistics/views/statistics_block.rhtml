@@ -1,12 +1,12 @@
 <h3 class="block-title">
   <span><%=block.title%></span>
 </h3>
-<div class="environment-statistics-block-data">
+<div class="statistics-block-data">
 	<ul>
 <% if block.is_visible?('user_stat') %>
     <li class="users"><span class="amount"><%= block.users%> </span><span class="label"><%= _('users')%></span></li>
 <% end %> 
-<% if !block.owner.enabled?('disable_asset_enterprises') && block.is_visible?('enterprise_stat') %>
+<% if block.is_visible?('enterprise_stat') && !block.environment.enabled?('disable_asset_enterprises') %>
     <li class="enterprises"><span class="amount"><%= block.enterprises%> </span><span class="label"><%= _('enterprises')%></span></li>
 <% end %>
 <% if block.is_visible?('community_stat') %>
@@ -25,10 +25,12 @@
     <li class="hits"><span class="amount"><%= block.hits%> </span><span class="label"><%= _('hits')%></span></li>
 <% end %>
 
-<% block.templates.each do |item|   
-   	if block.is_template_stat_active? item.id %>
+<% if block.owner.kind_of?(Environment) then %>
+<%   block.templates.each do |item|   
+   	  if block.is_template_stat_active? item.id %>
     <li class="<%= item.name.to_slug%>"><span class="amount"><%= block.template_stat_count(item.id)%> </span><span class="label"><%= item.name%></span></li>
-<% 	end
+<% 	  end
+   	end
    end%>
     </ul>
 </div>
