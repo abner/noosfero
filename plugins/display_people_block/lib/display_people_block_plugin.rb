@@ -20,8 +20,8 @@ class DisplayPeopleBlockPlugin < Noosfero::Plugin
     false
   end
 
-  def self.stylesheet?
-    false
+  def stylesheet?
+    true
   end
 
 end

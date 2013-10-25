@@ -11,7 +11,7 @@ class DisplayPeopleBlockPluginTest < ActiveSupport::TestCase
   end
 
   should "return false for class method stylesheet?" do
-    assert !DisplayPeopleBlockPlugin.stylesheet?
+    assert DisplayPeopleBlockPlugin.new.stylesheet?
   end
 
 end

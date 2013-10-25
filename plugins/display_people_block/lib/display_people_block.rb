@@ -10,11 +10,18 @@ class DisplayPeopleBlock < Block
   end
 
   def help
-    "Help for Display People Block"
+    _('Clicking a person takes you to his/her homepage')  
   end
 
   def default_title
-    "{#} People"
+    case
+      when owner.kind_of?(Organization)
+        "{#} Members"
+      when owner.kind_of?(Person)
+        "{#} Friends"
+      when owner.kind_of?(Environment)
+        "{#} People"
+    end
   end
 
   def view_title
@@ -73,18 +80,19 @@ class DisplayPeopleBlock < Block
                     'div', 
                     content_tag( 
                       'li', 
-                      link_to( 
-                        content_tag(
-                          'span', 
-                          name, 
-                          :class => 'banner-image'
+                      content_tag(
+                        'div',
+                        link_to( 
+                          content_tag('span', name, :class => 'banner-span' ), 
+                          expanded_address,
+                          :title => name
                         ),
-                        expanded_address,
-                        :class => 'banner-link',
-                        :title => name
+                        :class => 'banner-div'
                       ), 
-                    :class => 'vcard'), 
-                  :class => 'common-profile-list-block' )
+                      :class => 'vcard'
+                    ), 
+                    :class => 'common-profile-list-block' 
+                  )
         end
         list = content_tag 'ul', list
       end
@@ -97,6 +105,27 @@ class DisplayPeopleBlock < Block
       'http://' + address
     else
       address
+    end
+  end
+
+  def footer
+    owner = self.owner
+    if owner.kind_of?(Organization) || owner.kind_of?(Person)
+      profile = owner.identifier
+      controller = 'profile'
+      if owner.kind_of?(Organization)
+        action = 'members'
+      elsif owner.kind_of?(Person)
+        action = 'friends'
+      end
+    elsif owner.kind_of?(Environment)
+      profile = nil
+      controller = 'search'
+      action = 'people'
+    end
+    
+    lambda do
+      link_to _('View all'), :profile => profile, :controller => controller, :action => action
     end
   end
 
