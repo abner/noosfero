@@ -1,18 +1,32 @@
 <%= labelled_form_field check_box(:block, :user_stat) + _('Show user counter'), '' %>
 
+<% if @block.is_valid?(:community_stat) %>
 <%= labelled_form_field check_box(:block, :community_stat) + _('Show community counter'), '' %>
+<% end %> 
 
+<% if @block.is_valid?(:enterprise_stat) %>
 <%= labelled_form_field check_box(:block, :enterprise_stat) + _('Show enterprise counter'), '' %>
+<% end %> 
 
+<% if @block.is_valid?(:category_stat) %>
 <%= labelled_form_field check_box(:block, :category_stat) + _('Show category counter'), '' %>
+<% end %> 
 
+<% if @block.is_valid?(:tag_stat) %>
 <%= labelled_form_field check_box(:block, :tag_stat) + _('Show tag counter'), '' %>
+<% end %> 
 
+<% if @block.is_valid?(:comment_stat) %>
 <%= labelled_form_field check_box(:block, :comment_stat) + _('Show comment counter'), '' %>
+<% end %> 
 
+<% if @block.is_valid?(:hit_stat) %>
 <%= labelled_form_field check_box(:block, :hit_stat) + _('Show hit counter'), '' %>
+<% end %> 
 
-<% @block.templates.map do |item|%>
+<% if @block.is_valid?(:templates_ids_stat) %>
+<%   @block.templates.map do |item|%>
    <%= hidden_field_tag("block[templates_ids_stat][#{item.id}]", false)%>
    <%= labelled_form_field check_box_tag("block[templates_ids_stat][#{item.id}]", true, @block.is_template_stat_active?(item.id)) + _("Show counter for communities with template %s" % item.name), '' %>
-<% end %>
+<%   end %>
+<% end %> 
