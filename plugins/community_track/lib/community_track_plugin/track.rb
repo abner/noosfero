@@ -3,6 +3,10 @@ class CommunityTrackPlugin::Track < Folder
   settings_items :goals, :type => :string
   settings_items :expected_results, :type => :string
 
+  def self.icon_name(article = nil)
+    'community-track'
+  end
+
   def self.short_description
     _("Track")
   end
