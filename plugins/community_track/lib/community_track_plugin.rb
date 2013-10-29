@@ -1,7 +1,3 @@
-class CommunityTrackPlugin < Noosfero::Plugin; end;
-
-require_dependency 'community_track_plugin/step'
-
 class CommunityTrackPlugin < Noosfero::Plugin
 
   def self.plugin_name

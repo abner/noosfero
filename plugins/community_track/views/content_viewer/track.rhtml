@@ -42,7 +42,7 @@
       </li>
     <% end %>
     </ul>
-  <% if track.allow_create?(user) %>
+  <% if track.allow_create?(user) && !track.hidden_steps.empty? %>
     <div id="hidden_steps">
       <h3><%= _('Hidden Steps') %></h3>
       <ul class="step_list">

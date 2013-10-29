@@ -14,9 +14,9 @@ class CommunityTrackPluginMyprofileControllerTest < ActionController::TestCase
     @profile = fast_create(Community)
     @track = CommunityTrackPlugin::Track.create!(:abstract => 'abstract', :body => 'body', :name => 'track', :profile => @profile)
 
-    user = create_user('testinguser')
-    login_as(user.login)
-    @profile.add_admin(user.person)
+    @user = create_user('testinguser')
+    login_as(@user.login)
+    @profile.add_admin(@user.person)
   end
 
   should 'redirect to track on save order' do

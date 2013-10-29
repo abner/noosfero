@@ -47,10 +47,6 @@ class CommunityTrackPlugin::Step < Folder
     _('Defines a step.')
   end
 
-  def tools
-    children
-  end
-
   def accept_comments?
     false
   end

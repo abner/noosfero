@@ -3,6 +3,8 @@ class CommunityTrackPluginPublicController < PublicController
 
   no_design_blocks
 
+  before_filter :login_required, :only => :select_community
+
   def view_tracks
     block = Block.find(params[:id])
     p = params[:page].to_i
@@ -27,6 +29,19 @@ class CommunityTrackPluginPublicController < PublicController
     @block = Block.find(params[:id])
     @tracks = @block.tracks(1, @per_page)
     @show_more = @block.has_page?(2, @per_page)
+  end
+
+  def select_community
+    @communities = user.memberships.select{ |community| user.has_permission?('post_content', community) }
+    @back_to = request.url
+    if request.post?
+      community_identifier = params[:community_identifier]
+      if community_identifier.nil?
+        @failed = [_('Select one community to proceed')] 
+      else 
+        redirect_to :controller => 'cms', :action => 'new', :type => "CommunityTrackPlugin::Track", :profile => community_identifier
+      end
+    end
   end
 
 end

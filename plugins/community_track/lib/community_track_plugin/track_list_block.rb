@@ -10,10 +10,6 @@ class CommunityTrackPlugin::TrackListBlock < Block
     _('Track List')
   end
 
-  def default_title
-    _('Relevant Tracks')
-  end
-
   def help
     _('This block displays a list of most relevant tracks.')
   end

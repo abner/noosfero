@@ -1,3 +1,7 @@
+.icon-newcommunity-track {
+  background-image: url(/plugins/community_track/icons/community-track.png)
+}
+
 .step_active, #article .step_active a {
   background-color: #CCEBD6;
   color: #338533;

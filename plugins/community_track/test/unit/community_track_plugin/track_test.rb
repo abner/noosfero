@@ -3,8 +3,6 @@ require File.dirname(__FILE__) + '/../../test_helper'
 class TrackTest < ActiveSupport::TestCase
 
   def setup
-    @explicit_view_paths = File.join(File.dirname(__FILE__) + '/../../../views')
-
     profile = fast_create(Community)
     @track = CommunityTrackPlugin::Track.create!(:profile => profile, :name => 'track')
     @step = CommunityTrackPlugin::Step.create!(:parent => @track, :start_date => Date.today, :end_date => Date.today, :name => 'step', :profile => profile)

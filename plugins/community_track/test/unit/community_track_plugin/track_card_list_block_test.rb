@@ -12,10 +12,6 @@ class TrackCardListBlockTest < ActiveSupport::TestCase
     assert CommunityTrackPlugin::TrackCardListBlock.description
   end
 
-  should 'has title' do
-    assert @block.default_title
-  end
-
   should 'return track_card as track partial' do
     assert_equal 'track_card', @block.track_partial
   end
