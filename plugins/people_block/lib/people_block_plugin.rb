@@ -1,9 +1,9 @@
-require_dependency File.dirname(__FILE__) + '/display_people_block'
+require_dependency File.dirname(__FILE__) + '/people_block'
 
-class DisplayPeopleBlockPlugin < Noosfero::Plugin
+class PeopleBlockPlugin < Noosfero::Plugin
 
   def self.plugin_name
-    "Display People Block Plugin"
+    "People Block Plugin"
   end
 
   def self.plugin_description
@@ -12,7 +12,7 @@ class DisplayPeopleBlockPlugin < Noosfero::Plugin
 
   def self.extra_blocks
     {
-      DisplayPeopleBlock => {}
+      PeopleBlock => {}
     }
   end
 

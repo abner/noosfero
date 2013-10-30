@@ -19,7 +19,7 @@ module SweeperHelper
     end
 
     # friends blocks
-    blocks = profile.blocks.select{|b| b.kind_of?(FriendsBlock)}
+    blocks = profile.blocks.select{|b| b.kind_of?(PeopleBlock)}
     BlockSweeper.expire_blocks(blocks)
   end
 
