@@ -12,7 +12,7 @@
   <h3><%= _("Tools") %></h3>
   <% if step.allow_create?(user) %>
     <div class="actions">
-      <%= colorbox_button(:new, _('New Tool'), profile.admin_url.merge(:controller => 'cms', :action => 'new', :parent_id => @page )) unless remove_content_button(:new) %>
+      <%= colorbox_button(:new, _('New Tool'), profile.admin_url.merge(:controller => 'cms', :action => 'new', :parent_id => @page, :cms => true )) unless remove_content_button(:new) %>
     </div>
   <% end %>
   <div class="tools">
