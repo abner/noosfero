@@ -1,4 +1,5 @@
-<div class="item">
+<% extend CommunityTrackPlugin::TrackHelper %>
+<div class="item <%= category_class(track) %>">
   <div class="track_content">
     <div class="lead">
       <h3><%= link_to track.name, track.url %></h3>

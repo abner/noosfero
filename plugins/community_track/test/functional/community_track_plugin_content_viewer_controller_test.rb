@@ -12,6 +12,9 @@ class ContentViewerControllerTest < ActionController::TestCase
   def setup
     @profile = fast_create(Community)
     @track = CommunityTrackPlugin::Track.create!(:abstract => 'abstract', :body => 'body', :name => 'track', :profile => @profile)
+    category = fast_create(Category, :name => "education")
+    @track.add_category(category)
+
     @step = CommunityTrackPlugin::Step.create!(:name => 'step1', :body => 'body', :profile => @profile, :parent => @track, :published => false, :end_date => Date.today, :start_date => Date.today)
 
     user = create_user('testinguser')
@@ -95,7 +98,7 @@ class ContentViewerControllerTest < ActionController::TestCase
     @block = CommunityTrackPlugin::TrackListBlock.create!(:box => box)
     @profile.boxes << box
     get :view_page, @step.url
-    assert_tag :tag => 'div', :attributes => { :class => 'item' }, :descendant => { :tag => 'div', :attributes => { :class => 'steps' }, :descendant => { :tag => 'div', :attributes => { :class => "step #{@block.status_class(@step)}" } } }
+    assert_tag :tag => 'div', :attributes => { :class => 'item category_education' }, :descendant => { :tag => 'div', :attributes => { :class => 'steps' }, :descendant => { :tag => 'div', :attributes => { :class => "step #{@block.status_class(@step)}" } } }
   end
 
   should 'render tracks in track card list block' do
@@ -103,8 +106,8 @@ class ContentViewerControllerTest < ActionController::TestCase
     @block = CommunityTrackPlugin::TrackCardListBlock.create!(:box => box)
     @profile.boxes << box
     get :view_page, @step.url
-    assert_tag :tag => 'div', :attributes => { :class => 'item_card' }, :descendant => { :tag => 'div', :attributes => { :class => 'track_content' } }
-    assert_tag :tag => 'div', :attributes => { :class => 'item_card' }, :descendant => { :tag => 'div', :attributes => { :class => 'track_stats' } }
+    assert_tag :tag => 'div', :attributes => { :class => 'item_card category_education' }, :descendant => { :tag => 'div', :attributes => { :class => 'track_content' } }
+    assert_tag :tag => 'div', :attributes => { :class => 'item_card category_education' }, :descendant => { :tag => 'div', :attributes => { :class => 'track_stats' } }
   end
 
   should 'render link to display more tracks in track list block' do
