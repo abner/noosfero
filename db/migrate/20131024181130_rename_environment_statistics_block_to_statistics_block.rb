@@ -2,7 +2,7 @@ class RenameEnvironmentStatisticsBlockToStatisticsBlock < ActiveRecord::Migratio
   def self.up    
     out = IO.popen("#{File.dirname(__FILE__)}/../../script/noosfero-plugins enable statistics").readlines.first   
     raise "could not activate the statistics plugin" unless out.match(/enabled/) 
-    update("update blocks set type = 'StatisticsBlock' where type = 'EnvironmentStat0isticsBlock'")
+    update("update blocks set type = 'StatisticsBlock' where type = 'EnvironmentStatisticsBlock'")
     
     Environment.all.each do |env|
       env.enable_plugin('StatisticsPlugin')
