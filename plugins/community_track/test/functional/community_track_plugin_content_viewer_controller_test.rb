@@ -69,6 +69,12 @@ class ContentViewerControllerTest < ActionController::TestCase
     assert_tag :tag => 'div', :attributes => {:id => 'step' }, :descendant => { :tag => 'div', :attributes => { :class => 'actions' } }
   end
 
+  should 'show actions for enabled tools in step' do
+    get :view_page, @step.url
+    assert_tag 'div', :attributes => {:class => 'actions' }, :descendant => { :tag => 'a', :attributes => { :class => 'button with-text icon-new icon-newforum' } }
+    assert_tag 'div', :attributes => {:class => 'actions' }, :descendant => { :tag => 'a', :attributes => { :class => 'button with-text icon-new icon-newtext-html' } }
+  end
+
   should 'do not show actions for steps when user has not permission for edit' do
     user = create_user('intruder')
     logout

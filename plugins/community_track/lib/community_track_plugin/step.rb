@@ -51,6 +51,10 @@ class CommunityTrackPlugin::Step < Folder
     false
   end
 
+  def enabled_tools
+    {TinyMceArticle => {:name => _('Article')}, Forum => {:name => _('Forum')}}
+  end
+
   def to_html(options = {})
     step = self
     lambda do
