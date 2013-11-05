@@ -1,4 +1,5 @@
-<div class="item_card">
+<% extend CommunityTrackPlugin::TrackHelper %>
+<div class="item_card <%= category_class(track_card) %>">
   <a href="<%= url_for track_card.url %>">
   <div class="track_content">
     <div class="title">
