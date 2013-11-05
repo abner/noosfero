@@ -3,6 +3,8 @@ require File.dirname(__FILE__) + '/../../test_helper'
 class TrackHelperTest < ActiveSupport::TestCase
   
   include CommunityTrackPlugin::TrackHelper
+  include NoosferoTestHelper
+  include ActionView::Helpers::TextHelper
 
   def setup
     @track = CommunityTrackPlugin::Track.new
@@ -30,6 +32,24 @@ class TrackHelperTest < ActiveSupport::TestCase
     category = fast_create(Category, :name => 'not defined')
     @track.categories << category
     assert_equal 'category_not-defined', category_class(@track)
+  end
+
+  should 'return lead for track removing html tags' do
+    @track.abstract = "display <div>pure text</div>"
+    assert_equal "display pure text", track_card_lead(@track)
+  end
+
+  should 'limit lead char length' do
+    @track.abstract = ""
+    400.times { @track.abstract += "a" }
+    assert_equal 306, track_card_lead(@track).length
+  end
+
+  should 'display a shorter lead if track has a image' do
+    @track.abstract = ""
+    @track.image = Image.new
+    400.times { @track.abstract += "a" }
+    assert_equal 186, track_card_lead(@track).length
   end
 
 end
