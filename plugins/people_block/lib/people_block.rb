@@ -1,4 +1,4 @@
-class DisplayPeopleBlock < Block
+class PeopleBlock < Block
 
   settings_items :prioritize_people_with_image, :type => :boolean, :default => true
   settings_items :limit, :type => :integer, :default => 6
