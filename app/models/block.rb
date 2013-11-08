@@ -133,7 +133,7 @@ class Block < ActiveRecord::Base
   def cache_key(language='en')
     active_record_cache_key+'-'+language
   end
- 
+
   def timeout
     4.hours
   end
@@ -147,6 +147,10 @@ class Block < ActiveRecord::Base
       :profile => [],
       :environment => []
     }
+  end
+
+  def has_macro?
+    false
   end
 
 end
