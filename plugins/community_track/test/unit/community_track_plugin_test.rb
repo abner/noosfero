@@ -49,6 +49,18 @@ class CommunityTrackPluginTest < ActiveSupport::TestCase
     @params[:parent_id] = parent.id
     assert_not_includes @plugin.content_types, CommunityTrackPlugin::Step
   end
+
+  should 'return Track and Step as a content type if context has no params' do
+    parent = fast_create(Blog, :profile_id => @profile.id)
+    expects(:respond_to?).with(:params).returns(false)
+    assert_equivalent [CommunityTrackPlugin::Step, CommunityTrackPlugin::Track], @plugin.content_types
+  end
+
+  should 'return Track and Step as a content type if params is nil' do
+    parent = fast_create(Blog, :profile_id => @profile.id)
+    @params = nil
+    assert_equivalent [CommunityTrackPlugin::Step, CommunityTrackPlugin::Track], @plugin.content_types
+  end
   
   should 'return track card as an extra block' do
     assert_includes CommunityTrackPlugin.extra_blocks, CommunityTrackPlugin::TrackListBlock
