@@ -34,8 +34,8 @@ protected
       expire_timeout_fragment(profile.manage_friends_cache_key(:npage => i.to_s))
     end
 
-    blocks = profile.blocks.select{|b| b.kind_of?(PeopleBlock)}
-    BlockSweeper.expire_blocks(blocks)
+    #blocks = profile.blocks.select{|b| b.kind_of?(PeopleBlock)}
+    #BlockSweeper.expire_blocks(blocks)
   end
 
 end

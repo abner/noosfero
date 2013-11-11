@@ -73,7 +73,7 @@ class Community < Organization
   end
 
   def blocks_to_expire_cache
-    [PeopleBlock]
+    []
   end
 
   def each_member(offset=0)
