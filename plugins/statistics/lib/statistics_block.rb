@@ -1,17 +1,17 @@
 class StatisticsBlock < Block
 
-  settings_items :community_stat, :default => false 
-  settings_items :user_stat, :default => true
-  settings_items :enterprise_stat, :default => false
-  settings_items :category_stat, :default => false
-  settings_items :tag_stat, :default => true
-  settings_items :comment_stat, :default => true 
-  settings_items :hit_stat, :default => true 
-  settings_items :templates_ids_stat, Hash, :default => {}
+  settings_items :community_counter, :default => false 
+  settings_items :user_counter, :default => true
+  settings_items :enterprise_counter, :default => false
+  settings_items :category_counter, :default => false
+  settings_items :tag_counter, :default => true
+  settings_items :comment_counter, :default => true 
+  settings_items :hit_counter, :default => true 
+  settings_items :templates_ids_counter, Hash, :default => {}
   
-  USER_COUNTERS = [:community_stat, :user_stat, :enterprise_stat, :tag_stat, :comment_stat, :hit_stat]
-  COMMUNITY_COUNTERS = [:user_stat, :tag_stat, :comment_stat, :hit_stat]
-  ENTERPRISE_COUNTERS = [:user_stat, :tag_stat, :comment_stat, :hit_stat]
+  USER_COUNTERS = [:community_counter, :user_counter, :enterprise_counter, :tag_counter, :comment_counter, :hit_counter]
+  COMMUNITY_COUNTERS = [:user_counter, :tag_counter, :comment_counter, :hit_counter]
+  ENTERPRISE_COUNTERS = [:user_counter, :tag_counter, :comment_counter, :hit_counter]
 
   attr_reader :users
   attr_reader :enterprises
@@ -29,20 +29,20 @@ class StatisticsBlock < Block
     _('Statistics for %s') % owner.name
   end
 
-  def is_visible? stat
-    value = self.send(stat)
+  def is_visible? counter
+    value = self.send(counter)
     value == '1' || value == true
   end
 
-  def is_valid? stat
+  def is_counter_available? counter
     if owner.kind_of?(Environment)
       true
     elsif owner.kind_of?(Person)
-      USER_COUNTERS.include?(stat)
+      USER_COUNTERS.include?(counter)
     elsif owner.kind_of?(Community)
-      COMMUNITY_COUNTERS.include?(stat)
+      COMMUNITY_COUNTERS.include?(counter)
     elsif owner.kind_of?(Enterprise)
-      ENTERPRISE_COUNTERS.include?(stat)
+      ENTERPRISE_COUNTERS.include?(counter)
     end
     
   end
@@ -69,11 +69,11 @@ class StatisticsBlock < Block
     Community.templates(environment)
   end
   
-  def is_template_stat_active? template_id
-    self.templates_ids_stat[template_id.to_s].to_s == 'true'
+  def is_template_counter_active? template_id
+    self.templates_ids_counter[template_id.to_s].to_s == 'true'
   end
 
-  def template_stat_count(template_id)
+  def template_counter_count(template_id)
     owner.communities.visible.count(:conditions => {:template_id => template_id})
   end
 
@@ -125,7 +125,7 @@ class StatisticsBlock < Block
 
   def comments
     if owner.kind_of?(Environment) then
-      owner.profiles.joins(:articles).sum(:comments_count)
+      owner.profiles.joins(:articles).sum(:comments_count).to_i
     elsif owner.kind_of?(Profile) then
       owner.articles.sum(:comments_count)
     else
