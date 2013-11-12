@@ -24,13 +24,6 @@ As a Noosfero administrator user, go to administrator panel:
 - Click on "Enable/disable plugins" option
 - Click on "Statistics Plugin" check-box
 
-DEVELOPMENT
-===========
-
-Get the Statistics (Noosfero with Statistics Plugin) development repository:
-
-$ git clone https://gitorious.org/+noosfero/noosfero/statistics
-
 Running Statistics tests
 --------------------
 
