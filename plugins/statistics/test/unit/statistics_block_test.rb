@@ -222,15 +222,10 @@ class StatisticsBlockTest < ActiveSupport::TestCase
   
   should 'comments return the amount of comments of the community' do
     b = StatisticsBlock.new
-    e = fast_create(Environment)
-#    role1 = Role.create!(:name => 'test_role', :environment => e)
-#    Role.stubs(:admin).with('environment_administrator', e.id).returns(Role.new)
-#    assert_kind_of Role, Environment::Roles.admin(Environment.default.id)
-
+    e = Environment.default
 
     c1 = fast_create(Community, :environment_id => e.id)    
     a1 = fast_create(Article, :profile_id => c1.id)
-Community.stubs(:bli).with('teste').returns('teste')
     Comment.create!(:source => a1, :body => 'C1', :author_id => 1)
     Comment.create!(:source => a1, :body => 'C2', :author_id => 1)
 
@@ -266,21 +261,12 @@ Community.stubs(:bli).with('teste').returns('teste')
     e = fast_create(Environment)
 
     p1 = fast_create(Person, :environment_id => e.id)    
-    a1 = fast_create(Article, :profile_id => p1.id)
-    t1 = fast_create(Tag, :name => 'T1')
-    t2 = fast_create(Tag, :name => 'T2')
-    a1.tags << t1
-    a1.tags << t2
-    a2 = fast_create(Article, :profile_id => p1.id)
-    t3 = fast_create(Tag, :name => 'T3')
-    t4 = fast_create(Tag, :name => 'T4')
-    a2.tags << t3
-    a2.tags << t4
+    a1 = fast_create(Article, :profile_id => p1.id, :hits => 2)
+    a2 = fast_create(Article, :profile_id => p1.id, :hits => 5)
     
     b.expects(:owner).at_least_once.returns(e)
     
-    assert_equal 4, b.tags
-assert false
+    assert_equal 7, b.hits
   end
   
   should 'hits return the amount of hits of the community' do
@@ -288,21 +274,12 @@ assert false
     e = fast_create(Environment)
 
     c1 = fast_create(Community, :environment_id => e.id)    
-    a1 = fast_create(Article, :profile_id => c1.id)
-    t1 = fast_create(Tag, :name => 'T1')
-    t2 = fast_create(Tag, :name => 'T2')
-    a1.tags << t1
-    a1.tags << t2
-    a2 = fast_create(Article, :profile_id => c1.id)
-    t3 = fast_create(Tag, :name => 'T3')
-    t4 = fast_create(Tag, :name => 'T4')
-    a2.tags << t3
-    a2.tags << t4
+    a1 = fast_create(Article, :profile_id => c1.id, :hits => 2)
+    a2 = fast_create(Article, :profile_id => c1.id, :hits => 5)
     
     b.expects(:owner).at_least_once.returns(c1)
     
-    assert_equal 4, b.tags
-assert false
+    assert_equal 7, b.hits
   end
 
   should 'hits return the amount of hits of the profile (person)' do
@@ -310,21 +287,12 @@ assert false
     e = fast_create(Environment)
 
     p1 = fast_create(Person, :environment_id => e.id)    
-    a1 = fast_create(Article, :profile_id => p1.id)
-    t1 = fast_create(Tag, :name => 'T1')
-    t2 = fast_create(Tag, :name => 'T2')
-    a1.tags << t1
-    a1.tags << t2
-    a2 = fast_create(Article, :profile_id => p1.id)
-    t3 = fast_create(Tag, :name => 'T3')
-    t4 = fast_create(Tag, :name => 'T4')
-    a2.tags << t3
-    a2.tags << t4
+    a1 = fast_create(Article, :profile_id => p1.id, :hits => 2)
+    a2 = fast_create(Article, :profile_id => p1.id, :hits => 5)
     
     b.expects(:owner).at_least_once.returns(p1)
     
-    assert_equal 4, b.tags
-assert false
+    assert_equal 7, b.hits
   end
 
   should 'is_counter_available? return true for all counters if owner is environment' do

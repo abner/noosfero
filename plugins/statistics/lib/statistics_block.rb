@@ -135,7 +135,7 @@ class StatisticsBlock < Block
 
   def hits
     if owner.kind_of?(Environment) then
-      owner.profiles.joins(:articles).sum(:hits)
+      owner.profiles.joins(:articles).sum(:hits).to_i
     elsif owner.kind_of?(Profile) then
       owner.articles.sum(:hits)
     else
