@@ -21,7 +21,6 @@ class ApplicationController < ActionController::Base
   include ApplicationHelper
   layout :get_layout
   def get_layout
-    prepend_view_path('public/' + theme_path)
     theme_option(:layout) || 'application'
   end
 
@@ -123,9 +122,6 @@ class ApplicationController < ActionController::Base
   include Noosfero::Plugin::HotSpot
 
   def init_noosfero_plugins
-    plugins.each do |plugin|
-      prepend_view_path(plugin.class.view_path)
-    end
     init_noosfero_plugins_controller_filters
   end
 
