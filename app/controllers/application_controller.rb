@@ -21,7 +21,8 @@ class ApplicationController < ActionController::Base
   include ApplicationHelper
   layout :get_layout
   def get_layout
-    prepend_view_path('public/' + theme_path)
+    path = 'public/' + theme_path
+    ActionController::Base.view_paths.unshift(path) unless ActionController::Base.view_paths.include?(path)
     theme_option(:layout) || 'application'
   end
 
@@ -125,12 +126,10 @@ class ApplicationController < ActionController::Base
   def init_noosfero_plugins
     @@view_paths_cache ||= {}
     if !@@view_paths_cache[environment.id]
-      plugins.each do |plugin|
-        prepend_view_path(plugin.class.view_path)
+      plugins.each do |plugin| 
+        ActionController::Base.view_paths.unshift(plugin.class.view_path) unless ActionController::Base.view_paths.include?(plugin.class.view_path)
       end
-      @@view_paths_cache[environment.id] = self.view_paths
-    else
-      @view_paths = @@view_paths_cache[environment.id]
+      @@view_paths_cache[environment.id] = ActionController::Base.view_paths
     end
     init_noosfero_plugins_controller_filters
   end
