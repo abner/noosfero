@@ -123,8 +123,14 @@ class ApplicationController < ActionController::Base
   include Noosfero::Plugin::HotSpot
 
   def init_noosfero_plugins
-    plugins.each do |plugin|
-      prepend_view_path(plugin.class.view_path)
+    @@view_paths_cache ||= {}
+    if !@@view_paths_cache[environment.id]
+      plugins.each do |plugin|
+        prepend_view_path(plugin.class.view_path)
+      end
+      @@view_paths_cache[environment.id] = self.view_paths
+    else
+      @view_paths = @@view_paths_cache[environment.id]
     end
     init_noosfero_plugins_controller_filters
   end
