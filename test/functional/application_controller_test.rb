@@ -2,7 +2,7 @@ require File.dirname(__FILE__) + '/../test_helper'
 require 'test_controller'
 
 # Re-raise errors caught by the controller.
-class TestController; def rescue_action(e) raise e end; end
+class TestController; def rescue_action(e) raise e end; def self.view_paths_cache() @@view_paths_cache end; end
 
 class ApplicationControllerTest < ActionController::TestCase
   all_fixtures
@@ -500,4 +500,11 @@ class ApplicationControllerTest < ActionController::TestCase
     end
 
   end
+
+  should 'cache view paths' do
+    env = Environment.default
+    get :index
+    assert_not_equal nil, TestController.view_paths_cache[env.id]
+  end
+
 end

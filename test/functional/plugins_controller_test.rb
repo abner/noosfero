@@ -2,7 +2,7 @@ require File.dirname(__FILE__) + '/../test_helper'
 require 'plugins_controller'
 
 # Re-raise errors caught by the controller.
-class PluginsController; def rescue_action(e) raise e end; end
+class PluginsController; def self.view_paths_cache() @@view_paths_cache end; def rescue_action(e) raise e end; end
 
 class PluginsControllerTest < ActionController::TestCase
 
@@ -62,6 +62,12 @@ class PluginsControllerTest < ActionController::TestCase
     post :update, :environment => { :enabled_plugins => ['Plugin1']}
     environment.reload
     assert_equal ['Plugin1'], environment.enabled_plugins
+  end
+
+  should 'remove environment view_paths cache when update plugins' do
+    assert_not_equal nil, PluginsController.view_paths_cache[environment.id]
+    post :update, :environment => { :enabled_plugins => ['Plugin1']}
+    assert_equal nil, PluginsController.view_paths_cache[environment.id]
   end
 
 end
