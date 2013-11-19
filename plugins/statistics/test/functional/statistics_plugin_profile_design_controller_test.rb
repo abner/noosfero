@@ -45,39 +45,39 @@ class ProfileDesignControllerTest < ActionController::TestCase
     assert_equal 'Statistics', @block.title
   end
 
-  should 'be able to uncheck core stats' do
-    @block.user_stat = true
-    @block.tag_stat = true
-    @block.comment_stat = true
-    @block.hit_stat = true
+  should 'be able to uncheck core counters' do
+    @block.user_counter = true
+    @block.tag_counter = true
+    @block.comment_counter = true
+    @block.hit_counter = true
     @block.save!
     get :edit, :id => @block.id, :profile => @person.identifier
-    post :save, :id => @block.id, :block => {:user_stat => '0', :tag_stat => '0', :comment_stat => '0', :hit_stat => '0' }, :profile => @person.identifier
+    post :save, :id => @block.id, :block => {:user_counter => '0', :tag_counter => '0', :comment_counter => '0', :hit_counter => '0' }, :profile => @person.identifier
     @block.reload
-    any_checked = @block.is_visible?('user_stat') ||
-                  @block.is_visible?('tag_stat') ||
-                  @block.is_visible?('comment_stat') ||
-                  @block.is_visible?('hit_stat')
+    any_checked = @block.is_visible?('user_counter') ||
+                  @block.is_visible?('tag_counter') ||
+                  @block.is_visible?('comment_counter') ||
+                  @block.is_visible?('hit_counter')
     assert_equal false, any_checked
   end
 
-  should 'be able to check core stats' do
-    @block.user_stat = false
-    @block.community_stat = false
-    @block.enterprise_stat = false
-    @block.category_stat = false
-    @block.tag_stat = false
-    @block.comment_stat = false
-    @block.hit_stat = false
+  should 'be able to check core counters' do
+    @block.user_counter = false
+    @block.community_counter = false
+    @block.enterprise_counter = false
+    @block.category_counter = false
+    @block.tag_counter = false
+    @block.comment_counter = false
+    @block.hit_counter = false
     @block.save!
     get :edit, :id => @block.id, :profile => @person.identifier
-    post :save, :id => @block.id, :block => {:user_stat => '1',  
-      :tag_stat => '1', :comment_stat => '1', :hit_stat => '1' }, :profile => @person.identifier
+    post :save, :id => @block.id, :block => {:user_counter => '1',  
+      :tag_counter => '1', :comment_counter => '1', :hit_counter => '1' }, :profile => @person.identifier
     @block.reload
-    all_checked = @block.is_visible?('user_stat') &&
-                  @block.is_visible?('tag_stat') &&
-                  @block.is_visible?('comment_stat') &&
-                  @block.is_visible?('hit_stat')
+    all_checked = @block.is_visible?('user_counter') &&
+                  @block.is_visible?('tag_counter') &&
+                  @block.is_visible?('comment_counter') &&
+                  @block.is_visible?('hit_counter')
     assert all_checked
       
   end

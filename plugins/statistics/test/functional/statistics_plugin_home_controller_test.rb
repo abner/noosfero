@@ -45,7 +45,7 @@ class HomeControllerTest < ActionController::TestCase
   end
 
   should 'not display users class in statistics-block-data block' do
-    @block.user_stat = false
+    @block.user_counter = false
     @block.save!
     get :index
 
@@ -53,7 +53,7 @@ class HomeControllerTest < ActionController::TestCase
   end
 
   should 'display communities class in statistics-block-data block' do
-    @block.community_stat = true
+    @block.community_counter = true
     @block.save!
     get :index
 
@@ -67,7 +67,7 @@ class HomeControllerTest < ActionController::TestCase
   end
 
   should 'display enterprises class in statistics-block-data block' do
-    @block.enterprise_stat = true
+    @block.enterprise_counter = true
     @block.save!
     get :index
 
@@ -81,7 +81,7 @@ class HomeControllerTest < ActionController::TestCase
   end
 
   should 'display categories class in statistics-block-data block' do
-    @block.category_stat = true
+    @block.category_counter = true
     @block.save!
     get :index
 
@@ -101,7 +101,7 @@ class HomeControllerTest < ActionController::TestCase
   end
 
   should 'not display tags class in statistics-block-data block' do
-    @block.tag_stat = false
+    @block.tag_counter = false
     @block.save!
     get :index
 
@@ -115,7 +115,7 @@ class HomeControllerTest < ActionController::TestCase
   end
 
   should 'not display comments class in statistics-block-data block' do
-    @block.comment_stat = false
+    @block.comment_counter = false
     @block.save!
     get :index
 
@@ -129,7 +129,7 @@ class HomeControllerTest < ActionController::TestCase
   end
 
   should 'not display hits class in statistics-block-data block' do
-    @block.hit_stat = false
+    @block.hit_counter = false
     @block.save!
     get :index
 
@@ -138,7 +138,7 @@ class HomeControllerTest < ActionController::TestCase
   
   should 'display template name in class in statistics-block-data block' do
     template = fast_create(Community, :name => 'Councils', :is_template => true, :environment_id => @environment.id)
-    @block.templates_ids_stat = {template.id.to_s => 'true'}
+    @block.templates_ids_counter = {template.id.to_s => 'true'}
     @block.save!
     get :index
 

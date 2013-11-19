@@ -1,17 +1,17 @@
 require File.dirname(__FILE__) + '/../test_helper'
 class StatisticsBlockTest < ActiveSupport::TestCase
   
-  ['user_stat', 'tag_stat', 'comment_stat', 'hit_stat'].map do |stat|
-    should "#{stat} be true by default" do
+  ['user_counter', 'tag_counter', 'comment_counter', 'hit_counter'].map do |counter|
+    should "#{counter} be true by default" do
       b = StatisticsBlock.new
-      assert b.is_visible?(stat)
+      assert b.is_visible?(counter)
     end
   end
   
-  ['community_stat', 'enterprise_stat', 'category_stat'].map do |stat|
-    should "#{stat} be false by default" do
+  ['community_counter', 'enterprise_counter', 'category_counter'].map do |counter|
+    should "#{counter} be false by default" do
       b = StatisticsBlock.new
-      assert !b.is_visible?(stat)
+      assert !b.is_visible?(counter)
     end
   end
 
@@ -34,14 +34,14 @@ class StatisticsBlockTest < ActiveSupport::TestCase
 
   should 'is_visible? return true if setting is true' do
     b = StatisticsBlock.new
-    b.community_stat = true
-    assert b.is_visible?('community_stat')
+    b.community_counter = true
+    assert b.is_visible?('community_counter')
   end
 
   should 'is_visible? return false if setting is false' do
     b = StatisticsBlock.new
-    b.community_stat = false
-    assert !b.is_visible?('community_stat')
+    b.community_counter = false
+    assert !b.is_visible?('community_counter')
   end
   
   should 'templates return the Community templates of the Environment' do
@@ -201,28 +201,122 @@ class StatisticsBlockTest < ActiveSupport::TestCase
     assert_equal 4, b.tags
   end
 
-  should 'is_valid? return true for all stats if owner is environment' do
+  should 'comments return the amount of comments of the Environment' do
+    b = StatisticsBlock.new
+    e = fast_create(Environment)
+
+    p1 = fast_create(Person, :environment_id => e.id)    
+    a1 = fast_create(Article, :profile_id => p1.id)
+
+    Comment.create!(:source => a1, :body => 'C1', :author_id => 1)
+    Comment.create!(:source => a1, :body => 'C2', :author_id => 1)
+
+    a2 = fast_create(Article, :profile_id => p1.id)
+    Comment.create!(:source => a2, :body => 'C3', :author_id => 1)
+    Comment.create!(:source => a2, :body => 'C4', :author_id => 1)
+
+    b.expects(:owner).at_least_once.returns(e)
+    
+    assert_equal 4, b.comments
+  end
+  
+  should 'comments return the amount of comments of the community' do
+    b = StatisticsBlock.new
+    e = Environment.default
+
+    c1 = fast_create(Community, :environment_id => e.id)    
+    a1 = fast_create(Article, :profile_id => c1.id)
+    Comment.create!(:source => a1, :body => 'C1', :author_id => 1)
+    Comment.create!(:source => a1, :body => 'C2', :author_id => 1)
+
+    a2 = fast_create(Article, :profile_id => c1.id)
+    Comment.create!(:source => a2, :body => 'C3', :author_id => 1)
+    Comment.create!(:source => a2, :body => 'C4', :author_id => 1)
+    
+    b.expects(:owner).at_least_once.returns(c1)
+    
+    assert_equal 4, b.comments
+  end
+
+  should 'comments return the amount of comments of the profile (person)' do
+    b = StatisticsBlock.new
+    e = fast_create(Environment)
+
+    p1 = fast_create(Person, :environment_id => e.id)    
+    a1 = fast_create(Article, :profile_id => p1.id)
+    Comment.create!(:source => a1, :body => 'C1', :author_id => 1)
+    Comment.create!(:source => a1, :body => 'C2', :author_id => 1)
+
+    a2 = fast_create(Article, :profile_id => p1.id)
+    Comment.create!(:source => a1, :body => 'C3', :author_id => 1)
+    Comment.create!(:source => a1, :body => 'C4', :author_id => 1)
+    
+    b.expects(:owner).at_least_once.returns(p1)
+    
+    assert_equal 4, b.comments
+  end
+
+  should 'hits return the amount of hits of the Environment' do
+    b = StatisticsBlock.new
+    e = fast_create(Environment)
+
+    p1 = fast_create(Person, :environment_id => e.id)    
+    a1 = fast_create(Article, :profile_id => p1.id, :hits => 2)
+    a2 = fast_create(Article, :profile_id => p1.id, :hits => 5)
+    
+    b.expects(:owner).at_least_once.returns(e)
+    
+    assert_equal 7, b.hits
+  end
+  
+  should 'hits return the amount of hits of the community' do
+    b = StatisticsBlock.new
+    e = fast_create(Environment)
+
+    c1 = fast_create(Community, :environment_id => e.id)    
+    a1 = fast_create(Article, :profile_id => c1.id, :hits => 2)
+    a2 = fast_create(Article, :profile_id => c1.id, :hits => 5)
+    
+    b.expects(:owner).at_least_once.returns(c1)
+    
+    assert_equal 7, b.hits
+  end
+
+  should 'hits return the amount of hits of the profile (person)' do
+    b = StatisticsBlock.new
+    e = fast_create(Environment)
+
+    p1 = fast_create(Person, :environment_id => e.id)    
+    a1 = fast_create(Article, :profile_id => p1.id, :hits => 2)
+    a2 = fast_create(Article, :profile_id => p1.id, :hits => 5)
+    
+    b.expects(:owner).at_least_once.returns(p1)
+    
+    assert_equal 7, b.hits
+  end
+
+  should 'is_counter_available? return true for all counters if owner is environment' do
     b = StatisticsBlock.new
     e = fast_create(Environment)
 
     b.expects(:owner).at_least_once.returns(e)
     
-    assert b.is_valid?(:user_stat)
+    assert b.is_counter_available?(:user_counter)
   end
 
-  should 'is_template_stat_active? return true if setting is true' do
+  should 'is_template_counter_active? return true if setting is true' do
     b = StatisticsBlock.new
-    b.templates_ids_stat = {'1' => 'true'}
-    assert b.is_template_stat_active?(1)
+    b.templates_ids_counter = {'1' => 'true'}
+    assert b.is_template_counter_active?(1)
   end
 
-  should 'is_template_stat_active? return false if setting is false' do
+  should 'is_template_counter_active? return false if setting is false' do
     b = StatisticsBlock.new
-    b.templates_ids_stat = {'1' => 'false'}
-    assert !b.is_template_stat_active?(1)
+    b.templates_ids_counter = {'1' => 'false'}
+    assert !b.is_template_counter_active?(1)
   end
 
-  should 'template_stat_count return the amount of communities of the Environment using a template' do
+  should 'template_counter_count return the amount of communities of the Environment using a template' do
     b = StatisticsBlock.new
     e = fast_create(Environment)
     
@@ -237,6 +331,6 @@ class StatisticsBlockTest < ActiveSupport::TestCase
     
     b.expects(:owner).at_least_once.returns(e)
     
-    assert_equal 2, b.template_stat_count(t1.id)
+    assert_equal 2, b.template_counter_count(t1.id)
   end
 end
