@@ -16,11 +16,7 @@ class StepTest < ActiveSupport::TestCase
   should 'has a short description' do
     assert CommunityTrackPlugin::Step.short_description
   end
-<<<<<<< .merge_file_IIVzSe
-  
-=======
 
->>>>>>> .merge_file_6jcoSm
   should 'set published to false on create' do
     today = Date.today
     step = CommunityTrackPlugin::Step.create(:name => 'Step', :body => 'body', :profile => @profile, :parent => @track, :start_date => today, :end_date => today, :published => true)
@@ -33,11 +29,7 @@ class StepTest < ActiveSupport::TestCase
     step = CommunityTrackPlugin::Step.new(:name => 'Step', :body => 'body', :profile => @profile, :parent => blog, :start_date => today, :end_date => today, :published => true)
     assert !step.save
   end
-<<<<<<< .merge_file_IIVzSe
-  
-=======
 
->>>>>>> .merge_file_6jcoSm
   should 'do not allow step creation without a parent' do
     today = Date.today
     step = CommunityTrackPlugin::Step.new(:name => 'Step', :body => 'body', :profile => @profile, :parent => nil, :start_date => today, :end_date => today, :published => true)
@@ -73,39 +65,24 @@ class StepTest < ActiveSupport::TestCase
     @step.end_date_equal_or_after_start_date.inspect
     assert [], @step.errors
   end
-<<<<<<< .merge_file_IIVzSe
-  
-=======
 
->>>>>>> .merge_file_6jcoSm
   should 'be active if today is between start and end dates' do
     @step.start_date = Date.today
     @step.end_date = Date.today + 1.day
     assert @step.active?
   end
-<<<<<<< .merge_file_IIVzSe
-  
-=======
 
->>>>>>> .merge_file_6jcoSm
   should 'be finished if today is after the end date' do
     @step.start_date = Date.today - 2.day
     @step.end_date = Date.today - 1.day
     assert @step.finished?
   end
-<<<<<<< .merge_file_IIVzSe
-  
-=======
 
->>>>>>> .merge_file_6jcoSm
   should 'be waiting if today is before the end date' do
     @step.start_date = Date.today + 1.day
     @step.end_date = Date.today + 2.day
     assert @step.waiting?
   end
-<<<<<<< .merge_file_IIVzSe
-  
-=======
 
   should 'return delayed job created with a specific step_id' do
     step_id = 0
@@ -113,7 +90,6 @@ class StepTest < ActiveSupport::TestCase
     assert CommunityTrackPlugin::ActivationJob.find(step_id)
   end
 
->>>>>>> .merge_file_6jcoSm
   should 'create delayed job' do
     @step.start_date = Date.today
     @step.end_date = Date.today
@@ -121,11 +97,7 @@ class StepTest < ActiveSupport::TestCase
     assert_equal 1, Delayed::Job.count
     assert_equal @step.start_date, Delayed::Job.first.run_at.to_date
   end
-<<<<<<< .merge_file_IIVzSe
-  
-=======
 
->>>>>>> .merge_file_6jcoSm
   should 'do not duplicate delayed job' do
     @step.start_date = Date.today
     @step.end_date = Date.today
@@ -133,11 +105,7 @@ class StepTest < ActiveSupport::TestCase
     @step.schedule_activation
     assert_equal 1, Delayed::Job.count
   end
-<<<<<<< .merge_file_IIVzSe
-  
-=======
 
->>>>>>> .merge_file_6jcoSm
   should 'create delayed job when a step is saved' do
     @step.start_date = Date.today
     @step.end_date = Date.today
@@ -190,11 +158,7 @@ class StepTest < ActiveSupport::TestCase
 
   should 'do not schedule delayed job if save but do not modify date fields and published status' do
     @step.start_date = Date.today
-<<<<<<< .merge_file_IIVzSe
-    @step.end_date = Date.today 
-=======
     @step.end_date = Date.today
->>>>>>> .merge_file_6jcoSm
     @step.published = false
     @step.save!
     assert_equal 1, Delayed::Job.count
@@ -207,17 +171,10 @@ class StepTest < ActiveSupport::TestCase
   should 'set position on save' do
     assert !@step.position
     @step.save!
-<<<<<<< .merge_file_IIVzSe
     assert_equal 1, @step.position    
     step2 = CommunityTrackPlugin::Step.new(:name => 'Step2', :body => 'body', :profile => @profile, :parent => @track, :published => false, :end_date => Date.today, :start_date => Date.today)
     step2.save!
     assert_equal 2, step2.position    
-=======
-    assert_equal 1, @step.position
-    step2 = CommunityTrackPlugin::Step.new(:name => 'Step2', :body => 'body', :profile => @profile, :parent => @track, :published => false, :end_date => Date.today, :start_date => Date.today)
-    step2.save!
-    assert_equal 2, step2.position
->>>>>>> .merge_file_6jcoSm
   end
 
   should 'publish step if it is active' do
