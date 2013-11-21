@@ -8,7 +8,11 @@ class CommunityTrackPluginTest < ActiveSupport::TestCase
     @params = {}
     @plugin.stubs(:context).returns(self)
   end
+<<<<<<< .merge_file_XZ8G9h
   
+=======
+
+>>>>>>> .merge_file_c6dvgk
   attr_reader :profile, :params
 
   should 'has name' do
@@ -61,7 +65,11 @@ class CommunityTrackPluginTest < ActiveSupport::TestCase
     @params = nil
     assert_equivalent [CommunityTrackPlugin::Step, CommunityTrackPlugin::Track], @plugin.content_types
   end
+<<<<<<< .merge_file_XZ8G9h
   
+=======
+
+>>>>>>> .merge_file_c6dvgk
   should 'return track card as an extra block' do
     assert_includes CommunityTrackPlugin.extra_blocks, CommunityTrackPlugin::TrackListBlock
   end

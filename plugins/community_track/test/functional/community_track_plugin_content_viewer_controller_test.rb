@@ -2,6 +2,7 @@ require File.dirname(__FILE__) + '/../test_helper'
 
 class ContentViewerController
   append_view_path File.join(File.dirname(__FILE__) + '/../../views')
+<<<<<<< .merge_file_U6Y0Yh
   def rescue_action(e) 
     raise e 
   end 
@@ -9,6 +10,15 @@ end
 
 class ContentViewerControllerTest < ActionController::TestCase
   
+=======
+  def rescue_action(e)
+    raise e
+  end
+end
+
+class ContentViewerControllerTest < ActionController::TestCase
+
+>>>>>>> .merge_file_xXtPNe
   def setup
     @profile = fast_create(Community)
     @track = CommunityTrackPlugin::Track.create!(:abstract => 'abstract', :body => 'body', :name => 'track', :profile => @profile)
@@ -45,7 +55,11 @@ class ContentViewerControllerTest < ActionController::TestCase
 
   should 'display steps for tracks' do
     get :view_page, @track.url
+<<<<<<< .merge_file_U6Y0Yh
     assert_tag :tag => 'ul', :attributes => { :id => 'sortable' }, :descendant => {:tag => 'li', :attributes => { :class => 'step step_active' } }
+=======
+    assert_tag :tag => 'ul', :attributes => { :id => 'sortable' }, :descendant => {:tag => 'li', :attributes => { :class => 'step' } }
+>>>>>>> .merge_file_xXtPNe
   end
 
   should 'display hidden field with step id' do

@@ -29,7 +29,11 @@
 
     <ul id="sortable" class="step_list">
     <% track.steps.each do |step| %>
+<<<<<<< .merge_file_0e9FKr
       <li class="step <%= status_class(step) %>">
+=======
+      <li class="step">
+>>>>>>> .merge_file_BGtRVq
         <%= hidden_field_tag "step_ids[]", step.id %>
         <div class="position"><%= step.position %></div>
         <div class="content">

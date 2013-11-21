@@ -1,5 +1,9 @@
 class CommunityTrackPlugin::Track < Folder
+<<<<<<< .merge_file_u7ciYa
   
+=======
+
+>>>>>>> .merge_file_RaIcJ7
   settings_items :goals, :type => :string
   settings_items :expected_results, :type => :string
 
@@ -32,7 +36,11 @@ class CommunityTrackPlugin::Track < Folder
       end
     end
   end
+<<<<<<< .merge_file_u7ciYa
   
+=======
+
+>>>>>>> .merge_file_RaIcJ7
   def steps_unsorted
     children.where(:type => 'CommunityTrackPlugin::Step')
   end
@@ -59,7 +67,11 @@ class CommunityTrackPlugin::Track < Folder
     category = categories.first
     category ? category.name : ''
   end
+<<<<<<< .merge_file_u7ciYa
   
+=======
+
+>>>>>>> .merge_file_RaIcJ7
   def to_html(options = {})
     track = self
     lambda do

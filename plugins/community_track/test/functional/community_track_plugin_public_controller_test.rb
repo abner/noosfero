@@ -40,7 +40,11 @@ class CommunityTrackPluginPublicControllerTest < ActionController::TestCase
     xhr :get, :view_tracks, :id => @block.id, :page => 1
     assert_equal @block.limit, @response.body.scan(/item/).size
   end
+<<<<<<< .merge_file_rrtawk
   
+=======
+
+>>>>>>> .merge_file_wwt9Hg
   should 'display page for all tracks' do
     get :all_tracks, :id => @block.id
     assert_match /track_list_#{@block.id}/, @response.body

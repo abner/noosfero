@@ -1,7 +1,11 @@
 require File.dirname(__FILE__) + '/../../test_helper'
 
 class StepHelperTest < ActiveSupport::TestCase
+<<<<<<< .merge_file_dYGp5j
   
+=======
+
+>>>>>>> .merge_file_5aKrZk
   include CommunityTrackPlugin::StepHelper
 
   def setup
