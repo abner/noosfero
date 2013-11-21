@@ -15,11 +15,7 @@ class CommunityTrackPlugin < Noosfero::Plugin
   def content_types
     if context.respond_to?(:params) && context.params
       types = []
-<<<<<<< .merge_file_cCmuP4
-      parent_id = context.params[:parent_id] 
-=======
       parent_id = context.params[:parent_id]
->>>>>>> .merge_file_TfSGK5
       types << CommunityTrackPlugin::Track if context.profile.community? && !parent_id
       parent = parent_id ? context.profile.articles.find(parent_id) : nil
       types << CommunityTrackPlugin::Step if parent.kind_of?(CommunityTrackPlugin::Track)
