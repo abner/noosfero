@@ -186,19 +186,19 @@ class CommentTest < ActiveSupport::TestCase
   should 'not fill fields with javascript' do
     owner = create_user('testuser').person
     article = owner.articles.create!(:name => 'test', :body => '...')
-    javascript = "<script>alert('XSS')</script>"
+    javascript = "some<script>alert('XSS')</script> text"
     comment = article.comments.create!(:article => article, :name => javascript, :title => javascript, :body => javascript, :email => 'cracker@test.org')
     assert_no_match(/<script>/, comment.name)
   end
 
-  should 'sanitize required fields before validation' do
+  should 'not sanitize quot at required fields' do
     owner = create_user('testuser').person
     article = owner.articles.create(:name => 'test', :body => '...')
-    comment = article.comments.new(:title => '<h1 title </h1>', :body => '<h1 body </h1>', :name => '<h1 name </h1>', :email => 'cracker@test.org')
-    comment.valid?
+    comment = article.comments.create!(:title => '"title"', :body => '"body"', :name => '"name"', :email => 'cracker@test.org')
 
-    assert comment.errors.invalid?(:name)
-    assert comment.errors.invalid?(:body)
+    assert_equal '"title"', comment.title
+    assert_equal '"body"',  comment.body
+    assert_equal '"name"',  comment.name
   end
 
   should 'escape malformed html tags' do
