@@ -1594,11 +1594,7 @@ class ProfileControllerTest < ActionController::TestCase
     community.add_admin(user)
 
     Environment.any_instance.stubs(:enabled?).returns(false)
-<<<<<<< .merge_file_mgJCdA
-    Environment.any_instance.stubs(:enabled?).with('display_my_communities_on_user_menu').returns(true)
-=======
     Environment.any_instance.stubs(:enabled?).with(:display_my_communities_on_user_menu).returns(true)
->>>>>>> .merge_file_8c2aLz
 
     login_as(user.identifier)
     get :index
@@ -1611,11 +1607,7 @@ class ProfileControllerTest < ActionController::TestCase
     u2 = create_user('guy_that_will_be_admin_of_all').person # because the first member of each community is an admin
 
     Environment.any_instance.stubs(:enabled?).returns(false)
-<<<<<<< .merge_file_mgJCdA
-    Environment.any_instance.stubs(:enabled?).with('display_my_communities_on_user_menu').returns(true)
-=======
     Environment.any_instance.stubs(:enabled?).with(:display_my_communities_on_user_menu).returns(true)
->>>>>>> .merge_file_8c2aLz
 
     Environment.any_instance.stubs(:required_person_fields).returns([])
     u.data = { :email => 'test@test.com', :fields_privacy => { } }
@@ -1653,11 +1645,7 @@ class ProfileControllerTest < ActionController::TestCase
     u = create_user('other_other_ze').person
 
     Environment.any_instance.stubs(:enabled?).returns(false)
-<<<<<<< .merge_file_mgJCdA
-    Environment.any_instance.stubs(:enabled?).with('display_my_enterprises_on_user_menu').returns(true)
-=======
     Environment.any_instance.stubs(:enabled?).with(:display_my_enterprises_on_user_menu).returns(true)
->>>>>>> .merge_file_8c2aLz
 
     Environment.any_instance.stubs(:required_person_fields).returns([])
     u.data = { :email => 'test@test.com', :fields_privacy => { } }
