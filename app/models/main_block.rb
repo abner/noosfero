@@ -17,7 +17,7 @@ class MainBlock < Block
   end
 
   def editable?
-    false
+    true
   end
 
   def cacheable?
