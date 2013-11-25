@@ -29,7 +29,7 @@
 
     <ul id="sortable" class="step_list">
     <% track.steps.each do |step| %>
-      <li class="step <%= status_class(step) %>">
+      <li class="step">
         <%= hidden_field_tag "step_ids[]", step.id %>
         <div class="position"><%= step.position %></div>
         <div class="content">

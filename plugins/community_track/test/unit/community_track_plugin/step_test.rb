@@ -171,10 +171,10 @@ class StepTest < ActiveSupport::TestCase
   should 'set position on save' do
     assert !@step.position
     @step.save!
-    assert_equal 1, @step.position    
+    assert_equal 1, @step.position
     step2 = CommunityTrackPlugin::Step.new(:name => 'Step2', :body => 'body', :profile => @profile, :parent => @track, :published => false, :end_date => Date.today, :start_date => Date.today)
     step2.save!
-    assert_equal 2, step2.position    
+    assert_equal 2, step2.position
   end
 
   should 'publish step if it is active' do

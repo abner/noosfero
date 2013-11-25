@@ -45,7 +45,7 @@ class ContentViewerControllerTest < ActionController::TestCase
 
   should 'display steps for tracks' do
     get :view_page, @track.url
-    assert_tag :tag => 'ul', :attributes => { :id => 'sortable' }, :descendant => {:tag => 'li', :attributes => { :class => 'step step_active' } }
+    assert_tag :tag => 'ul', :attributes => { :id => 'sortable' }, :descendant => {:tag => 'li', :attributes => { :class => 'step' } }
   end
 
   should 'display hidden field with step id' do

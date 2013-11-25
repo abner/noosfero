@@ -68,7 +68,7 @@ class TrackTest < ActiveSupport::TestCase
     assert_equal 3, step3.position
     assert_equal [step1, step2, step3], @track.steps
   end
-  
+
   should 'return steps with order defined by position attribute' do
     @track.children.destroy_all
     step1 = CommunityTrackPlugin::Step.create!(:parent => @track, :start_date => Date.today, :end_date => Date.today, :name => "step1", :profile => @track.profile)
@@ -85,7 +85,7 @@ class TrackTest < ActiveSupport::TestCase
 
   should 'save steps in a new order' do
     @track.children.destroy_all
-    
+
     step1 = CommunityTrackPlugin::Step.create!(:parent => @track, :start_date => Date.today, :end_date => Date.today, :name => "step1", :profile => @track.profile)
     step2 = CommunityTrackPlugin::Step.create!(:parent => @track, :start_date => Date.today, :end_date => Date.today, :name => "step2", :profile => @track.profile)
     step3 = CommunityTrackPlugin::Step.create!(:parent => @track, :start_date => Date.today, :end_date => Date.today, :name => "step3", :profile => @track.profile)
@@ -108,6 +108,20 @@ class TrackTest < ActiveSupport::TestCase
     hidden_step.hidden = true
     hidden_step.save!
     assert_equal [hidden_step], @track.hidden_steps
+  end
+
+   should 'get first paragraph' do
+    @track.body = '<p>First</p><p>Second</p>'
+    assert_equal '<p>First</p>', @track.first_paragraph
+  end
+
+  should 'provide first_paragraph even if body was not given' do
+    assert_equal '', @track.first_paragraph
+  end
+
+  should 'provide first_paragraph even if body is nil' do
+    @track.body = nil
+    assert_equal '', @track.first_paragraph
   end
 
 end

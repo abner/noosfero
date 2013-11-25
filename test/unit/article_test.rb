@@ -1744,7 +1744,6 @@ class ArticleTest < ActiveSupport::TestCase
     assert_nil article.author_id
   end
 
-<<<<<<< .merge_file_XQp6qc
   should 'save image on create article' do
     assert_difference Article, :count do
       p = Article.create!(:name => 'test', :image_builder => {

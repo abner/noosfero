@@ -147,11 +147,11 @@ class CmsController < MyProfileController
     article = params[:id].nil? ? nil : profile.articles.find(params[:id])
     profile.update_attribute(:home_page, article)
 
-    if @article.nil?
-       session[:notice] = _('home page reseted.')
+    if article.nil?
+      session[:notice] = _('Homepage reseted.')
     else
-      session[:notice] = _('"%s" configured as home page.') % article.name
-     end
+      session[:notice] = _('"%s" configured as homepage.') % article.name
+    end
 
     redirect_to (request.referer || profile.url)
   end
