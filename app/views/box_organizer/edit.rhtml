@@ -11,19 +11,19 @@
     <div style='margin-left: 10px'>
       <%= radio_button(:block, :display, 'always') %>
       <%= label_tag('block_display_always', _('In all pages')) %>
-<% if !@block.main? %>      
-      <br/>
-      <%= radio_button(:block, :display, 'home_page_only') %>
-      <%= label_tag('block_display_home_page_only', _('Only in the homepage')) %>
-<% end %>
+      <% if !@block.main? %>      
+        <br/>
+        <%= radio_button(:block, :display, 'home_page_only') %>
+        <%= label_tag('block_display_home_page_only', _('Only in the homepage')) %>
+      <% end %>
       <br/>
       <%= radio_button(:block, :display, 'except_home_page') %>
       <%= label_tag('block_display_except_home_page', _('In all pages, except in the homepage')) %>
-<% if !@block.main? %>      
-      <br/>
-      <%= radio_button(:block, :display, 'never') %>
-      <%= label_tag('block_display_never', _("Don't display")) %>
-<% end %>      
+      <% if !@block.main? %>      
+        <br/>
+          <%= radio_button(:block, :display, 'never') %>
+          <%= label_tag('block_display_never', _("Don't display")) %>
+      <% end %>      
     </div>
 
     <%= labelled_form_field(_('Show for:'), select(:block, :language, [ [ _('all languages'), 'all']] + environment.locales.map {|key, value| [value, key]} )) %>
