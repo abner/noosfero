@@ -31,7 +31,7 @@ class Comment < ActiveRecord::Base
     end
   end
 
-  xss_terminate :only => [ :body, :title, :name ], :on => 'validation'
+  xss_terminate :only => [ :body, :title, :name ], :on => 'validation', :with => 'white_list'
 
   def comment_root
     (reply_of && reply_of.comment_root) || self

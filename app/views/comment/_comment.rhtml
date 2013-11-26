@@ -50,10 +50,10 @@
       <div class="comment-created-at">
         <%= show_time(comment.created_at) %>
       </div>
-      <h4><%= comment.title.blank? && '&nbsp;' || comment.title %></h4>
+      <h4><%= comment.title.blank? && '&nbsp;' || h(comment.title) %></h4>
       <div class="comment-text">
         <p/>
-        <%= txt2html comment.body %>
+        <%= txt2html h(comment.body) %>
       </div>
     </div>
 
