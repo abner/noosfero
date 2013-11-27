@@ -4,7 +4,11 @@ class StepTest < ActiveSupport::TestCase
 
   def setup
     @profile = fast_create(Community)
-    @track = CommunityTrackPlugin::Track.create(:profile_id => @profile.id, :name => 'track')
+    @track = CommunityTrackPlugin::Track.new(:profile_id => @profile.id, :name => 'track')
+    @category = fast_create(Category)
+    @track.add_category(@category)
+    @track.save!
+
     @step = CommunityTrackPlugin::Step.new(:name => 'Step', :body => 'body', :profile => @profile, :parent => @track, :published => false, :end_date => Date.today, :start_date => Date.today)
     Delayed::Job.destroy_all
   end
@@ -258,8 +262,34 @@ class StepTest < ActiveSupport::TestCase
   end
 
   should 'return enabled tools for a step' do
-    assert_includes @step.enabled_tools, TinyMceArticle
-    assert_includes @step.enabled_tools, Forum
+    assert_includes CommunityTrackPlugin::Step.enabled_tools, TinyMceArticle
+    assert_includes CommunityTrackPlugin::Step.enabled_tools, Forum
+  end
+
+  should 'return class for selected tool' do
+    @step.tool_type = 'Forum'
+    assert_equal Forum, @step.tool_class
+  end
+
+  should 'return tool for selected type' do
+    @step.tool_type = 'Forum'
+    @step.save!
+    article = fast_create(Article, :parent_id => @step.id)
+    forum = fast_create(Forum, :parent_id => @step.id)
+    assert_equal forum, @step.tool
+  end
+
+  should 'not return tool with different type' do
+    @step.tool_type = 'Forum'
+    @step.save!
+    article = fast_create(Article, :parent_id => @step.id)
+    assert_not_equal article, @step.tool
+  end
+
+  should 'initialize start date and end date with default values' do
+    step = CommunityTrackPlugin::Step.new
+    assert step.start_date
+    assert step.end_date
   end
 
 end

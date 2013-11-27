@@ -1,6 +1,7 @@
 class CommunityTrackPlugin::Step < Folder
 
   settings_items :hidden, :type => :boolean, :default => false
+  settings_items :tool_type, :type => String
 
   alias :tools :children
 
@@ -24,6 +25,12 @@ class CommunityTrackPlugin::Step < Folder
   before_create :set_hidden_position
   before_save :set_hidden_position
 
+  def initialize(*args)
+    super(*args)
+    self.start_date ||= Date.today
+    self.end_date ||= Date.today + 1.day
+  end
+  
   def set_hidden_position
     if hidden
       decrement_positions_on_lower_items
@@ -48,11 +55,11 @@ class CommunityTrackPlugin::Step < Folder
   end
 
   def accept_comments?
-    false
+    true
   end
 
-  def enabled_tools
-    {TinyMceArticle => {:name => _('Article')}, Forum => {:name => _('Forum')}}
+  def self.enabled_tools
+    [TinyMceArticle, Forum]
   end
 
   def to_html(options = {})
@@ -87,6 +94,14 @@ class CommunityTrackPlugin::Step < Folder
   def publish
     self[:published] = active? && !hidden
     save!
+  end
+
+  def tool_class
+    tool_type ? tool_type.constantize : nil
+  end
+
+  def tool
+    tools.find(:first, :conditions => {:type => tool_type })
   end
 
   class CommunityTrackPlugin::ActivationJob < Struct.new(:step_id)
