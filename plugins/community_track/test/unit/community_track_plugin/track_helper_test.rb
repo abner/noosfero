@@ -52,4 +52,26 @@ class TrackHelperTest < ActiveSupport::TestCase
     assert_equal 186, track_card_lead(@track).length
   end
 
+  should 'return category color if its defined' do
+    category1 = fast_create(Category, :name => 'education', :display_color => 'fbfbfb')
+    @track.categories << category1
+    assert_equal 'background-color: #fbfbfb;', track_color_style(@track)
+  end
+
+  should 'return category parent color if category color is not defined' do
+    e = fast_create(Environment)
+    category1 = fast_create(Category, :name => 'education', :display_color => 'fbfbfb', :environment_id => e.id)
+    category2 = fast_create(Category, :name => 'education', :display_color => nil, :parent_id => category1.id, :environment_id => e.id)
+    @track.categories << category2
+    assert_equal 'background-color: #fbfbfb;', track_color_style(@track)
+  end
+  
+  should 'return "" if the category and upper leves dont have a color defined' do
+    e = fast_create(Environment)
+    category1 = fast_create(Category, :name => 'education', :display_color => nil, :environment_id => e.id)
+    category2 = fast_create(Category, :name => 'education', :display_color => nil, :parent_id => category1.id, :environment_id => e.id)
+    category3 = fast_create(Category, :name => 'education', :display_color => nil, :parent_id => category2.id, :environment_id => e.id)
+    @track.categories << category3
+    assert_equal "", track_color_style(@track)
+  end
 end

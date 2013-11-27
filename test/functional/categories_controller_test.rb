@@ -142,7 +142,7 @@ class CategoriesControllerTest < ActionController::TestCase
     env.save!
     get :new
 
-    assert_no_tag :tag => 'select', :attributes => { :name => "category[display_color]" }
+    assert_no_tag :tag => 'input', :attributes => { :name => "category[display_color]" }
   end
 
   should 'display color selection if environment.categories_menu is true' do
@@ -150,7 +150,7 @@ class CategoriesControllerTest < ActionController::TestCase
     env.save!
     get :new
 
-    assert_tag :tag => 'select', :attributes => { :name => "category[display_color]" }
+    assert_tag :tag => 'input', :attributes => { :name => "category[display_color]" }
   end
 
   should 'not list regions and product categories' do

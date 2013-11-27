@@ -1,6 +1,5 @@
 <li>
 <div class='treeitem'>
-  <%= display_color_for_category(category) %>
   <%= category.name %>
   <% if category.children.count > 0 %>
     <div class='button' id="category-loading-<%= category.id %>" style="position: relative;">
