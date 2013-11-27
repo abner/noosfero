@@ -49,7 +49,7 @@ class CategoriesControllerTest < ActionController::TestCase
   end
 
   def test_edit_save
-    post :edit, :id => cat1.id, :category => { :name => 'new name for category' }
+    post :edit, :id => cat1.id, :category => { :name => 'new name for category', :display_color => nil }
     assert_redirected_to :action => 'index'
     assert_equal 'new name for category', Category.find(cat1.id).name
   end

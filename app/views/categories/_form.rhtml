@@ -20,6 +20,10 @@
   <%= labelled_check_box(_('Display in the menu'), 'category[display_in_menu]', '1', @category.display_in_menu) %>
 
   <%= labelled_colorpicker_field(_('Pick a color'), :category, 'display_color' ) if !environment.enabled?('disable_categories_menu')%>
+  <span id="color_preview" style="border-color: #000000; border: 1px solid; width: 50px; <%= category_color_style(@category) %>" >
+  	&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+  </span>
+
 
   <% f.fields_for :image_builder, @category.image do |i| %>
     <%= file_field_or_thumbnail(_('Image:'), @category.image, i) %>
@@ -28,4 +32,18 @@
   <% button_bar do %>
     <%= submit_button('save', _('Save'), :cancel => {:action => 'index'}) %>
   <% end%>
+<script type="text/javascript">
+
+	jQuery('.colorpicker_submit').live('click', function() {
+		previewColor();
+	});
+	
+	jQuery('.colorpicker_field').change(function() {
+		previewColor();
+	});
+	
+	function previewColor() {
+        jQuery("#color_preview").css("background-color", '#'+jQuery('.colorpicker_field').val());
+	} 
+</script>
 <% end %>

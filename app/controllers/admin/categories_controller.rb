@@ -43,6 +43,9 @@ class CategoriesController < AdminController
     begin
       @category = environment.categories.find(params[:id])
       if request.post?
+        if !params[:category][:display_color].nil? && params[:category][:display_color].strip.empty?
+          params[:category][:display_color] = nil
+        end
         @category.update_attributes!(params[:category])
         @saved = true
         redirect_to :action => 'index'

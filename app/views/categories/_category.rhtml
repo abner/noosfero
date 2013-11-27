@@ -1,5 +1,10 @@
 <li>
 <div class='treeitem'>
+  <% if category_color_style(category) != '' %>
+  <span style="border-color: #000000; border: 1px solid; width: 50px; <%= category_color_style(category) %>" >
+  	&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+  </span>
+  <% end %>
   <%= category.name %>
   <% if category.children.count > 0 %>
     <div class='button' id="category-loading-<%= category.id %>" style="position: relative;">
