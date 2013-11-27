@@ -1,45 +1,31 @@
-class PeopleBlock < Block
+class PeopleBlockBase < Block
 
   settings_items :prioritize_people_with_image, :type => :boolean, :default => true
   settings_items :limit, :type => :integer, :default => 6
   settings_items :name, :type => String, :default => ""
   settings_items :address, :type => String, :default => ""
-	
+
   def self.description
     _('Random people')
   end
 
   def help
-    _('Clicking a person takes you to his/her homepage')  
+    _('Clicking on the people or groups will take you to their home page.')  
   end
 
   def default_title
-    case
-      when owner.kind_of?(Organization)
-        "{#} Members"
-      when owner.kind_of?(Person)
-        "{#} Friends"
-      when owner.kind_of?(Environment)
-        "{#} People"
-    end
+    _('{#} People')
   end
 
   def view_title
-    default_title.gsub('{#}', profile_count.to_s)
+    title.gsub('{#}', profile_count.to_s)
   end
 
   def profiles
-    case
-      when owner.kind_of?(Organization)
-        owner.members
-      when owner.kind_of?(Person)
-        owner.friends
-      when owner.kind_of?(Environment)
-        owner.people
-    end
+    owner.profiles
   end
 
-  def profiles_list
+  def profile_list
     result = nil
     visible_profiles = profiles.visible.includes([:image,:domains,:preferred_domain,:environment])
     if !prioritize_people_with_image
@@ -53,12 +39,12 @@ class PeopleBlock < Block
   end
 
   def profile_count
-    profiles_list.count
+    profiles.visible.count
   end
 
   def content(args={})
 
-    profiles = self.profiles_list
+    profiles = self.profile_list
     title = self.view_title
 
     if !self.name.blank? && !self.address.blank?
@@ -105,27 +91,6 @@ class PeopleBlock < Block
       'http://' + address
     else
       address
-    end
-  end
-
-  def footer
-    owner = self.owner
-    if owner.kind_of?(Organization) || owner.kind_of?(Person)
-      profile = owner.identifier
-      controller = 'profile'
-      if owner.kind_of?(Organization)
-        action = 'members'
-      elsif owner.kind_of?(Person)
-        action = 'friends'
-      end
-    elsif owner.kind_of?(Environment)
-      profile = nil
-      controller = 'search'
-      action = 'people'
-    end
-    
-    lambda do
-      link_to _('View all'), :profile => profile, :controller => controller, :action => action
     end
   end
 
