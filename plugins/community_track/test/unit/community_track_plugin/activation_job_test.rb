@@ -4,7 +4,7 @@ class ActivationJobTest < ActiveSupport::TestCase
 
   def setup
     @profile = fast_create(Community)
-    @track = CommunityTrackPlugin::Track.create(:profile_id => @profile.id, :name => 'track')
+    @track = create_track('track', @profile)
     @step = CommunityTrackPlugin::Step.new(:name => 'Step', :body => 'body', :profile => @profile, :parent => @track, :published => false, :end_date => Date.today, :start_date => Date.today)
     Delayed::Job.destroy_all
   end
