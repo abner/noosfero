@@ -28,4 +28,10 @@ class BlockTest < ActiveSupport::TestCase
     assert_equal @environment, block.owner
   end
 
+  should 'touch container block on save child block' do
+    block = Block.create!(:box => @container.container_box)
+    ContainerBlock.any_instance.expects(:touch).once
+    block.save!
+  end
+
 end
