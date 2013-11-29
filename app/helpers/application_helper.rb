@@ -983,6 +983,12 @@ module ApplicationHelper
     html
   end
 
+  def labelled_colorpicker_field(human_name, object_name, method, options = {})
+    options[:id] ||= 'text-field-' + FormsHelper.next_id_number
+    content_tag('label', human_name, :for => options[:id], :class => 'formlabel') +
+    text_field(object_name, method, options.merge(:class => 'colorpicker_field'))
+  end
+
   def colorpicker_field(object_name, method, options = {})
     text_field(object_name, method, options.merge(:class => 'colorpicker_field'))
   end

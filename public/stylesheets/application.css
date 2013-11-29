@@ -2383,6 +2383,10 @@ div#activation_enterprise label, div#activation_enterprise input, div#activation
   font-size: 11px;
   text-align: center;
 }
+#content .colorpicker_field {
+    background-position: 0% 0%;
+    height: auto;
+}
 .formfieldline {
   padding: 3px 0px;
 }
@@ -2394,7 +2398,7 @@ div#activation_enterprise label, div#activation_enterprise input, div#activation
   display: block;
   padding: 2px 0px;
 }
-.formfield input, .formfield textarea {
+.formfield input, .formfield textarea, .colorpicker_field {
   background: transparent url("../images/input-bg.gif") no-repeat top left;
   border: 1px solid #999;
   border-top: none;
@@ -2402,7 +2406,7 @@ div#activation_enterprise label, div#activation_enterprise input, div#activation
   color: #585858;
   font-size: 11px;
 }
-.formfield input {
+.formfield input, .colorpicker_field {
   text-indent: 5px;
   padding: 2px 0px;
 }

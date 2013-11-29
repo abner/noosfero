@@ -165,36 +165,6 @@ class CategoryTest < ActiveSupport::TestCase
 
   end
 
-  should "limit the possibile display colors" do
-    c = Category.new(:name => 'test category', :environment_id => @env.id)
-
-    c.display_color = 16
-    c.valid?
-    assert c.errors.invalid?(:display_color)
-
-    valid = (1..15).map { |item| item.to_i }
-    valid.each do |item|
-      c.display_color = item
-      c.valid?
-      assert !c.errors.invalid?(:display_color)
-    end
-
-  end
-
-  should 'avoid duplicated display colors' do
-    c1 = fast_create(Category, :name => 'test category', :environment_id => @env.id, :display_color => 1)
-
-    c = Category.new(:name => 'lalala', :environment_id => @env.id)
-    c.display_color = 1
-    assert !c.valid?
-    assert c.errors.invalid?(:display_color)
-
-    c.display_color = 2
-    c.valid?
-    assert !c.errors.invalid?(:display_color)
-
-  end
-
   should 'be able to get top ancestor' do
     c1 = fast_create(Category, :name => 'test category', :environment_id => @env.id)
     c2 = fast_create(Category, :name => 'test category', :environment_id => @env.id, :parent_id => c1.id)
