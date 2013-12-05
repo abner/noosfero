@@ -6,7 +6,7 @@ class StatisticsBlock < Block
   settings_items :category_counter, :default => false
   settings_items :tag_counter, :default => true
   settings_items :comment_counter, :default => true 
-  settings_items :hit_counter, :default => true 
+  settings_items :hit_counter, :default => false 
   settings_items :templates_ids_counter, Hash, :default => {}
   
   USER_COUNTERS = [:community_counter, :user_counter, :enterprise_counter, :tag_counter, :comment_counter, :hit_counter]

@@ -153,9 +153,9 @@ class EnvironmentDesignControllerTest < ActionController::TestCase
     assert_tag :input, :attributes => {:id => 'block_comment_counter', :checked => 'checked'}
   end
   
-  should 'input hit counter be checked by default' do
+  should 'input hit counter not be checked by default' do
     get :edit, :id => @block.id
 
-    assert_tag :input, :attributes => {:id => 'block_hit_counter', :checked => 'checked'}
+    assert_no_tag :input, :attributes => {:id => 'block_hit_counter', :checked => 'checked'}
   end  
 end

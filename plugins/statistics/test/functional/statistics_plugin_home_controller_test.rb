@@ -123,14 +123,14 @@ class HomeControllerTest < ActionController::TestCase
   end
   
   should 'display hits class in statistics-block-data block' do
+    @block.hit_counter = true
+    @block.save!
     get :index
 
     assert_tag :tag => 'div', :attributes => {:class => 'statistics-block-data'}, :descendant => { :tag => 'li', :attributes => {:class => 'hits'} }
   end
 
   should 'not display hits class in statistics-block-data block' do
-    @block.hit_counter = false
-    @block.save!
     get :index
 
     assert_no_tag :tag => 'div', :attributes => {:class => 'statistics-block-data'}, :descendant => { :tag => 'li', :attributes => {:class => 'hits'} }
