@@ -7,9 +7,9 @@ class Category < ActiveRecord::Base
     :slug => 1,
   }
 
-  validates_exclusion_of :slug, :in => [ 'index' ], :message => N_('%{fn} cannot be like that.').fix_i18n
+  validates_exclusion_of :slug, :in => [ 'index' ], :message => N_('{fn} cannot be like that.').fix_i18n
   validates_presence_of :name, :environment_id
-  validates_uniqueness_of :slug,:scope => [ :environment_id, :parent_id ], :message => N_('%{fn} is already being used by another category.').fix_i18n
+  validates_uniqueness_of :slug,:scope => [ :environment_id, :parent_id ], :message => N_('{fn} is already being used by another category.').fix_i18n
   belongs_to :environment
 
   # Finds all top level categories for a given environment. 

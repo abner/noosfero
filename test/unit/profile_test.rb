@@ -1457,6 +1457,19 @@ class ProfileTest < ActiveSupport::TestCase
     assert_equal [today_event], profile.events.by_day(today)
   end
 
+  should 'list events by month' do
+    profile = fast_create(Profile)
+
+    today = Date.today
+    yesterday_event = Event.new(:name => 'Joao Birthday', :start_date => today - 1.day)
+    today_event = Event.new(:name => 'Ze Birthday', :start_date => today)
+    tomorrow_event = Event.new(:name => 'Mane Birthday', :start_date => today + 1.day)
+
+    profile.events << [yesterday_event, today_event, tomorrow_event]
+
+    assert_equal [yesterday_event, today_event, tomorrow_event], profile.events.by_month(today)
+  end
+
   should 'list events in a range' do
     profile = fast_create(Profile)
 
@@ -1486,13 +1499,13 @@ class ProfileTest < ActiveSupport::TestCase
     assert_not_includes profile.events.by_day(today), event_out_of_range
   end
 
-  should 'sort events by name' do
+  should 'sort events by date' do
     profile = fast_create(Profile)
     event1 = Event.new(:name => 'Noosfero Hackaton', :start_date => Date.today)
-    event2 = Event.new(:name => 'Debian Day', :start_date => Date.today)
-    event3 = Event.new(:name => 'Fisl 10', :start_date => Date.today)
+    event2 = Event.new(:name => 'Debian Day', :start_date => Date.today - 1)
+    event3 = Event.new(:name => 'Fisl 10', :start_date => Date.today + 1)
     profile.events << [event1, event2, event3]
-    assert_equal [event2, event3, event1], profile.events
+    assert_equal [event2, event1, event3], profile.events
   end
 
   should 'be available if identifier doesnt exist on environment' do
@@ -1915,5 +1928,13 @@ class ProfileTest < ActiveSupport::TestCase
     plugins = Noosfero::Plugin::Manager.new(environment, self)
     p = fast_create(Profile)
     assert p.folder_types.include?('ProfileTest::Folder1')
+  end
+
+  should 'destroy profile if its environment is destroyed' do
+    environment = fast_create(Environment)
+    profile = fast_create(Profile, :environment_id => environment.id)
+
+    environment.destroy
+    assert_raise(ActiveRecord::RecordNotFound) {profile.reload}
   end
 end
