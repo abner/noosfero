@@ -9,7 +9,6 @@ class PluginsController < AdminController
   def update
     params[:environment][:enabled_plugins].delete('')
     if @environment.update_attributes(params[:environment])
-      @@view_paths_cache[@environment.id] = nil
       session[:notice] = _('Plugins updated successfully.')
     else
       session[:error] = _('Plugins were not updated successfully.')

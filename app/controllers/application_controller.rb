@@ -131,9 +131,13 @@ class ApplicationController < ActionController::Base
     plugins.each do |plugin|
       filters = plugin.send(self.class.name.underscore + '_filters')
       filters = [filters] if !filters.kind_of?(Array)
+      controller_filters = self.class.filter_chain.map {|c| c.method }
       filters.each do |plugin_filter|
-        self.class.send(plugin_filter[:type], plugin.class.name.underscore + '_' + plugin_filter[:method_name], (plugin_filter[:options] || {}))
-        self.class.send(:define_method, plugin.class.name.underscore + '_' + plugin_filter[:method_name], plugin_filter[:block])
+        filter_method = plugin.class.name.underscore + '_' + plugin_filter[:method_name]
+        unless controller_filters.include?(filter_method)
+          self.class.send(plugin_filter[:type], filter_method, (plugin_filter[:options] || {}))
+          self.class.send(:define_method, filter_method, plugin_filter[:block])
+        end
       end
     end
   end
