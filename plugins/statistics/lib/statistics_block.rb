@@ -12,15 +12,7 @@ class StatisticsBlock < Block
   USER_COUNTERS = [:community_counter, :user_counter, :enterprise_counter, :tag_counter, :comment_counter, :hit_counter]
   COMMUNITY_COUNTERS = [:user_counter, :tag_counter, :comment_counter, :hit_counter]
   ENTERPRISE_COUNTERS = [:user_counter, :tag_counter, :comment_counter, :hit_counter]
-
-  attr_reader :users
-  attr_reader :enterprises
-  attr_reader :communities
-  attr_reader :categories
-  attr_reader :tags
-  attr_reader :comments
-  attr_reader :hits
-
+  
   def self.description
     _('Stastistics')
   end
