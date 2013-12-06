@@ -6,23 +6,15 @@ class StatisticsBlock < Block
   settings_items :category_counter, :default => false
   settings_items :tag_counter, :default => true
   settings_items :comment_counter, :default => true 
-  settings_items :hit_counter, :default => true 
+  settings_items :hit_counter, :default => false 
   settings_items :templates_ids_counter, Hash, :default => {}
   
   USER_COUNTERS = [:community_counter, :user_counter, :enterprise_counter, :tag_counter, :comment_counter, :hit_counter]
   COMMUNITY_COUNTERS = [:user_counter, :tag_counter, :comment_counter, :hit_counter]
   ENTERPRISE_COUNTERS = [:user_counter, :tag_counter, :comment_counter, :hit_counter]
-
-  attr_reader :users
-  attr_reader :enterprises
-  attr_reader :communities
-  attr_reader :categories
-  attr_reader :tags
-  attr_reader :comments
-  attr_reader :hits
-
+  
   def self.description
-    _('Stastistics')
+    _('Statistics')
   end
 
   def default_title

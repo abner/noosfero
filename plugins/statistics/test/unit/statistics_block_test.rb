@@ -1,14 +1,14 @@
 require File.dirname(__FILE__) + '/../test_helper'
 class StatisticsBlockTest < ActiveSupport::TestCase
   
-  ['user_counter', 'tag_counter', 'comment_counter', 'hit_counter'].map do |counter|
+  ['user_counter', 'tag_counter', 'comment_counter'].map do |counter|
     should "#{counter} be true by default" do
       b = StatisticsBlock.new
       assert b.is_visible?(counter)
     end
   end
   
-  ['community_counter', 'enterprise_counter', 'category_counter'].map do |counter|
+  ['community_counter', 'enterprise_counter', 'category_counter', 'hit_counter'].map do |counter|
     should "#{counter} be false by default" do
       b = StatisticsBlock.new
       assert !b.is_visible?(counter)

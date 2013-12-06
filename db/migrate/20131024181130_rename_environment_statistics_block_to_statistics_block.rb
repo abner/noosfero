@@ -10,6 +10,6 @@ class RenameEnvironmentStatisticsBlockToStatisticsBlock < ActiveRecord::Migratio
   end
 
   def self.down    
-    #say("Nothing to undo (cannot recover the data)")
+    say("Nothing to undo (cannot recover the data)")
   end
 end
