@@ -7,3 +7,6 @@
 [submodule "plugins/bsc/public/jquery.ui.spinner"]
 	path = plugins/bsc/public/jquery.ui.spinner
 	url = https://github.com/btburnett3/jquery.ui.spinner.git
+[submodule "public/designs/icons/participabr"]
+	path = public/designs/icons/participabr
+	url = https://github.com/SerproLivre/participa-icon
