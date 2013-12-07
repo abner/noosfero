@@ -21,6 +21,10 @@
   background-image: url(/designs/icons/default/Tango/16x16/actions/go-previous.png);
 }
 
+#content .boxes .block.container-block {
+  outline-style: double;
+}
+
 #content .boxes .container-block .block {
   outline-offset: -2px;
 }
