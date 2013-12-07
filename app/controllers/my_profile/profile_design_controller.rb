@@ -54,16 +54,4 @@ class ProfileDesignController < BoxOrganizerController
     blocks
   end
 
-  #FIXME DRY
-  def update_categories
-    @object = params[:id] ? @profile.blocks.find(params[:id]) : nil
-    if params[:category_id]
-      @current_category = Category.find(params[:category_id])
-      @categories = @current_category.children
-    else
-      @categories = environment.top_level_categories
-    end
-    render :partial => 'shared/select_categories', :locals => {:object_name => 'block', :multiple => true}, :layout => false
-  end
-
 end
