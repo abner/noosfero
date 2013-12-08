@@ -21,7 +21,7 @@
   background-image: url(/designs/icons/default/Tango/16x16/actions/go-previous.png);
 }
 
-#content .boxes .block.container-block {
+#box-organizer .boxes .block.container-block {
   outline-style: double;
 }
 
