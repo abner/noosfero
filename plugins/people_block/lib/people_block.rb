@@ -16,11 +16,11 @@ class PeopleBlock < Block
   def default_title
     case
       when owner.kind_of?(Organization)
-        "{#} Members"
+        _('{#} Members')
       when owner.kind_of?(Person)
-        "{#} Friends"
+        _('{#} Friends')
       when owner.kind_of?(Environment)
-        "{#} People"
+        _('{#} People')
     end
   end
 
