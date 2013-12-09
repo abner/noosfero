@@ -360,9 +360,11 @@ div.pending-tasks {
 #category-ajax-selector a {
   font-size: 12px;
 }
-#category-ajax-selector h3 {
-  margin: 10px 0px;
-  font-size: 14px;
+#selected-categories span {
+  float: left;
+}
+#selected-categories .label {
+  font-weight: bold;
 }
 #category-ajax-selector .box-title {
   position: absolute;
