@@ -122,12 +122,8 @@ class ApplicationController < ActionController::Base
   include Noosfero::Plugin::HotSpot
 
   def init_noosfero_plugins
-    init_noosfero_plugins_controller_filters
-  end
-
-  # This is a generic method that initialize any possible filter defined by a
-  # plugin to the current controller being initialized.
-  def init_noosfero_plugins_controller_filters
+    # This is a generic method that initialize any possible filter defined by a
+    # plugin to the current controller being initialized.
     plugins.each do |plugin|
       filters = plugin.send(self.class.name.underscore + '_filters')
       filters = [filters] if !filters.kind_of?(Array)

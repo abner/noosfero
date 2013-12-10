@@ -501,4 +501,23 @@ class ApplicationControllerTest < ActionController::TestCase
 
   end
 
+  should 'do not duplicate plugin filters' do
+
+    class FilterPlugin < Noosfero::Plugin
+      def test_controller_filters
+        { :type => 'before_filter',
+          :method_name => 'filter_plugin',
+          :options => {:only => 'some_method'},
+          :block => lambda {} }
+      end
+    end
+
+    Noosfero::Plugin::Manager.any_instance.stubs(:enabled_plugins).returns([FilterPlugin.new])
+
+    get :index
+    assert_includes @controller.class.filter_chain.map {|c| c.method }, 'application_controller_test/filter_plugin_filter_plugin'
+    get :index
+    assert_equal 1, @controller.class.filter_chain.select{|c| c.method == 'application_controller_test/filter_plugin_filter_plugin'}.count
+  end
+
 end
