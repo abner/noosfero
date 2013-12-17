@@ -1,8 +1,3 @@
-require_dependency File.dirname(__FILE__) + '/people_block'
-require_dependency File.dirname(__FILE__) + '/people'
-require_dependency File.dirname(__FILE__) + '/friends'
-require_dependency File.dirname(__FILE__) + '/members'
-
 class PeopleBlockPlugin < Noosfero::Plugin
 
   def self.plugin_name
