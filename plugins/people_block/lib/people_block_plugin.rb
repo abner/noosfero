@@ -1,4 +1,7 @@
 require_dependency File.dirname(__FILE__) + '/people_block'
+require_dependency File.dirname(__FILE__) + '/people'
+require_dependency File.dirname(__FILE__) + '/friends'
+require_dependency File.dirname(__FILE__) + '/members'
 
 class PeopleBlockPlugin < Noosfero::Plugin
 
@@ -12,7 +15,9 @@ class PeopleBlockPlugin < Noosfero::Plugin
 
   def self.extra_blocks
     {
-      PeopleBlock => {}
+      PeopleBlock => {:type => Environment},
+      MembersBlock => {:type => Community},
+      FriendsBlock => {:type => Person}
     }
   end
 

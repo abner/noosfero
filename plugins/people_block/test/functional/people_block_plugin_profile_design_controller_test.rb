@@ -20,11 +20,11 @@ class ProfileDesignControllerTest < ActionController::TestCase
     @environment = @profile.environment
     @environment.save!
 
-    PeopleBlock.delete_all
+    FriendsBlock.delete_all
     @box1 = Box.create!(:owner => @profile)
     @profile.boxes = [@box1]
 
-    @block = PeopleBlock.new
+    @block = FriendsBlock.new
     @block.box = @box1
     @block.save!
 
@@ -32,7 +32,7 @@ class ProfileDesignControllerTest < ActionController::TestCase
     @profile.save!
 
     get :index, :profile => @profile.identifier
-    assert_tag :div, :attributes => {:class => 'block people-block'}
+    assert_tag :div, :attributes => {:class => 'block friends-block'}
   end
 
   should 'the people block is available for person profile' do
@@ -48,7 +48,7 @@ class ProfileDesignControllerTest < ActionController::TestCase
     environment.stubs(:enabled?).returns(false)
     @controller.stubs(:profile).returns(profile)
     @controller.stubs(:user).returns(profile)
-    assert_includes @controller.available_blocks, PeopleBlock
+    assert_includes @controller.available_blocks, FriendsBlock
   end
 
   should 'the people block is available for community profile' do
@@ -64,7 +64,7 @@ class ProfileDesignControllerTest < ActionController::TestCase
     environment.stubs(:enabled?).returns(false)
     @controller.stubs(:profile).returns(profile)
     @controller.stubs(:user).returns(profile)
-    assert_includes @controller.available_blocks, PeopleBlock
+    assert_includes @controller.available_blocks, MembersBlock
   end
   
 end
