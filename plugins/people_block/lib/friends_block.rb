@@ -1,21 +1,21 @@
 class FriendsBlock < PeopleBlockBase
-	
+
   def self.description
     _('Friends')
   end
 
   def help
-    _('Clicking a friend takes you to his/her homepage')  
+    _('Clicking a friend takes you to his/her homepage')
   end
 
   def default_title
     _('{#} Friends')
   end
-  
+
   def profiles
     owner.friends
   end
-  
+
   def footer
     owner = self.owner
     lambda do

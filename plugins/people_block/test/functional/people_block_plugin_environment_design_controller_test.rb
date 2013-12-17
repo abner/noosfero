@@ -28,5 +28,5 @@ class EnvironmentDesignControllerTest < ActionController::TestCase
     get :edit, :id => b.id
     assert_tag :tag => 'input', :attributes => { :id => 'block_limit' }
   end
-  
+
 end

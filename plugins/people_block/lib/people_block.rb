@@ -1,11 +1,11 @@
 class PeopleBlock < PeopleBlockBase
-	
+
   def self.description
     _('People')
   end
 
   def help
-    _('Clicking a person takes you to his/her homepage')  
+    _('Clicking a person takes you to his/her homepage')
   end
 
   def default_title
@@ -15,7 +15,7 @@ class PeopleBlock < PeopleBlockBase
   def profiles
     owner.people
   end
-  
+
   def footer
     lambda do
       link_to _('View all'), :controller => 'search', :action => 'people'

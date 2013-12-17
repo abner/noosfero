@@ -103,10 +103,10 @@ class PeopleBlockTest < ActiveSupport::TestCase
     assert_match(/#{person2.name}/, content)
   end
 
-  
+
   should 'link to "all people"' do
     env = fast_create(Environment)
-    
+
     block = PeopleBlock.new
 
     expects(:_).with('View all').returns('View all')
@@ -141,5 +141,5 @@ class PeopleBlockTest < ActiveSupport::TestCase
 
   protected
   include NoosferoTestHelper
-   
+
 end

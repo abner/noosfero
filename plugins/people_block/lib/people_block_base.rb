@@ -10,7 +10,7 @@ class PeopleBlockBase < Block
   end
 
   def help
-    _('Clicking on the people or groups will take you to their home page.')  
+    _('Clicking on the people or groups will take you to their home page.')
   end
 
   def default_title
@@ -62,22 +62,22 @@ class PeopleBlockBase < Block
         list = content_tag 'div', _('None'), :class => 'common-profile-list-block-none'
       else
         if !name.blank? && !expanded_address.blank?
-          list << content_tag( 
-                    'div', 
-                    content_tag( 
-                      'li', 
+          list << content_tag(
+                    'div',
+                    content_tag(
+                      'li',
                       content_tag(
                         'div',
-                        link_to( 
-                          content_tag('span', name, :class => 'banner-span' ), 
+                        link_to(
+                          content_tag('span', name, :class => 'banner-span' ),
                           expanded_address,
                           :title => name
                         ),
                         :class => 'banner-div'
-                      ), 
+                      ),
                       :class => 'vcard'
-                    ), 
-                    :class => 'common-profile-list-block' 
+                    ),
+                    :class => 'common-profile-list-block'
                   )
         end
         list = content_tag 'ul', list
