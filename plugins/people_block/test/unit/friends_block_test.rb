@@ -152,5 +152,5 @@ class FriendsBlockTest < ActiveSupport::TestCase
 
   protected
   include NoosferoTestHelper
-   
+
 end

@@ -66,5 +66,5 @@ class ProfileDesignControllerTest < ActionController::TestCase
     @controller.stubs(:user).returns(profile)
     assert_includes @controller.available_blocks, MembersBlock
   end
-  
+
 end

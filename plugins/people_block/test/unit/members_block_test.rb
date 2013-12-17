@@ -155,5 +155,5 @@ class MembersBlockTest < ActiveSupport::TestCase
 
   protected
   include NoosferoTestHelper
-   
+
 end
