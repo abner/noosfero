@@ -49,4 +49,9 @@ module CategoriesHelper
     link_to_function(cat.full_name, nil, :id => "remove-selected-category-#{cat.id}-button", :class => 'select-subcategory-link') {|page| page["selected-category-#{cat.id}"].remove}
   end
 
+  #FIXME make this test
+  def selected_category_link(cat)
+    link_to_function(cat.full_name, nil, :id => "remove-selected-category-#{cat.id}-button", :class => 'select-subcategory-link') {|page| page["selected-category-#{cat.id}"].remove}
+  end
+
 end

@@ -99,7 +99,6 @@ class BoxOrganizerController < ApplicationController
     end
   end
 
-  #FIXME refactor and make this test
   def update_categories
     @object = params[:id] ? boxes_holder.blocks.find(params[:id]) : nil
     if params[:category_id]
