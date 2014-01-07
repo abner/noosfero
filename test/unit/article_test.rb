@@ -1409,12 +1409,12 @@ class ArticleTest < ActiveSupport::TestCase
 
     not_folders.each do |klass|
       item = fast_create(klass)
-      assert_not_includes Article.folders(profile), item
+      assert_not_includes Article.folders, item
     end
 
     folders.each do |klass|
       item = fast_create(klass)
-      assert_includes Article.folders(profile), item
+      assert_includes Article.folders, item
     end
   end
 
@@ -1425,12 +1425,12 @@ class ArticleTest < ActiveSupport::TestCase
 
     not_folders.each do |klass|
       item = fast_create(klass)
-      assert_includes Article.no_folders(profile), item
+      assert_includes Article.no_folders, item
     end
 
     folders.each do |klass|
       item = fast_create(klass)
-      assert_not_includes Article.no_folders(profile), item
+      assert_not_includes Article.no_folders, item
     end
   end
 

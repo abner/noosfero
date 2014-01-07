@@ -1,5 +1,5 @@
-class ContextContentBlock < Block
-    
+class ContextContentPlugin::ContextContentBlock < Block
+
   settings_items :show_name, :type => :boolean, :default => true
   settings_items :show_image, :type => :boolean, :default => true
   settings_items :show_parent_content, :type => :boolean, :default => true
@@ -9,7 +9,7 @@ class ContextContentBlock < Block
   alias :profile :owner
 
   include Noosfero::Plugin::HotSpot
-    
+
   def self.description
     _('Display context content')
   end
@@ -25,11 +25,11 @@ class ContextContentBlock < Block
   end
 
   def first_content_types
-    available_content_types.first(first_types_count) 
+    available_content_types.first(first_types_count)
   end
 
   def more_content_types
-    available_content_types.drop(first_types_count) 
+    available_content_types.drop(first_types_count)
   end
 
   def first_types_count
@@ -46,8 +46,9 @@ class ContextContentBlock < Block
       if content.image?
         image_tag(content.public_filename(:thumb))
       else
-        extra_class = content.kind_of?(UploadedFile) ? "extension-#{content.extension}" : ''
-        content_tag 'div', '', :class => "context-icon icon-#{content.class.icon_name(content)} #{extra_class}"
+        extra_class = content.uploaded_file? ? "extension-#{content.extension}" : ''
+        klasses = [content.icon_name].flatten.map{|name| 'icon-'+name}.join(' ')
+        content_tag 'div', '', :class => "context-icon #{klasses} #{extra_class}"
       end
     end
   end
@@ -80,7 +81,7 @@ class ContextContentBlock < Block
     lambda do
       contents = block.contents(@page)
       if !contents.blank?
-        block_title(block.title) + content_tag('div', 
+        block_title(block.title) + content_tag('div',
             render(:file => 'blocks/context_content', :locals => {:block => block, :contents => contents}), :class => 'contents', :id => "context_content_#{block.id}")
       else
         ''
@@ -89,7 +90,7 @@ class ContextContentBlock < Block
   end
 
   def cacheable?
-    false 
+    false
   end
 
 end

@@ -1,4 +1,4 @@
-require File.dirname(__FILE__) + '/../test_helper'
+require 'test_helper'
 
 class ContextContentPluginProfileControllerTest < ActionController::TestCase
 
@@ -6,7 +6,7 @@ class ContextContentPluginProfileControllerTest < ActionController::TestCase
 
   def setup
     @profile = fast_create(Community)
-    @block = ContextContentBlock.new
+    @block = ContextContentPlugin::ContextContentBlock.new
     @block.types = ['TinyMceArticle']
     @block.limit = 1
     @block.save!

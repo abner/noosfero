@@ -1342,12 +1342,12 @@ class PersonTest < ActiveSupport::TestCase
     (1..5).each {|i|
       u = create_user('user'+i.to_s)
       e.add_admin(u.person)
-      admins << u.person    
+      admins << u.person
     }
     (6..10).each {|i|
       u = create_user('user'+i.to_s)
     }
-    assert_equal admins, Person.admins 
+    assert_equal admins, Person.admins
   end
 
   should 'activated named_scope return persons who are activated users' do
@@ -1356,17 +1356,14 @@ class PersonTest < ActiveSupport::TestCase
     activated = []
     (1..5).each {|i|
       u = create_user('user'+i.to_s)
-      u.activated_at = Time.now.utc
-      u.activation_code = nil
-      u.save!
-      activated << u.person    
+      u.activate
+      activated << u.person
     }
     (6..10).each {|i|
       u = create_user('user'+i.to_s)
-      u.activated_at = nil
-      u.save!
+      u.deactivate
     }
-    assert_equal activated, Person.activated 
+    assert_equal activated, Person.activated
   end
 
   should 'deactivated named_scope return persons who are deactivated users' do
@@ -1375,17 +1372,46 @@ class PersonTest < ActiveSupport::TestCase
     deactivated = []
     (1..5).each {|i|
       u = create_user('user'+i.to_s)
-      u.activated_at = nil
-      u.save!
-      deactivated << u.person    
+      u.deactivate
+      deactivated << u.person
     }
     (6..10).each {|i|
       u = create_user('user'+i.to_s)
-      u.activated_at = Time.now.utc
-      u.activation_code = nil
-      u.save!
+      u.activate
     }
-    assert_equal deactivated, Person.deactivated 
+    assert_equal deactivated, Person.deactivated
+  end
+
+  should 'be able to retrieve memberships by role person has' do
+    user = create_user('john').person
+    c1 = fast_create(Community, :name => 'a-community')
+    c2 = fast_create(Community, :name => 'other-community')
+    member_role = Role.create(:name => 'somerandomrole')
+    user.affiliate(c2, member_role)
+
+    assert_includes user.memberships_by_role(member_role), c2
+    assert_not_includes user.memberships_by_role(member_role), c1
+  end
+
+  should 'not list leave_scrap_to_self in activities' do
+    person = fast_create(Person)
+    at = ActionTracker::Record.create!(:user => person, :verb => 'leave_scrap_to_self')
+    person.reload
+    assert_equal person.activities, []
+  end
+
+  should 'not list add_member_in_community in activities' do
+    person = fast_create(Person)
+    at = ActionTracker::Record.create!(:user => person, :verb => 'add_member_in_community')
+    person.reload
+    assert_equal person.activities, []
+  end
+
+  should 'not list reply_scrap_on_self in activities' do
+    person = fast_create(Person)
+    at = ActionTracker::Record.create!(:user => person, :verb => 'reply_scrap_on_self')
+    person.reload
+    assert_equal person.activities, []
   end
 
   should 'vote in a comment with value greater than 1' do

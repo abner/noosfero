@@ -1,11 +1,12 @@
-class ContainerBlock < Block
+class ContainerBlockPlugin::ContainerBlock < Block
 
   after_create :create_box
   after_destroy :destroy_children
+  after_destroy :destroy_box
 
   settings_items :container_box_id, :type => Integer, :default => nil
   settings_items :children_settings, :type => Hash, :default => {}
-  
+
   def self.description
     _('Container')
   end
@@ -13,23 +14,27 @@ class ContainerBlock < Block
   def help
     _('This block acts as a container for another blocks')
   end
-  
+
   def layout_template
     nil
   end
 
   def destroy_children
-    blocks.destroy_all  
+    blocks.destroy_all
   end
 
   def create_box
-    box = Box.create!(:owner => self)
+    box = Box.create!(:owner => owner)
     settings[:container_box_id] = box.id
     save!
   end
 
+  def destroy_box
+    container_box.destroy
+  end
+
   def container_box
-    Box.find(container_box_id)
+    owner.boxes.find(container_box_id)
   end
 
   def block_classes=(classes)
@@ -50,5 +55,5 @@ class ContainerBlock < Block
       render :file => 'blocks/container.rhtml', :locals => {:block => block}
     end
   end
-  
+
 end

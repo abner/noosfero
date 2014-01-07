@@ -1,4 +1,4 @@
-require File.dirname(__FILE__) + '/../test_helper'
+require 'test_helper'
 
 class EnvironmentTest < ActiveSupport::TestCase
 
@@ -8,7 +8,7 @@ class EnvironmentTest < ActiveSupport::TestCase
     @box = Box.create!(:owner => @environment)
     @block = Block.create!(:box => @box)
 
-    @container = ContainerBlock.create!(:box => @box)
+    @container = ContainerBlockPlugin::ContainerBlock.create!(:box => @box)
   end
 
   should 'return blocks as usual' do

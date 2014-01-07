@@ -1,10 +1,10 @@
-require File.dirname(__FILE__) + '/../test_helper'
+require 'test_helper'
 
 class ProfileDesignController
   append_view_path File.join(File.dirname(__FILE__) + '/../../views')
-  def rescue_action(e) 
-    raise e 
-  end 
+  def rescue_action(e)
+    raise e
+  end
 end
 
 class ProfileDesignControllerTest < ActionController::TestCase
@@ -19,7 +19,7 @@ class ProfileDesignControllerTest < ActionController::TestCase
     @page = fast_create(Folder, :profile_id => @profile.id)
 
     box = Box.create!(:owner => @profile)
-    @block = ContextContentBlock.new(:box => box)
+    @block = ContextContentPlugin::ContextContentBlock.new(:box => box)
     @block.types = ['TinyMceArticle']
     @block.limit = 1
     @block.save!
