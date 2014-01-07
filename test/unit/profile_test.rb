@@ -1376,9 +1376,22 @@ class ProfileTest < ActiveSupport::TestCase
     t2 = fast_create(Profile, :is_template => true)
     profile = fast_create(Profile)
 
-    assert_includes Profile.templates(Environment.default), t1
-    assert_includes Profile.templates(Environment.default), t2
-    assert_not_includes Profile.templates(Environment.default), profile
+    assert_includes environment.profiles.templates, t1
+    assert_includes environment.profiles.templates, t2
+    assert_not_includes environment.profiles.templates, profile
+  end
+
+  should 'return a list of profiles that are not templates' do
+    environment = Environment.default
+    p1 = fast_create(Profile, :is_template => false)
+    p2 = fast_create(Profile, :is_template => false)
+    t1 = fast_create(Profile, :is_template => true)
+    t2 = fast_create(Profile, :is_template => true)
+
+    assert_includes environment.profiles.no_templates, p1
+    assert_includes environment.profiles.no_templates, p2
+    assert_not_includes environment.profiles.no_templates, t1
+    assert_not_includes environment.profiles.no_templates, t2
   end
 
   should 'return a list of profiles that are not templates' do
@@ -1762,7 +1775,8 @@ class ProfileTest < ActiveSupport::TestCase
     env = fast_create(Environment)
     roles = %w(foo bar profile_foo profile_bar).map{ |r| Role.create!(:name => r, :environment_id => env.id, :permissions => ["some"]) }
     Role.create! :name => 'test', :environment_id => env.id + 1
-    assert_equal roles, Profile::Roles.all_roles(env.id)
+    assert_equal [], roles - Profile::Roles.all_roles(env.id)
+    assert_equal [], Profile::Roles.all_roles(env.id) - roles
   end
 
   should 'define method for role' do

@@ -5580,7 +5580,11 @@ li.profile-activity-item.upload_image .activity-gallery-images-count-1 img {
 
 #profile-wall ul.profile-wall-activities-comments ul,
 #profile-network ul.profile-network-activities-comments ul {
+<<<<<<< .merge_file_GYgDrQ
   padding-left: 0px;
+=======
+  padding-left: 12px;
+>>>>>>> .merge_file_YKYeQP
 }
 
 #profile-wall .profile-wall-activities-comments li,
