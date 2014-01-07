@@ -5,13 +5,18 @@ require 'region_validators_controller'
 class RegionValidatorsController; def rescue_action(e) raise e end; end
 
 class RegionValidatorsControllerTest < ActionController::TestCase
-  all_fixtures
+
   def setup
     @controller = RegionValidatorsController.new
     @request    = ActionController::TestRequest.new
     @response   = ActionController::TestResponse.new
-    login_as('ze')
+    Environment.destroy_all
+    @environment = fast_create(Environment, :is_default => true)
+    
+    login_as(create_admin_user(@environment))
   end
+
+  attr_reader :environment
 
   def test_local_files_reference
     assert_local_files_reference
@@ -30,8 +35,6 @@ class RegionValidatorsControllerTest < ActionController::TestCase
   end
 
   should 'view validators for a  specific region' do
-    environment = fast_create(Environment, :name => "my environment")
-    give_permission('ze', 'manage_environment_validators', environment)
     region = Region.new(:name => 'my region')
     environment.regions << region
     assert !region.new_record?
@@ -46,8 +49,6 @@ class RegionValidatorsControllerTest < ActionController::TestCase
   end
 
   should 'search possible validators by name' do
-    environment = fast_create(Environment, :name => "my environment")
-    give_permission('ze', 'manage_environment_validators', environment)    
     region = Region.new(:name => 'my region')
     environment.regions << region
     assert !region.new_record?
@@ -62,8 +63,6 @@ class RegionValidatorsControllerTest < ActionController::TestCase
   end
 
   should 'be able to add validators to the current region' do
-    environment = fast_create(Environment, :name => "my environment")
-    give_permission('ze', 'manage_environment_validators', environment)
     region = Region.new(:name => 'my region')
     environment.regions << region
     assert !region.new_record?
@@ -79,8 +78,6 @@ class RegionValidatorsControllerTest < ActionController::TestCase
   end
 
   should 'be able to remove validators from the current region' do
-    environment = fast_create(Environment, :name => "my environment")
-    give_permission('ze', 'manage_environment_validators', environment)
     region = Region.new(:name => 'my region')
     environment.regions << region
     assert !region.new_record?

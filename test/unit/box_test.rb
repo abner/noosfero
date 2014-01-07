@@ -88,7 +88,7 @@ class BoxTest < ActiveSupport::TestCase
       end
     end
     class PluginBlock < Block
-      def self.to_s; 'plugin-block'; end
+      def self.name; 'plugin-block'; end
     end
     Noosfero::Plugin::Manager.any_instance.stubs(:enabled_plugins).returns([SomePlugin.new])
 
@@ -103,7 +103,7 @@ class BoxTest < ActiveSupport::TestCase
       end
     end
     class PluginBlock < Block
-      def self.to_s; 'plugin-block'; end
+      def self.name; 'plugin-block'; end
     end
     Noosfero::Plugin::Manager.any_instance.stubs(:enabled_plugins).returns([SomePlugin.new])
 

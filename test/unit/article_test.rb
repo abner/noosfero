@@ -1409,14 +1409,15 @@ class ArticleTest < ActiveSupport::TestCase
 
     not_folders.each do |klass|
       item = fast_create(klass)
-      assert_not_includes Article.folders, item
+      assert_not_includes Article.folders(profile), item
     end
 
     folders.each do |klass|
       item = fast_create(klass)
-      assert_includes Article.folders, item
+      assert_includes Article.folders(profile), item
     end
   end
+
 
   should 'return no folders' do
     not_folders = [RssFeed, TinyMceArticle, Event, TextileArticle]
@@ -1425,12 +1426,12 @@ class ArticleTest < ActiveSupport::TestCase
 
     not_folders.each do |klass|
       item = fast_create(klass)
-      assert_includes Article.no_folders, item
+      assert_includes Article.no_folders(profile), item
     end
 
     folders.each do |klass|
       item = fast_create(klass)
-      assert_not_includes Article.no_folders, item
+      assert_not_includes Article.no_folders(profile), item
     end
   end
 

@@ -5,18 +5,18 @@ require 'trusted_sites_controller'
 class TrustedSitesController; def rescue_action(e) raise e end; end
 
 class TrustedSitesControllerTest < ActionController::TestCase
-  all_fixtures
 
   def setup
     @controller = TrustedSitesController.new
     @request    = ActionController::TestRequest.new
     @response   = ActionController::TestResponse.new
-    @role = Role.find(:first)
-    @environment = Environment.default
+    Environment.destroy_all
+    
+    @environment = fast_create(Environment, :is_default => true)
     @environment.trusted_sites_for_iframe = ['existing.site.com']
     @environment.save!
 
-    login_as(:ze)
+    login_as(create_admin_user(@environment))
   end
 
   should 'get index' do

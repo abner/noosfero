@@ -6,14 +6,12 @@ class EnterpriseRegistrationController; def rescue_action(e) raise e end; end
 
 class EnterpriseRegistrationControllerTest < ActionController::TestCase
 
-  # all_fixtures:users
-  all_fixtures
-
   def setup
-    super
     @controller = EnterpriseRegistrationController.new
     @request    = ActionController::TestRequest.new
     @response   = ActionController::TestResponse.new
+    User.destroy_all
+    create_user('ze')
     login_as 'ze'
   end
 

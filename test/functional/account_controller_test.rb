@@ -186,21 +186,25 @@ class AccountControllerTest < ActionController::TestCase
   end
 
   def test_should_be_able_to_change_password
+    User.destroy_all
+    user = create_user('ze', :password => 'test', :password_confirmation => 'test')
     login_as 'ze'
     post :change_password, :current_password => 'test', :new_password => 'blabla', :new_password_confirmation => 'blabla'
     assert_response :redirect
     assert_redirected_to :action => 'index'
     assert assigns(:current_user).authenticated?('blabla')
-    assert_equal users(:ze), @controller.send(:current_user)
+    assert_equal user, @controller.send(:current_user)
   end
 
   should 'input current password correctly to change password' do
+    User.destroy_all
+    user = create_user('ze', :password => 'test', :password_confirmation => 'test')
     login_as 'ze'
     post :change_password, :current_password => 'wrong', :new_password => 'blabla', :new_password_confirmation => 'blabla'
     assert_response :success
     assert_template 'change_password'
     assert ! User.find_by_login('ze').authenticated?('blabla')
-    assert_equal users(:ze), @controller.send(:current_user)
+    assert_equal user, @controller.send(:current_user)
   end
 
   should 'provide a "I forget my password" link at the login page' do
@@ -688,6 +692,8 @@ class AccountControllerTest < ActionController::TestCase
         {:test => 5}
       end
     end
+    User.destroy_all
+    user = create_user('ze')
 
     e = User.find_by_login('ze').environment
     e.enable_plugin(Plugin1.name)

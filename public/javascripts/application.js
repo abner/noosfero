@@ -802,7 +802,7 @@ function remove_comment(button, url, msg) {
   });
 }
 
-function remove_item_wall(button, item, url, msg) {
+function remove_item_activity(button, item, url, msg) {
   var $ = jQuery;
   var $wall_item = $(button).closest(item);
   $wall_item.addClass('remove-item-loading');
@@ -858,9 +858,12 @@ Array.min = function(array) {
 };
 
 function hideAndGetUrl(link) {
+  document.body.style.cursor = 'wait';
   link.hide();
   url = jQuery(link).attr('href');
-  jQuery.get(url);
+  jQuery.get(url, function( data ) {
+    document.body.style.cursor = 'default';
+  });
 }
 
 jQuery(function($){

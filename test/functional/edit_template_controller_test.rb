@@ -7,11 +7,13 @@ require 'edit_template_controller'
 class EditTemplateController; def rescue_action(e) raise e end; end
 
 class EditTemplateControllerTest < ActionController::TestCase
-  all_fixtures
+
   def setup
     @controller = EditTemplateController.new
     @request    = ActionController::TestRequest.new
     @response   = ActionController::TestResponse.new
+    User.destroy_all
+    create_user('ze')
     login_as 'ze'
   end
 

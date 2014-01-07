@@ -6,12 +6,12 @@ class EnterpriseValidationController; def rescue_action(e) raise e end; end
 
 class EnterpriseValidationControllerTest < ActionController::TestCase
 
-  all_fixtures
-
   def setup
     @controller = EnterpriseValidationController.new
     @request    = ActionController::TestRequest.new
     @response   = ActionController::TestResponse.new
+    User.destroy_all
+    create_user('ze')
     
     login_as 'ze'
     @org = Organization.create!(:identifier => 'myorg', :name => "My Org")

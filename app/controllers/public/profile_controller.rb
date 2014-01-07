@@ -193,6 +193,7 @@ class ProfileController < PublicController
     @message = @comment.save ? _("Comment successfully added.") : _("You can't leave an empty comment.")
     if @tab_action == 'wall'
       activities = @profile.activities.paginate(:per_page => 15, :page => params[:page]) if params[:not_load_scraps].nil?
+#FIXME should not load all comments
       render :partial => 'profile_activities_list', :locals => {:activities => activities}
     else
       network_activities = @profile.tracked_notifications.visible.paginate(:per_page => 15, :page => params[:page])
@@ -211,21 +212,21 @@ class ProfileController < PublicController
   end
 
   def more_comments
-    activity = ActionTracker::Record.find(:first, :conditions => {:id => params[:activity], :user_id => @profile})
+    activity = ActionTracker::Record.find(:first, :conditions => {:id => params[:activity]})
     comments_count = activity.comments.count
     comment_page = (params[:comment_page] || 1).to_i
     comments_per_page = 5
     no_more_pages = comments_count <= comment_page * comments_per_page
 
     render :update do |page|
-      page.insert_html :bottom, 'profile-wall-activities-comments-'+params[:activity],
+      page.insert_html :bottom, 'profile-' + params[:tab_action] + '-activities-comments-' + params[:activity],
         :partial => 'comment', :collection => activity.comments.paginate(:per_page => comments_per_page, :page => comment_page)
 
       if no_more_pages
-        page.remove 'profile-wall-activities-comments-more-'+params[:activity]
+        page.remove 'profile-' + params[:tab_action] + '-activities-comments-more-' + params[:activity]
       else
-        page.replace_html 'profile-wall-activities-comments-more-'+params[:activity],
-          :partial => 'more_comments', :locals => {:activity => activity, :comment_page => comment_page}
+        page.replace_html 'profile-' + params[:tab_action] + '-activities-comments-more-' + params[:activity],
+          :partial => 'more_comments', :locals => {:activity => activity, :tab_action => params[:tab_action], :comment_page => comment_page}
       end
     end
   end

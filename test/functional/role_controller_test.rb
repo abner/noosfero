@@ -5,14 +5,18 @@ require 'role_controller'
 class RoleController; def rescue_action(e) raise e end; end
 
 class RoleControllerTest < ActionController::TestCase
-  all_fixtures
 
   def setup
     @controller = RoleController.new
     @request    = ActionController::TestRequest.new
     @response   = ActionController::TestResponse.new
-    @role = Role.find(:first)
-    login_as(:ze)
+
+    Role.delete_all
+    Environment.delete_all
+    environment = fast_create(Environment, :is_default => true)
+    @role = fast_create(Role, :name => 'some', :environment_id => environment.id)
+    user = create_admin_user(environment)
+    login_as(user)
   end
 
   def test_local_files_reference

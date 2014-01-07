@@ -132,7 +132,9 @@ class HighlightsBlockTest < ActiveSupport::TestCase
     block.shuffle = true
     block.save!
     block.reload
-    assert_equal [i1,i2,i3,i4,i5], block.images
+
+    assert_equal [], [i1,i2,i3,i4,i5] - block.images
+    assert_equal [], block.images - [i1,i2,i3,i4,i5]
     assert_not_equal [i2,i3,i1,i4,i5], block.featured_images
   end
 

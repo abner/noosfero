@@ -766,7 +766,8 @@ class ProfileControllerTest < ActionController::TestCase
   end
 
   should 'see all the activities in the current profile network' do
-    p1= Person.first
+    Person.delete_all
+    p1= fast_create(Person)
     p2= fast_create(Person)
     assert !p1.is_a_friend?(p2)
     p3= fast_create(Person)
@@ -798,7 +799,8 @@ class ProfileControllerTest < ActionController::TestCase
   end
 
   should 'the network activity be visible only to profile followers' do
-    p1= Person.first
+    Person.delete_all
+    p1= fast_create(Person)
     p2= fast_create(Person)
     assert !p1.is_a_friend?(p2)
     p3= fast_create(Person)
@@ -834,7 +836,7 @@ class ProfileControllerTest < ActionController::TestCase
   end
 
   should 'the network activity be paginated' do
-    p1= Person.first
+    p1= fast_create(Person)
     40.times{fast_create(ActionTrackerNotification, :action_tracker_id => fast_create(ActionTracker::Record), :profile_id => p1.id)}
 
     @controller.stubs(:logged_in?).returns(true)
@@ -847,7 +849,7 @@ class ProfileControllerTest < ActionController::TestCase
   end
 
   should 'the network activity be visible only to logged users' do
-    p1= ActionTracker::Record.current_user_from_model
+    p1= fast_create(Person)
     p2= fast_create(Person)
     assert !p1.is_a_friend?(p2)
     p3= fast_create(Person)
@@ -909,7 +911,7 @@ class ProfileControllerTest < ActionController::TestCase
   end
 
   should 'the self activity not crashes with user not logged in' do
-    p1= Person.first
+    p1= fast_create(Person)
     p2= fast_create(Person)
     assert !p1.is_a_friend?(p2)
     p3= fast_create(Person)
@@ -953,7 +955,7 @@ class ProfileControllerTest < ActionController::TestCase
   end
 
   should 'the activities be the received scraps in people profile' do
-    p1 = ActionTracker::Record.current_user_from_model
+    p1 = fast_create(Person)
     p2 = fast_create(Person)
     p3 = fast_create(Person)
     s1 = fast_create(Scrap, :sender_id => p1.id, :receiver_id => p2.id)
@@ -990,7 +992,7 @@ class ProfileControllerTest < ActionController::TestCase
   end
 
   should 'the activities be paginated in people profiles' do
-    p1 = Person.first
+    p1 = fast_create(Person)
     40.times{fast_create(Scrap, :receiver_id => p1.id, :created_at => Time.now)}
 
     @controller.stubs(:logged_in?).returns(true)
@@ -1189,7 +1191,7 @@ class ProfileControllerTest < ActionController::TestCase
     20.times {comment = fast_create(Comment, :source_id => article, :title => 'a comment', :body => 'lalala', :created_at => Time.now)}
     article.reload
     assert_equal 20, article.comments.count
-    get :more_comments, :activity => activity.id, :comment_page => 2
+    get :more_comments, :activity => activity.id, :tab_action => 'network', :comment_page => 2
     assert_response :success
     assert_template '_comment'
     assert_select_rjs :insert_html do
@@ -1383,17 +1385,21 @@ class ProfileControllerTest < ActionController::TestCase
     assert_equal "Comment successfully added.", assigns(:message)
   end
 
-  should 'display comment in wall if user was removed' do
+  should 'display comment in wall if user was removed after click in view all comments' do
     UserStampSweeper.any_instance.stubs(:current_user).returns(profile)
     article = TinyMceArticle.create!(:profile => profile, :name => 'An article about free software')
     to_be_removed = create_user('removed_user').person
     comment = Comment.create!(:author => to_be_removed, :title => 'Test Comment', :body => 'My author does not exist =(', :source_id => article.id, :source_type => 'Article')
     to_be_removed.destroy
+    
+    activity = ActionTracker::Record.last
 
     login_as(profile.identifier)
-    get :index, :profile => profile.identifier
+    get :more_comments, :profile => profile.identifier, :activity => activity.id, :comment_page => 1, :tab_action => 'wall'
 
-    assert_tag :tag => 'span', :content => '(removed user)', :attributes => {:class => 'comment-user-status comment-user-status-wall icon-user-removed'}
+    assert_select_rjs :insert_html do
+      assert_select 'span', :content => '(removed user)', :attributes => {:class => 'comment-user-status comment-user-status-wall icon-user-removed'}
+    end
   end
 
   should 'not display spam comments in wall' do
@@ -1407,7 +1413,7 @@ class ProfileControllerTest < ActionController::TestCase
     assert !/This article makes me hungry/.match(@response.body), 'Spam comment was shown!'
   end
 
-  should 'display comment in wall from non logged users' do
+  should 'display comment in wall from non logged users after click in view all comments' do
     UserStampSweeper.any_instance.stubs(:current_user).returns(profile)
     article = TinyMceArticle.create!(:profile => profile, :name => 'An article about free software')
     comment = Comment.create!(:name => 'outside user', :email => 'outside@localhost.localdomain', :title => 'Test Comment', :body => 'My author does not exist =(', :source_id => article.id, :source_type => 'Article')
@@ -1415,7 +1421,14 @@ class ProfileControllerTest < ActionController::TestCase
     login_as(profile.identifier)
     get :index, :profile => profile.identifier
 
-    assert_tag :tag => 'span', :content => '(unauthenticated user)', :attributes => {:class => 'comment-user-status comment-user-status-wall icon-user-unknown'}
+    activity = ActionTracker::Record.last
+
+    login_as(profile.identifier)
+    get :more_comments, :profile => profile.identifier, :activity => activity.id, :comment_page => 1, :tab_action => 'wall'
+
+    assert_select_rjs :insert_html do
+      assert_select 'span', :content => '(unauthenticated user)', :attributes => {:class => 'comment-user-status comment-user-status-wall icon-user-unknown'}
+    end
   end
 
   should 'add locale on mailing' do
