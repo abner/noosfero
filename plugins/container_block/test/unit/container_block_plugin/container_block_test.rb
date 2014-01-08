@@ -20,6 +20,11 @@ class ContainerBlockPlugin::ContainerBlockTest < ActiveSupport::TestCase
     assert @block.container_box_id
   end
 
+  should 'created box should have zero as position' do
+    @block.save!
+    assert_equal 0, @block.container_box.position
+  end
+
   should 'return created box' do
     @block.save!
     assert @block.container_box
