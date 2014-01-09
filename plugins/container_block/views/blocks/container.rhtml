@@ -15,7 +15,7 @@
 </style>
 
 <% if edit_mode %>
-  <div class="button-bar">
+  <div class="container-block-button-bar button-bar">
     <a href="#" onclick="toggleMoveContainerChildren(<%= block.id %>, <%= block.container_box.id %>); return false;" class="button icon-resize" title=<%= _('Resize blocks').to_json %>></a>
     <%= link_to_remote '', :url => { :controller => @controller.boxes_holder.kind_of?(Environment) ? 'container_block_plugin_admin' : 'container_block_plugin_myprofile', :action => 'saveWidths', :id => block.id }, 
                            :with => "containerChildrenWidth(#{block.id}, #{block.container_box.id})", 
@@ -24,37 +24,4 @@
                            :loaded => "close_loading();",
                            :complete => "display_notice(request.responseText);"%>
   </div>
-
-  <script>
-    function toggleMoveContainerChildren(container, box) {
-      var div = jQuery('#box-'+box+' > .block-outer > .block');
-      var targetDiv = jQuery('#box-'+box+' .block-outer .block-target');
-      if(div.is('.ui-resizable')) {
-        targetDiv.show();
-        div.find("a").die("click");
-        div.resizable('destroy');
-      } else {
-        targetDiv.hide();
-        div.find("a").live("click", function(e) {
-          e.preventDefault();
-        });
-        div.resizable({
-          handles: 'e, w',
-          containment: '#block-'+container+' .block-inner-2',
-          resize: function( event, ui ) {
-            ui.element.height('auto');
-          }
-        });
-      }
-    }
-
-    function containerChildrenWidth(container, box) {
-      widths = "";
-      jQuery('#box-'+box+' > .block-outer > .block').each(function(i) { 
-        childId = jQuery(this).attr('id').match(/block-(\d+)/)[1];
-        widths+=childId+","+jQuery(this).width()+"|";
-      });
-      return "widths="+widths;
-    }
-  </script>
 <% end %>
