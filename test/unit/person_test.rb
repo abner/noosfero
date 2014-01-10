@@ -1543,4 +1543,9 @@ class PersonTest < ActiveSupport::TestCase
     assert person.voted_against?(article)
   end
 
+  should 'person notifier be PersonNotifier class' do
+    p =  Person.new
+    assert p.notifier.kind_of?(PersonNotifier)
+  end
+
 end
