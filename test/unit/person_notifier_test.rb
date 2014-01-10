@@ -45,7 +45,6 @@ class PersonNotifierTest < ActiveSupport::TestCase
   should 'display author name in delivered mail' do
     @community.add_member(@member)
     Comment.create!(:author => @admin, :title => 'test comment', :body => 'body!', :source => @article)
-    ActionTracker::Record.all.map{|action| Person.notify_activity(action)}
     notify
     sent = ActionMailer::Base.deliveries.first
     assert_match /#{@admin.name}/, sent.body
@@ -129,6 +128,37 @@ class PersonNotifierTest < ActiveSupport::TestCase
     @member.save!
     assert_equal 1, Delayed::Job.count
     assert_equal @member.notification_time, ((Delayed::Job.first.run_at - DateTime.now)/1.hour).round
+  end
+
+  should 'display error message if fail to render a notificiation' do
+    @community.add_member(@member)
+    Comment.create!(:author => @admin, :title => 'test comment', :body => 'body!', :source => @article)
+    ActionTracker::Record.any_instance.stubs(:verb).returns("some_invalid_verb")
+    notify
+    sent = ActionMailer::Base.deliveries.first
+    assert_match /cannot render notification for some_invalid_verb/, sent.body
+  end
+
+  ActionTrackerConfig.verb_names.each do |verb|
+    should "render notification for verb #{verb}" do
+      action = mock()
+      action.stubs(:verb).returns(verb)
+      action.stubs(:user).returns(@member)
+      action.stubs(:created_at).returns(DateTime.now)
+      action.stubs(:target).returns(fast_create(Forum))
+      action.stubs(:comments_count).returns(0)
+      action.stubs(:comments_as_thread).returns([])
+      action.stubs(:params).returns({'name' => 'home', 'url' => '/', 'lead' => ''})
+      action.stubs(:get_url).returns('')
+
+      notifications = []
+      notifications.stubs(:find).returns([action])
+      Person.any_instance.stubs(:tracked_notifications).returns(notifications)
+
+      notify
+      sent = ActionMailer::Base.deliveries.first
+      assert_no_match /cannot render notification for #{verb}/, sent.body
+    end
   end
 
   should 'exists? method in NotifyAllJob return false if there is no instance of this class created' do

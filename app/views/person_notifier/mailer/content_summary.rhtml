@@ -3,7 +3,7 @@
 <div>
 <% @notifications.each do |activity| %>
   <div style="border-left:none;border-right:none;border-top:1px solid #ccc;border-bottom:none;padding:10px;width:600px">
-    <%= render :partial => activity.verb, :locals => { :activity => activity }%>
+    <%= render :partial => activity.verb, :locals => { :activity => activity } rescue "cannot render notification for #{activity.verb}" %>
   </div>
 <% end %>
 </div>

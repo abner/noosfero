@@ -76,7 +76,7 @@ class PersonNotifier
       @profile = person
       recipients person.email
       from "#{@profile.environment.name} <#{@profile.environment.contact_email}>"
-      subject _("[%s] Notifications!") % [@profile.environment.name]
+      subject _("[%s] Network Activity") % [@profile.environment.name]
       body :recipient => @profile.nickname || @profile.name,
         :environment => @profile.environment.name,
         :url => @profile.environment.top_url,
