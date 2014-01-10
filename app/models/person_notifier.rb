@@ -17,7 +17,7 @@ class PersonNotifier
   end
 
   def reschedule_next_notification_mail
-    return nil unless @person.setting_changed?(:notification_time)
+    return nil unless @person.setting_changed?(:notification_time) || @person.setting_changed?(:last_notification)
     NotifyJob.find(@person.id).delete_all
     schedule_next_notification_mail
   end
