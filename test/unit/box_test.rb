@@ -93,7 +93,7 @@ class BoxTest < ActiveSupport::TestCase
     Noosfero::Plugin::Manager.any_instance.stubs(:enabled_plugins).returns([SomePlugin.new])
 
     blocks = Box.new(:position => 1).acceptable_blocks
-    assert blocks.include?('plugin-block')
+    assert blocks.include?('box-test_plugin-block')
   end
 
   should 'list plugin block as allowed for box at position 2' do
@@ -108,7 +108,7 @@ class BoxTest < ActiveSupport::TestCase
     Noosfero::Plugin::Manager.any_instance.stubs(:enabled_plugins).returns([SomePlugin.new])
 
     blocks = Box.new(:position => 2).acceptable_blocks
-    assert blocks.include?('plugin-block')
+    assert blocks.include?('box-test_plugin-block')
   end
 
   should 'list only boxes with a postion greater than zero' do

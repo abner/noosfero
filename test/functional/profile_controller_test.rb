@@ -1394,6 +1394,8 @@ class ProfileControllerTest < ActionController::TestCase
     
     activity = ActionTracker::Record.last
 
+    activity = ActionTracker::Record.last
+
     login_as(profile.identifier)
     get :more_comments, :profile => profile.identifier, :activity => activity.id, :comment_page => 1, :tab_action => 'wall'
 

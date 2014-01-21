@@ -21,7 +21,11 @@ class MainBlock < Block
   end
 
   def cacheable?
-   false
+    false
+  end
+
+  def display_options
+    ['always', 'except_home_page']
   end
 
 end

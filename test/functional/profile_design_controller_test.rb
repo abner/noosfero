@@ -299,7 +299,7 @@ class ProfileDesignControllerTest < ActionController::TestCase
     assert !@controller.instance_variable_get('@side_block_types').include?(CustomBlock8)
   end
 
-  should 'not edit main block with nerver option' do
+  should 'not edit main block with never option' do
     get :edit, :profile => 'designtestuser', :id => @b4.id
     assert_no_tag :input, :attributes => { :type => 'radio', :value => 'never'}
   end

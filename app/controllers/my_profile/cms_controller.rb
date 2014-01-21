@@ -2,6 +2,8 @@ class CmsController < MyProfileController
 
   protect 'edit_profile', :profile, :only => [:set_home_page]
 
+  include ArticleHelper
+
   def self.protect_if(*args)
     before_filter(*args) do |c|
       user, profile = c.send(:user), c.send(:profile)
@@ -71,6 +73,13 @@ class CmsController < MyProfileController
     translations if @article.translatable?
     continue = params[:continue]
 
+    @article.article_privacy_exceptions = params[:q].split(/,/).map{|n| environment.people.find n.to_i} unless params[:q].nil?
+
+    @tokenized_children = prepare_to_token_input(
+                            profile.members.includes(:articles_with_access).find_all{ |m|
+                              m.articles_with_access.include?(@article)
+                            }
+                          )
     refuse_blocks
     record_coming
     if request.post?
@@ -132,6 +141,8 @@ class CmsController < MyProfileController
 
     continue = params[:continue]
     if request.post?
+      @article.article_privacy_exceptions = params[:q].split(/,/).map{|n| environment.people.find n.to_i} unless params[:q].nil?
+
       if @article.save
         if continue
           redirect_to :action => 'edit', :id => @article
@@ -292,6 +303,12 @@ class CmsController < MyProfileController
     render :text => article_list_to_json(results), :content_type => 'application/json'
   end
 
+  def search_article_privacy_exceptions
+    arg = params[:q].downcase
+    result = profile.members.find(:all, :conditions => ['LOWER(name) LIKE ?', "%#{arg}%"])
+    render :text => prepare_to_token_input(result).to_json
+  end
+
   def media_upload
     files_uploaded = []
     parent = check_parent(params[:parent_id])
@@ -397,4 +414,3 @@ class CmsController < MyProfileController
   end
 
 end
-
