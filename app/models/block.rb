@@ -179,4 +179,14 @@ class Block < ActiveRecord::Base
     DISPLAY_OPTIONS[option]
   end
 
+  def duplicate
+    duplicated_block = self.clone
+    duplicated_block.display = 'never'
+    duplicated_block.created_at = nil
+    duplicated_block.updated_at = nil
+    duplicated_block.save!
+    duplicated_block.insert_at(self.position + 1)
+    duplicated_block
+  end
+
 end
