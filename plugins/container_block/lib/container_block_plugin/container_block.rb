@@ -13,6 +13,10 @@ class ContainerBlockPlugin::ContainerBlock < Block
     errors.add(:box_id, _('cyclical reference is not allowed.')) if box_id == container_box_id
   end
 
+  before_save do |b|
+    raise "cyclical reference is not allowed" if b.box_id == b.container_box_id && !b.container_box_id.blank?
+  end
+
   def self.description
     _('Container')
   end
