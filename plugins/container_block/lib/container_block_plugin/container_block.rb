@@ -7,6 +7,12 @@ class ContainerBlockPlugin::ContainerBlock < Block
   settings_items :container_box_id, :type => Integer, :default => nil
   settings_items :children_settings, :type => Hash, :default => {}
 
+  validate :no_cyclical_reference, :if => 'container_box_id.present?'
+
+  def no_cyclical_reference
+    errors.add(:box_id, _('cyclical reference is not allowed.')) if box_id == container_box_id
+  end
+
   def self.description
     _('Container')
   end
