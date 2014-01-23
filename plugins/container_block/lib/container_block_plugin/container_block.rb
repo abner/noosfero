@@ -35,7 +35,7 @@ class ContainerBlockPlugin::ContainerBlock < Block
 
   def create_box
     container_box = Box.create!(:owner => owner)
-    container_box.update_attribute(:position, 0)
+    container_box.update_attribute(:position, nil)
     settings[:container_box_id] = container_box.id
     save!
   end
