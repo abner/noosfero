@@ -6475,3 +6475,8 @@ li.profile-activity-item.upload_image .activity-gallery-images-count-1 img {
   width: 100px;
   text-align: center;
 }
+
+ul.article-versions li {
+  font-size: 13px;
+  padding: 3px 0px;
+}

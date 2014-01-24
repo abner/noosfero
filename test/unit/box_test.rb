@@ -118,11 +118,4 @@ class BoxTest < ActiveSupport::TestCase
     assert_equal [box2], profile.boxes.with_position
   end
 
-  should 'list only boxes with a postion greater than zero' do
-    profile = fast_create(Profile)
-    box = fast_create(Box, :owner_id => profile.id, :owner_type => 'Profile', :position => 0)
-    box2 = fast_create(Box, :owner_id => profile.id, :owner_type => 'Profile', :position => 1)
-    assert_equal [box2], profile.boxes.with_position
-  end
-
 end

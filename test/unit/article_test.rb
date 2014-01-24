@@ -740,6 +740,11 @@ class ArticleTest < ActiveSupport::TestCase
     assert_match(/-year-2009-month-04/, a.cache_key(:year => '2009', :month => '04'))
   end
 
+ should 'use revision number to compose cache key' do
+    a = fast_create(Article, :name => 'Versioned article', :profile_id => profile.id)
+    assert_match(/-version-2/,a.cache_key(:version => 2))
+  end
+
   should 'not be highlighted by default' do
     a = Article.new
     assert !a.highlighted
@@ -1689,6 +1694,16 @@ class ArticleTest < ActiveSupport::TestCase
     assert_equal license, article.license
   end
 
+  should 'return license from a specific version' do
+    cc = License.create!(:name => 'CC (by)', :environment => Environment.default)
+    gpl = License.create!(:name => 'GPLv3', :environment => Environment.default)
+    article = Article.create!(:name => 'first version', :profile => profile, :license => cc)
+    article.license = gpl
+    article.save
+    assert_equal cc, article.version_license(1)
+    assert_equal gpl, article.version_license(2)
+  end
+
   should 'update path if parent is changed' do
     f1 = Folder.create!(:name => 'Folder 1', :profile => profile)
     f2 = Folder.create!(:name => 'Folder 2', :profile => profile)
@@ -1747,17 +1762,26 @@ class ArticleTest < ActiveSupport::TestCase
     assert_nil article.author_id
   end
 
-  should 'return articles with specific types' do
-    Article.delete_all
+  should "return the author of a specific version" do
+    author1 = fast_create(Person)
+    author2 = fast_create(Person)
+    article = Article.create!(:name => 'first version', :profile => profile, :last_changed_by => author1)
+    article.name = 'second version'
+    article.last_changed_by = author2
+    article.save
+    assert_equal author1, article.author(1)
+    assert_equal author2, article.author(2)
+  end
 
-    c1 = fast_create(TinyMceArticle, :name => 'Testing article 1', :body => 'Article body 1', :profile_id => profile.id)
-    c2 = fast_create(TextArticle, :name => 'Testing article 2', :body => 'Article body 2', :profile_id => profile.id)
-    c3 = fast_create(Event, :name => 'Testing article 3', :body => 'Article body 3', :profile_id => profile.id)
-    c4 = fast_create(RssFeed, :name => 'Testing article 4', :body => 'Article body 4', :profile_id => profile.id)
-    c5 = fast_create(TextileArticle, :name => 'Testing article 5', :body => 'Article body 5', :profile_id => profile.id)
-
-    assert_equivalent [c1,c2], Article.with_types(['TinyMceArticle', 'TextArticle'])
-    assert_equivalent [c3], Article.with_types(['Event'])
+  should "return the author_name of a specific version" do
+    author1 = fast_create(Person)
+    author2 = fast_create(Person)
+    article = Article.create!(:name => 'first version', :profile => profile, :last_changed_by => author1)
+    article.name = 'second version'
+    article.last_changed_by = author2
+    article.save
+    assert_equal author1.name, article.author_name(1)
+    assert_equal author2.name, article.author_name(2)
   end
 
   should 'identify if belongs to forum' do
@@ -1789,17 +1813,17 @@ class ArticleTest < ActiveSupport::TestCase
     end
   end
 
-  should 'vote in a article' do
-    article = Article.create!(:name => 'Test', :profile => profile, :last_changed_by => nil)
-    profile.vote(article, 5)
-    assert_equal 1, article.voters_who_voted.length
-    assert_equal 5, article.votes_total
-  end
+ should 'return articles with specific types' do
+    Article.delete_all
 
-  should 'be able to remove a voted article' do
-    article = Article.create!(:name => 'Test', :profile => profile, :last_changed_by => nil)
-    profile.vote(article, 5)
-    article.destroy
+    c1 = fast_create(TinyMceArticle, :name => 'Testing article 1', :body => 'Article body 1', :profile_id => profile.id)
+    c2 = fast_create(TextArticle, :name => 'Testing article 2', :body => 'Article body 2', :profile_id => profile.id)
+    c3 = fast_create(Event, :name => 'Testing article 3', :body => 'Article body 3', :profile_id => profile.id)
+    c4 = fast_create(RssFeed, :name => 'Testing article 4', :body => 'Article body 4', :profile_id => profile.id)
+    c5 = fast_create(TextileArticle, :name => 'Testing article 5', :body => 'Article body 5', :profile_id => profile.id)
+
+    assert_equivalent [c1,c2], Article.with_types(['TinyMceArticle', 'TextArticle'])
+    assert_equivalent [c3], Article.with_types(['Event'])
   end
 
 end
