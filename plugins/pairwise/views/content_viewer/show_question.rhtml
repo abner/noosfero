@@ -1,0 +1,47 @@
+<% @question = @page.question %>
+
+<% unless @page.errors[:base].nil? %>
+<!-- #TODO add owner verification to remove or edit repository -->
+  <% if @page.errors[:base] == "Pairwise::Errors::RecordNotFound" %>
+    <h3>Warning:</h3>
+    <p>This question doesn't exist on the Web Service. Do you want to <%= link_to 'delete', :action => 'destroy', :controller => 'cms', :profile => @page.profile.identifier, :id => @page.id %>?</p>
+  <% else %>
+    <%= @page.errors[:base] %>
+  <% end %>
+<% else %>
+
+  <table>
+    <tr>
+      <td><%= @page.description %></td>
+    </tr>
+  </table>
+  <br/>
+  <h5><%= _('Choices') %></h5>
+  <table> 
+    <thead>
+    <tr>
+      <th><%= _('Choice Text') %></th>
+      <th><%= _('Choice Wins') %></th>
+      <th><%= _('Choice Losses') %></th>
+      <th><%= _('Choice Score') %></th>
+    </tr>
+  </thead>
+  <tbody>
+    <% @page.question.get_choices.each do |choice| %>
+    <tr>
+        <td><%= choice.data %></td>
+        <td><%= choice.wins %></td>
+        <td><%= choice.losses %></td>
+        <td><%= choice.score %></td>
+  	</tr>
+    <% end %>
+    </tbody>
+  </table>
+
+  <%= link_to _('Vote'), {:controller => "pairwise_plugin_profile", 
+                                        :profile => @page.profile.identifier, 
+                                        :action => "prompt", 
+                                        :id => @page.id,
+                                        :question_id => @question.id}, :class=>"button with-text icon-edit" %>
+  
+<% end %>

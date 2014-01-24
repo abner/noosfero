@@ -1,0 +1,17 @@
+<% extend PairwisePlugin::Helpers::ViewerHelper %>
+
+<h1><%= link_to @question.name, @pairwise_content.view_url %></h1>
+
+<p><%= @pairwise_content.description %></p>
+
+<table>
+	<tr>
+		<td align="center"><%= choose_left_link(@pairwise_content, @question, @prompt) %></td>
+	</tr>
+	<tr> 
+		<td align="center"> ou </td>
+	</tr>
+	<tr>
+		<td align="center"><%= choose_right_link(@pairwise_content, @question, @prompt) %></td>
+	</tr>
+</table>
