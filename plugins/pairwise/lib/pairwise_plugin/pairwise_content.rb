@@ -109,18 +109,6 @@ class PairwisePlugin::PairwiseContent < Article
         errors.add_to_base(N_("Error adding new choice to question. ") + N_(e.message))
         return false
       end
-      
-      # raise choices.inspect
-      # @question = question
-      # @question.ideas = choices
-      # @question.name = name
-      # #pairwise_client.activate(@question) if activated?
-      # begin
-      #   @question.save
-      # rescue Exception => e
-      #    errors.add_to_base(N_('Error sending question to pairwise'))
-      #    logger.error(e)
-      # end
     end
   end
 
