@@ -1,5 +1,45 @@
-<%= hidden_field_tag 'id', @article.id %>
-<%= required_fields_message %>
-<%= required f.text_field(:name) %><br/>
-<%= required f.text_field :description %><br/>
-<%= required f.text_area :choices %><br/>
+<style>
+
+#pairwise_form_fields textarea {
+	width: 470px;
+	margin-top: 5px;
+	height:30px;
+}
+
+</style>
+<div id="pairwise_form_fields">
+
+	<%= hidden_field_tag 'id', @article.id %>
+	<%= required_fields_message %>
+	<%= required f.text_field(:name) %><br/>
+	<%= required f.text_field :description %><br/>
+
+	<div id="choices">
+		<span class="required-field">
+			<label for="choices"><%= _('Choices') %></label>
+		</span>
+		<%#new articles starts with two choices fields %>
+		<div id="pairwise_choices_list">
+			<% if @article.new_record? %>
+					<%= required text_area_tag 'article[choices][]', '', :id => 'choice1' %>
+					<%= required text_area_tag 'article[choices][]', '', :id => 'choice2' %>
+				
+			<% else #already saved pairwise content show on input for each choice%>
+				<% @article.choices.each_with_index do |choice, index| %>
+					<%= required text_area_tag "choices_saved[#{index}]", choice, :id => "choice_#{index}", :disabled => true %>
+				<% end %>
+			<% end %>
+		</div>
+	</div>
+	<button id="add_new_choice"><%= _("Add new choice") %></button>
+	<br/>
+
+	<script type="text/javascript">
+	jQuery('#add_new_choice').click(function(){
+		var qty = jQuery("#pairwise_choices_list textarea").size();
+		var choice_id = 'choice' + qty;
+		jQuery("#pairwise_choices_list").append("<span class='required-field'><textarea id='choices_' name='article[choices][]'></textarea></span>");
+		return false;
+	})
+	</script>
+</div>

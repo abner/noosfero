@@ -19,15 +19,33 @@ class Pairwise::Client
                       :ideas => ideas
                     })
     q.it_should_autoactivate_ideas = true
+    q.active = true
     q.save
     q
   end
 
-  def activate_question(question)
-    question.active = true
-    question.save
-    question
+  def add_choice(question_id, choice_text)
+    question = Pairwise::Question.find question_id
+    raise Pairwise::Error.new("Question not found in pairwise") if question.nil?
+    choice_args = {
+                    :question_id => question_id,
+                    :local_identifier => @local_identifier.to_s,
+                    :visitor_identifier => @local_identifier.to_s,
+                    :data => choice_text
+                  }
+    Pairwise::Choice.create(choice_args)
   end
+
+  def update_question(question_id, name)
+    question = Pairwise::Question.find question_id
+    question.name = name
+    question.save
+  end
+  #def activate_question(question)
+  #  question.active = true
+  #  question.save
+  #  question
+  #end
 
   # finds a question by a given id
   def find_question_by_id(question_id)

@@ -1,0 +1,9 @@
+
+#pairwise_form_fields textarea {
+	width: 200px;
+	height:30px;
+}
+
+div#pairwise_form_fields {
+	border: 2px solid red;
+}

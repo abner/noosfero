@@ -2,7 +2,6 @@ class PairwiseContentFixtures
 
   def self.pairwise_content
     content = PairwisePlugin::PairwiseContent.new
-    content.pairwise_question_active = true
     content.pairwise_question_id = 1
     content.name = "Question 1"
     content.choices = "choice1\nchoice2"
@@ -11,7 +10,7 @@ class PairwiseContentFixtures
 
   def self.pairwise_content_inactive
     content = self.pairwise_content
-    content.pairwise_question_active = false
+    content.published = false
     content
   end
 

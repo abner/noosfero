@@ -1,9 +1,16 @@
 class PairwisePlugin::PairwiseContent < Article
   include ActionView::Helpers::TagHelper
-  settings_items :pairwise_question_id, :pairwise_question_active
+  settings_items :pairwise_question_id
 
   before_save :send_question_to_service
   after_destroy :destroy_question_from_service
+
+  validate_on_create :validate_choices
+
+ def initialize(*args)
+    super(*args)
+    self.published = false
+  end
 
   def self.short_description
     'Pairwise question'
@@ -52,13 +59,13 @@ class PairwisePlugin::PairwiseContent < Article
   end
 
   def choices
-    return '' if @choices.nil?
-    if @choices.empty?
+    #raise question.get_choices.inspect
+    if @choices.nil?
       begin
         @choices ||= question.get_choices.map {|q| q.data}
-        @choices = @choices.join("\n")
+        #@choices = @choices.join("\n")
       rescue
-        @choices = ""
+        @choices = []
       end
     end
     @choices
@@ -74,8 +81,16 @@ class PairwisePlugin::PairwiseContent < Article
     next_prompt = pairwise_client.vote(question.prompt.id, question.id, direction, visitor, question.appearance_id)
   end
 
-  def activated?
-    self.pairwise_question_active == true and question.active == false
+   def validate_choices
+    errors.add_to_base(_("Choices empty")) if choices.nil?
+    errors.add_to_base(_("Choices invalid format")) unless choices.is_a?(Array)
+    errors.add_to_base(_("Choices invalid")) if choices.size == 0
+    choices.each do | choice |
+      if choice.empty?
+        errors.add_to_base(_("Choice empty")) 
+        break
+      end
+    end
   end
 
   def send_question_to_service
@@ -83,17 +98,29 @@ class PairwisePlugin::PairwiseContent < Article
       created_question = create_pairwise_question
       self.pairwise_question_id = created_question.id
     else
-      @question = question
-      @question.ideas = choices
-      @question.name = name
-      
-      pairwise_client.activate(@question) if activated?
       begin
-        @question.save
+        unless @choices.nil?
+          @choices.each do |choice_text|
+            pairwise_client.add_choice(pairwise_question_id, choice_text)
+          end
+        end
+        pairwise_client.update_question(pairwise_question_id, name)
       rescue Exception => e
-         errors.add_to_base(N_('Error sending question to pairwise'))
-         logger.error(e)
+        errors.add_to_base(N_("Error adding new choice to question. ") + N_(e.message))
+        return false
       end
+      
+      # raise choices.inspect
+      # @question = question
+      # @question.ideas = choices
+      # @question.name = name
+      # #pairwise_client.activate(@question) if activated?
+      # begin
+      #   @question.save
+      # rescue Exception => e
+      #    errors.add_to_base(N_('Error sending question to pairwise'))
+      #    logger.error(e)
+      # end
     end
   end
 
