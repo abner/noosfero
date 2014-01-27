@@ -14,7 +14,7 @@ class PairwisePlugin::PairwiseContentTest < ActiveSupport::TestCase
                               }
     @profile = create_user('testing').person
     @profile.environment = environments(:colivre_net)
-    @pairwise_client = PairwiseClient.build(1, pairwise_env_settings)
+    @pairwise_client = Pairwise::Client.build(1, pairwise_env_settings)
     @pairwise_content = PairwiseContentFixtures.pairwise_content_inactive
   end
 
@@ -23,7 +23,7 @@ class PairwisePlugin::PairwiseContentTest < ActiveSupport::TestCase
   end
 
   should 'activate question' do
-    @question = PairwiseQuestion.new(:id => @pairwise_content.pairwise_question_id, :name => 'Question 1', :active => false)  
+    @question = Pairwise::Question.new(:id => @pairwise_content.pairwise_question_id, :name => 'Question 1', :active => false)  
     
     #setting pairwise_question
     @pairwise_content.profile = @profile
@@ -62,7 +62,7 @@ class PairwisePlugin::PairwiseContentTest < ActiveSupport::TestCase
   end
 
   should 'get question from pairwise service' do
-    @question = PairwiseQuestion.new(:id => @pairwise_content.pairwise_question_id, :name => 'Question 1')
+    @question = Pairwise::Question.new(:id => @pairwise_content.pairwise_question_id, :name => 'Question 1')
     @pairwise_client.expects(:find_question_by_id).with(@question.id).returns(@question)
     @pairwise_content.expects(:pairwise_client).returns(@pairwise_client)
     assert_equal @question, @pairwise_content.question

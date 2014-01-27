@@ -1,12 +1,12 @@
 require "test_helper"
 
-class PairwiseClientTest < ActiveSupport::TestCase
+class Pairwise::ClientTest < ActiveSupport::TestCase
   def setup
     pairwise_env_settings = { "api_host" => "http://localhost:3030/",
       "username" => "abner.oliveira@serpro.gov.br",
       "password" => "serpro"
     }
-    @client = PairwiseClient.build('1', pairwise_env_settings)
+    @client = Pairwise::Client.build('1', pairwise_env_settings)
     @choices = "Choice 1\nChoice 2"
     @question = @client.create_question('Q1', @choices)
   end
@@ -59,7 +59,7 @@ class PairwiseClientTest < ActiveSupport::TestCase
   should 'not register votes when appearance_id is missing' do
     @question = @client.question_with_prompt(@question.id)
     assert_not_nil @question.prompt
-    exception = assert_raises PairwiseError do
+    exception = assert_raises Pairwise::Error do
       @client.vote(@question.prompt.id, @question.id, 'left', 'guest-tester')
     end
     assert_equal "Vote not registered. Please check if all the necessary parameters were passed.", exception.message

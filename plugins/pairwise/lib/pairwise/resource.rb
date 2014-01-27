@@ -1,4 +1,4 @@
-module PairwiseResource
+module Pairwise::Resource
   %w(site user password).each do |attr|               
     define_method(attr) do
       Thread.current["#{name}.active_resource.#{attr}"]

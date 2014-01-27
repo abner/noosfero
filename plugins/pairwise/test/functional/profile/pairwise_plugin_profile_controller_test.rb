@@ -14,7 +14,7 @@ class PairwisePluginProfileControllerTest < ActionController::TestCase
   def setup
     @environment = Environment.default
   
-    @pairwise_client = PairwiseClient.build(1, pairwise_env_settings)
+    @pairwise_client = Pairwise::Client.build(1, pairwise_env_settings)
     @controller = PairwisePluginProfileController.new
     @request = ActionController::TestRequest.new
     @response = ActionController::TestResponse.new

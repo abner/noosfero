@@ -16,7 +16,7 @@ class PairwiseContentFixtures
   end
 
   def self.pairwise_question 
-    question = PairwiseQuestion.new({
+    question = Pairwise::Question.new({
         :id => 1,
         :name => 'Question 1',
         :active => true,
@@ -25,7 +25,7 @@ class PairwiseContentFixtures
   end
 
   def self.pairwise_prompt
-    prompt = PairwisePrompt.new({
+    prompt = Pairwise::Prompt.new({
         :id => 1, 
         :question_id => 1, 
         :left_choice_text => 'Option 1', 

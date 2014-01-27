@@ -20,7 +20,7 @@ class PairwisePlugin::PairwiseContent < Article
   end
 
   def pairwise_client
-    @pairwise_client ||= PairwiseClient.build(profile.id, environment.settings[:pairwise_plugin])
+    @pairwise_client ||= Pairwise::Client.build(profile.id, environment.settings[:pairwise_plugin])
     @pairwise_client
   end
 

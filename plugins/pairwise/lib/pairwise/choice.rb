@@ -1,5 +1,5 @@
-class PairwiseChoice < ActiveResource::Base
-  extend PairwiseResource
+class Pairwise::Choice < ActiveResource::Base
+  extend Pairwise::Resource
   self.element_name = "choice"
     # extend Resource
     # self.site = self.site + "questions/:question_id/"
