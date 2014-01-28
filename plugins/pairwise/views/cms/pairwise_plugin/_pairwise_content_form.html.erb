@@ -1,7 +1,7 @@
 <style>
 
 #pairwise_form_fields textarea {
-	width: 470px;
+	width: 100%;
 	margin-top: 5px;
 	height:30px;
 }
@@ -24,15 +24,21 @@
 					<%= required text_area_tag 'article[choices][]', '', :id => 'choice1' %>
 					<%= required text_area_tag 'article[choices][]', '', :id => 'choice2' %>
 				
-			<% else #already saved pairwise content show on input for each choice%>
-				<% @article.choices.each_with_index do |choice, index| %>
-					<%= required text_area_tag "choices_saved[#{index}]", choice, :id => "choice_#{index}", :disabled => true %>
+			<% else #already saved pairwise content show one input for each choice%>
+				<% @article.choices.each do |choice_hash| %>
+					<% choice_hash.each do |id, data| %>
+						<%= required text_area_tag "article[choices_saved[#{id}]", 
+						data, :id => "choice_#{id}", :disabled => false  %>
+						<%##TODO disable if question got votes %>
+					<% end %>
 				<% end %>
 			<% end %>
 		</div>
 	</div>
-	<button id="add_new_choice"><%= _("Add new choice") %></button>
-	<br/>
+	<div class="button-bar">
+		<input class="button with-text icon-add" type="button" id="add_new_choice" value="<%= _("New choice") %>">
+		<br style="clear: left;">
+	</div>
 
 	<script type="text/javascript">
 	jQuery('#add_new_choice').click(function(){

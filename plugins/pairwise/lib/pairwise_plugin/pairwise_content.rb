@@ -3,7 +3,7 @@ class PairwisePlugin::PairwiseContent < Article
   settings_items :pairwise_question_id
 
   before_save :send_question_to_service
-  after_destroy :destroy_question_from_service
+  after_destroy :call_destroy_in_pairwise
 
   validate_on_create :validate_choices
 
@@ -62,7 +62,7 @@ class PairwisePlugin::PairwiseContent < Article
     #raise question.get_choices.inspect
     if @choices.nil?
       begin
-        @choices ||= question.get_choices.map {|q| q.data}
+        @choices ||= question.get_choices.map {|q| { q.id.to_s, q.data } }
         #@choices = @choices.join("\n")
       rescue
         @choices = []
@@ -73,6 +73,14 @@ class PairwisePlugin::PairwiseContent < Article
 
   def choices=(value)
     @choices = value
+  end
+
+  def choices_saved
+    @choices_saved
+  end
+
+  def choices_saved=value
+    @choices_saved = value
   end
 
   def vote_to(question, direction, visitor='guest')
@@ -99,9 +107,16 @@ class PairwisePlugin::PairwiseContent < Article
       self.pairwise_question_id = created_question.id
     else
       begin
+        #add new choices
         unless @choices.nil?
           @choices.each do |choice_text|
-            pairwise_client.add_choice(pairwise_question_id, choice_text)
+            pairwise_client.add_choice(pairwise_question_id, choice_text) unless choice_text.empty?
+          end
+        end
+        #change old choices
+        unless @choices_saved.nil?
+          @choices_saved.each do |id,data|
+            pairwise_client.update_choice(question, id, data)
           end
         end
         pairwise_client.update_question(pairwise_question_id, name)
@@ -112,18 +127,13 @@ class PairwisePlugin::PairwiseContent < Article
     end
   end
 
-  def destroy_question_from_service
+  def call_destroy_in_pairwise
     question.destroy unless question.nil?
   end
 
-
   def create_pairwise_question
-    client = pairwise_client
-    question = client.create_question(name, choices)
+    question = pairwise_client.create_question(name, choices)
     question
   end
 
-  def destroy_project_from_service
-    project.destroy unless project.nil?
-  end
 end

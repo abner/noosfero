@@ -8,6 +8,13 @@ class PairwiseContentFixtures
     content
   end
 
+  def self.new_pairwise_content
+    PairwisePlugin::PairwiseContent.new do |content|
+      content.name = "New question content"
+      content.published = true
+    end
+  end
+
   def self.pairwise_content_inactive
     content = self.pairwise_content
     content.published = false

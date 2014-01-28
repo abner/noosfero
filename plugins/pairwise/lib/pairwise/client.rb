@@ -41,6 +41,15 @@ class Pairwise::Client
     question.name = name
     question.save
   end
+
+  def update_choice(question, choice_id, choice_data)
+    choice = Pairwise::Choice.find(choice_id, :params => {:question_id => question.id })
+    raise N_("Invalid choice id") unless choice
+    unless choice_data.eql?(choice.data)
+      choice.data = choice_data
+      choice.save
+    end
+  end
   #def activate_question(question)
   #  question.active = true
   #  question.save
