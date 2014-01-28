@@ -15,10 +15,6 @@ class Pairwise::ClientTest < ActiveSupport::TestCase
     assert_not_nil @question.id
   end
 
-  # should 'question be innactive when created' do
-  #   assert_equal false, @question.active
-  # end
-
   should 'update a question' do
     @question_to_be_changed = @client.create_question('Question 1', @choices)
     @client.update_question(@question_to_be_changed.id, "New name")
@@ -27,8 +23,15 @@ class Pairwise::ClientTest < ActiveSupport::TestCase
 
   should "add new choice to a question" do
     assert_equal 2, @question.get_choices.size
-    
   end
+
+  should 'update a choice test' do
+    assert_not_equal  "Choice renamed", @question.choices.first.data
+    @client.update_choice(@question, @question.choices.first.id, 'Choice Renamed')
+    @question_after_change  = @client.find_question_by_id(@question.id)
+    assert_equal "Choice Renamed", @question.choices.first.data
+  end
+
 
   should 'retrieve question from service' do
     @question_retrieved = @client.find_question_by_id(@question.id)

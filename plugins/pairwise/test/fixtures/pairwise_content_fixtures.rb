@@ -4,7 +4,7 @@ class PairwiseContentFixtures
     content = PairwisePlugin::PairwiseContent.new
     content.pairwise_question_id = 1
     content.name = "Question 1"
-    content.choices = "choice1\nchoice2"
+    content.choices = ["choice1,choice2"]
     content
   end
 

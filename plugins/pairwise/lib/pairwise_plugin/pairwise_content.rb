@@ -68,7 +68,7 @@ class PairwisePlugin::PairwiseContent < Article
         @choices = []
       end
     end
-    @choices
+    @choices ||= []
   end
 
   def choices=(value)
