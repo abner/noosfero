@@ -1,7 +1,5 @@
 require "test_helper"
-
 require "#{RAILS_ROOT}/plugins/pairwise/test/fixtures/pairwise_content_fixtures"
-
 
 class PairwisePlugin::PairwiseContentTest < ActiveSupport::TestCase
 
@@ -17,33 +15,6 @@ class PairwisePlugin::PairwiseContentTest < ActiveSupport::TestCase
     @pairwise_client = Pairwise::Client.build(1, pairwise_env_settings)
     @pairwise_content = PairwiseContentFixtures.pairwise_content
   end
-
-  # should 'activate question' do
-  #   @question = Pairwise::Question.new(:id => @pairwise_content.pairwise_question_id, :name => 'Question 1', :active => false)  
-    
-  #   #setting pairwise_question
-  #   @pairwise_content.profile = @profile
-
-  #   #pretend it is not a new record
-  #   @pairwise_content.expects('new_record?').returns(false).at_least_once
-
-  #   #mocking to not call client to get the quest
-  #   @pairwise_content.expects(:question).returns(@question).at_least_once
-
-  #   #mocking pairwise_client
-  #   @pairwise_content.expects(:pairwise_client).returns(@pairwise_client)
-
-  #   #activating pairwise_content
-  #   @pairwise_content.pairwise_question_active = true
-
-  #   #expecting activate to be called in client passing question 
-  #   # because the pairwise content pairwise_question_active changed to true
-  #   @pairwise_client.expects(:activate).with(@question)
-
-  #   #calling to save in pairwise content so the before save will call 
-  #   #pairwise service through pairwise client to activate the question
-  #   @pairwise_content.save!
-  # end
 
   should 'be inactive when created' do
     assert_equal false, @pairwise_content.published?

@@ -1,18 +1,9 @@
-<style>
-
-#pairwise_form_fields textarea {
-	width: 100%;
-	margin-top: 5px;
-	height:30px;
-}
-
-</style>
 <div id="pairwise_form_fields">
 
 	<%= hidden_field_tag 'id', @article.id %>
 	<%= required_fields_message %>
 	<%= required f.text_field(:name) %><br/>
-	<%= required f.text_field :description %><br/>
+	<%= required f.text_field :body %><br/>
 
 	<div id="choices">
 		<span class="required-field">

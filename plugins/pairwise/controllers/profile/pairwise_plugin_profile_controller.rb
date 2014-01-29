@@ -21,6 +21,10 @@ class PairwisePluginProfileController < ProfileController
     redirect_to :controller => :pairwise_plugin_profile,:action => 'prompt', :id => @pairwise_content.id,  :question_id => @question.id , :prompt_id => next_prompt["id"]
   end
 
+  def show_question
+    @article = @pairwise_content = find_content(params)
+  end
+
  protected
 
   def process_error_message message

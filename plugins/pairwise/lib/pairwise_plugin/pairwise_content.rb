@@ -12,6 +12,20 @@ class PairwisePlugin::PairwiseContent < Article
     self.published = false
   end
 
+   alias_method :original_view_url, :view_url
+
+  def view_url
+    #pairwise content points to prompt page by default
+    profile.url.merge(
+                      :controller => :pairwise_plugin_profile, 
+                      :action => :prompt, 
+                      :id => id)
+  end
+
+  def result_url
+    url
+  end
+
   def self.short_description
     'Pairwise question'
   end
