@@ -9,6 +9,20 @@ class Pairwise::Question < ActiveResource::Base
 
   alias_method :choices, :get_choices
 
+  def has_choice_with_text?(text)
+    return filter_choices_with_text(text).size > 0
+  end
+
+  def get_choice_with_text(text)
+    choices_selected = filter_choices_with_text(text)
+    nil if choices_selected.size == 0
+    choices_selected.first
+  end
+
+  def filter_choices_with_text(text)
+    get_choices.select { |c| c if c.data.eql?(text) }
+  end
+
   def add_choice(text)
     Pairwise::Choice.create(:data => text, :question_id => self.id, :active => "true")
   end

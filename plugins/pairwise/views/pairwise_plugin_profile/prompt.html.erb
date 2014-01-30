@@ -6,15 +6,6 @@
 	<%= pairwise_edit_link _('Edit Question'), @pairwise_content if @pairwise_content.allow_edit?(user)%></p>
 
 <p><%= @pairwise_content.body %></p>
-
-<table>
-	<tr>
-		<td class="prompt"><%= choose_left_link(@pairwise_content, @question, @prompt) %></td>
-	</tr>
-	<tr> 
-		<td align="center"> ou </td>
-	</tr>
-	<tr>
-		<td class="prompt"><%= choose_right_link(@pairwise_content, @question, @prompt) %></td>
-	</tr>
-</table>
+	<div class="prompt"><%= choose_left_link(@pairwise_content, @question, @prompt) %></div>
+	<div class="prompt-separator"> <%= _('Or') %></div>
+	<div class="prompt"><%= choose_right_link(@pairwise_content, @question, @prompt) %></div>

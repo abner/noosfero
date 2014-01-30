@@ -25,11 +25,22 @@ class Pairwise::ClientTest < ActiveSupport::TestCase
     assert_equal 2, @question.get_choices.size
   end
 
-  should 'update a choice test' do
-    assert_not_equal  "Choice renamed", @question.choices.first.data
-    @client.update_choice(@question, @question.choices.first.id, 'Choice Renamed')
+  should 'update a choice text' do
+    choice = @question.get_choice_with_text("Choice 1")
+    assert_not_nil choice
+    @client.update_choice(@question, choice.id, 'Choice Renamed')
     @question_after_change  = @client.find_question_by_id(@question.id)
-    assert_equal "Choice Renamed", @question.choices.first.data
+    assert @question_after_change.has_choice_with_text?("Choice Renamed"), "Choice not found"
+    assert ! @question_after_change.has_choice_with_text?("Choice 1"), "Choice 1 should not exist"
+  end
+
+  should 'not allow change choice to a blank value' do
+    choice = @question.get_choice_with_text("Choice 1")
+    assert_not_nil choice
+    exception = assert_raises Pairwise::Error do
+      @client.update_choice(@question, choice.id, '')
+    end
+    assert_equal "Empty choice text", exception.message
   end
 
 

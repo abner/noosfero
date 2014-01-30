@@ -45,6 +45,7 @@ class Pairwise::Client
   def update_choice(question, choice_id, choice_data)
     choice = Pairwise::Choice.find(choice_id, :params => {:question_id => question.id })
     raise N_("Invalid choice id") unless choice
+    raise Pairwise::Error.new N_("Empty choice text") if choice_data.empty?
     unless choice_data.eql?(choice.data)
       choice.data = choice_data
       choice.save

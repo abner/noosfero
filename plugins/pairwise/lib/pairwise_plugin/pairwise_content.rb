@@ -120,22 +120,32 @@ class PairwisePlugin::PairwiseContent < Article
       created_question = create_pairwise_question
       self.pairwise_question_id = created_question.id
     else
-      begin
-        #add new choices
-        unless @choices.nil?
-          @choices.each do |choice_text|
+      #add new choices
+      unless @choices.nil?
+        @choices.each do |choice_text|
+          begin
             pairwise_client.add_choice(pairwise_question_id, choice_text) unless choice_text.empty?
+          rescue Exception => e
+            errors.add_to_base(N_("Choices: Error adding new choice to question") + N_(e.message))
+            return false
           end
         end
-        #change old choices
-        unless @choices_saved.nil?
-          @choices_saved.each do |id,data|
+      end
+      #change old choices
+      unless @choices_saved.nil?
+        @choices_saved.each do |id,data|
+          begin
             pairwise_client.update_choice(question, id, data)
+          rescue Exception => e
+            errors.add_to_base(N_("Choices:") + " " + N_(e.message))
+            return false
           end
         end
+      end
+      begin
         pairwise_client.update_question(pairwise_question_id, name)
       rescue Exception => e
-        errors.add_to_base(N_("Error adding new choice to question. ") + N_(e.message))
+        errors.add_to_base(N_("Question not saved:  ") + N_(e.message))
         return false
       end
     end
