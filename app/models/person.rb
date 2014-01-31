@@ -97,8 +97,6 @@ class Person < Profile
 
   belongs_to :user, :dependent => :delete
 
-  acts_as_voter
-
   def can_control_scrap?(scrap)
     begin
       !self.scraps(scrap).nil?
@@ -147,32 +145,34 @@ class Person < Profile
   end
 
   FIELDS = %w[
+  description
+  image
   preferred_domain
   nickname
   sex
-  address
-  zip_code
-  city
-  state
-  country
-  nationality
   birth_date
+  nationality
+  country
+  state
+  city
+  district
+  zip_code
+  address
+  address_reference
   cell_phone
   comercial_phone
+  personal_website
+  jabber_id
   schooling
+  formation
+  custom_formation
+  area_of_study
+  custom_area_of_study
   professional_activity
   organization
   organization_website
-  area_of_study
-  custom_area_of_study
-  formation
-  custom_formation
   contact_phone
   contact_information
-  description
-  image
-  district
-  address_reference
   ]
 
   validates_multiparameter_assignments
