@@ -1,13 +1,13 @@
-<% @question = @page.question %>
+<% 
+  @question = @page.question
+ %>
 
 <% unless @page.errors[:base].nil? %>
-<!-- #TODO add owner verification to remove or edit repository -->
-  <% if @page.errors[:base] == "Pairwise::Errors::RecordNotFound" %>
-    <h3>Warning:</h3>
-    <p>This question doesn't exist on the Web Service. Do you want to <%= link_to 'delete', :action => 'destroy', :controller => 'cms', :profile => @page.profile.identifier, :id => @page.id %>?</p>
-  <% else %>
+    <h3><%= _('Pairwise Integration Error') %></h3>
+    <p> <%= _('Please contact the administrator') %></p>
+    <pre>
     <%= @page.errors[:base] %>
-  <% end %>
+    </pre>
 <% else %>
 
   <table>
