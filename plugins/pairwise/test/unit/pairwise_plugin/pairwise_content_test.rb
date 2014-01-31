@@ -6,9 +6,9 @@ class PairwisePlugin::PairwiseContentTest < ActiveSupport::TestCase
  fixtures :environments
 
   def setup
-     pairwise_env_settings = { "api_host" => "http://localhost:3030/",
-                                "username" => "abner.oliveira@serpro.gov.br", 
-                                "password" => "serpro"
+     pairwise_env_settings = { :api_host => "http://localhost:3030/",
+                                :username => "abner.oliveira@serpro.gov.br", 
+                                :password => "serpro"
                               }
     @profile = create_user('testing').person
     @profile.environment = environments(:colivre_net)

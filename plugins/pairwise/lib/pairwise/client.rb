@@ -125,16 +125,19 @@ class Pairwise::Client
     
   end
 
-
   def self.build(local_identifier, settings)
+    if settings.nil?
+      error_message = "#{_("Plugin was not configured")}. #{_("Please contact the administrator")}"
+      raise Pairwise::Error.new error_message
+    end
     [Pairwise::Question, Pairwise::Prompt, Pairwise::Choice].each do | klas |
       if([Pairwise::Prompt, Pairwise::Choice].include?(klas))
-        klas.site = settings["api_host"] +  "questions/:question_id/" 
+        klas.site = settings[:api_host] +  "questions/:question_id/" 
       else
-        klas.site = settings["api_host"]
+        klas.site = settings[:api_host]
       end      
-      klas.user =  settings["username"]
-      klas.password = settings["password"]
+      klas.user =  settings[:username]
+      klas.password = settings[:password]
     end
     new local_identifier
   end
