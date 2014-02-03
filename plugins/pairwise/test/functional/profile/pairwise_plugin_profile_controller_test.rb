@@ -5,9 +5,9 @@ require "#{RAILS_ROOT}/plugins/pairwise/test/fixtures/pairwise_content_fixtures"
 class PairwisePluginProfileControllerTest < ActionController::TestCase
 
   def pairwise_env_settings
-    { "api_host" => "http://localhost:3030/",
-      "username" => "abner.oliveira@serpro.gov.br",
-      "password" => "serpro"
+    { :api_host => "http://localhost:3030/",
+      :username => "abner.oliveira@serpro.gov.br",
+      :password => "serpro"
     }
   end
 
@@ -72,15 +72,10 @@ class PairwisePluginProfileControllerTest < ActionController::TestCase
 
   should 'register a vote' do
     login_as(@user.user.login)
-   
-    PairwisePluginProfileController.any_instance.expects(:find_content).returns(@content)
-    @content.expects(:question_with_prompt_for_visitor).with(@user.id, nil).returns(@question)
-
     #next prompt will have id = 33
     next_prompt_id = 33
-    
     vote = { 
-            'prompt' => {
+                'prompt' => {
                         "id" => next_prompt_id,
                         "left_choice_id" => 3,
                         "left_choice_test" => "Option 3",
@@ -88,8 +83,11 @@ class PairwisePluginProfileControllerTest < ActionController::TestCase
                         "right_choice_text" => "Option 4"
               }
             }
+    @content.expects(:vote_to).with(@question, 'left', @user.identifier).returns(vote).at_least_once
+    @content.expects(:question_with_prompt_for_visitor).with(@user.id, nil).returns(@question).at_least_once
 
-    @content.expects(:vote_to).with(@question, 'left', @user.id).returns(vote)
+    PairwisePluginProfileController.any_instance.expects(:find_content).returns(@content).at_least_once
+    
     get :choose, 
                   :profile => @profile.identifier, 
                   :id => @content.id,
