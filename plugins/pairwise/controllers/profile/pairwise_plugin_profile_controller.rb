@@ -8,13 +8,13 @@ class PairwisePluginProfileController < ProfileController
   def prompt
     prompt_id = params[:prompt_id]
     @pairwise_content = find_content(params)
-    @question = @pairwise_content.question_with_prompt_for_visitor(user.id, prompt_id)
+    @question = @pairwise_content.question_with_prompt_for_visitor(user.identifier, prompt_id)
     @prompt = @question.prompt
   end
 
   def choose
     @pairwise_content = find_content(params)
-    @question = @pairwise_content.question_with_prompt_for_visitor(user.id)
+    @question = @pairwise_content.question_with_prompt_for_visitor(user.identifier)
     visitor = user.nil? ? 'guest' : user.identifier
     vote = @pairwise_content.vote_to(@question, params[:direction], visitor)
     next_prompt = vote['prompt']

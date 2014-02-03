@@ -36,7 +36,7 @@ class PairwisePluginProfileControllerTest < ActionController::TestCase
   should 'get a first prompt' do
     login_as(@user.user.login)
     PairwisePluginProfileController.any_instance.expects(:find_content).returns(@content)
-    @content.expects(:question_with_prompt_for_visitor).with(@user.id, nil).returns(@question)
+    @content.expects(:question_with_prompt_for_visitor).with(@user.identifier, nil).returns(@question)
     get :prompt, 
                   :profile => @profile.identifier, 
                   :id => @content.id,
@@ -54,7 +54,7 @@ class PairwisePluginProfileControllerTest < ActionController::TestCase
   should 'get a prompt by a prompt id' do
     login_as(@user.user.login)
     PairwisePluginProfileController.any_instance.expects(:find_content).returns(@content)
-    @content.expects(:question_with_prompt_for_visitor).with(@user.id, @question.prompt.id.to_s).returns(@question)
+    @content.expects(:question_with_prompt_for_visitor).with(@user.identifier, @question.prompt.id.to_s).returns(@question)
     get :prompt, 
                   :profile => @profile.identifier, 
                   :id => @content.id,
@@ -84,7 +84,7 @@ class PairwisePluginProfileControllerTest < ActionController::TestCase
               }
             }
     @content.expects(:vote_to).with(@question, 'left', @user.identifier).returns(vote).at_least_once
-    @content.expects(:question_with_prompt_for_visitor).with(@user.id, nil).returns(@question).at_least_once
+    @content.expects(:question_with_prompt_for_visitor).with(@user.identifier, nil).returns(@question).at_least_once
 
     PairwisePluginProfileController.any_instance.expects(:find_content).returns(@content).at_least_once
     
