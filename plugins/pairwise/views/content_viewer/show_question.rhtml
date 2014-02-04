@@ -1,4 +1,4 @@
-<% 
+<%
   @question = @page.question
  %>
 
@@ -17,7 +17,7 @@
   </table>
   <br/>
   <h5><%= _('Choices') %></h5>
-  <table> 
+  <table>
     <thead>
     <tr>
       <th><%= _('Choice Text') %></th>
@@ -38,10 +38,11 @@
     </tbody>
   </table>
 
-  <%= link_to _('Vote'), {:controller => "pairwise_plugin_profile", 
-                                        :profile => @page.profile.identifier, 
-                                        :action => "prompt", 
+  <%= link_to _('Vote'), {:controller => "pairwise_plugin_profile",
+                                        :profile => @page.profile.identifier,
+                                        :action => "prompt",
                                         :id => @page.id,
                                         :question_id => @question.id}, :class=>"button with-text icon-edit" %>
-  
+
 <% end %>
+

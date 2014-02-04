@@ -1,9 +1,3 @@
-# require 'rubygems'
-# require 'active_resource'
-# require 'active_support/all'
-# require 'active_support/core_ext/module/attribute_accessors'
-require 'ap'
-
 class PairwisePlugin < Noosfero::Plugin
 
   def self.plugin_name
@@ -42,3 +36,4 @@ class PairwisePlugin < Noosfero::Plugin
   end
 
 end
+
