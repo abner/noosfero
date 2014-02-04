@@ -2533,11 +2533,11 @@ div#activation_enterprise label, div#activation_enterprise input, div#activation
 }
 /*** REQUIRED FIELDS ***/
 
-.required-field label {
+.required-field label.formlabel {
   font-weight: bold;
   color: #c00;
 }
-.required-field label:after {
+.required-field label.formlabel:after {
   content: ' (*)';
 }
 .login-box {
@@ -3265,6 +3265,10 @@ table.cms-articles .icon:hover {
 
 .controller-cms select#article_license_id {
   max-width: 100%;
+}
+
+.controller-cms .button-bar .icon-delete {
+  float: right;
 }
 
 /************* external blog options *****************/

@@ -468,6 +468,8 @@ ActiveRecord::Schema.define(:version => 20140108132730) do
     t.boolean  "is_template",                           :default => false
     t.integer  "template_id"
     t.string   "redirection_after_login"
+    t.string   "personal_website"
+    t.string   "jabber_id"
   end
 
   add_index "profiles", ["environment_id"], :name => "index_profiles_on_environment_id"
@@ -624,5 +626,18 @@ ActiveRecord::Schema.define(:version => 20140108132730) do
     t.text    "restrictions"
     t.integer "organization_id"
   end
+
+  create_table "votes", :force => true do |t|
+    t.integer  "vote",          :null => false
+    t.integer  "voteable_id",   :null => false
+    t.string   "voteable_type", :null => false
+    t.integer  "voter_id"
+    t.string   "voter_type"
+    t.datetime "created_at"
+    t.datetime "updated_at"
+  end
+
+  add_index "votes", ["voteable_id", "voteable_type"], :name => "fk_voteables"
+  add_index "votes", ["voter_id", "voter_type"], :name => "fk_voters"
 
 end
