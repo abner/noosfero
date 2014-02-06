@@ -3,7 +3,6 @@ class PairwisePlugin::PairwiseContent < Article
   settings_items :pairwise_question_id
 
   before_save :send_question_to_service
-  after_destroy :call_destroy_in_pairwise
 
   validate_on_create :validate_choices
 
@@ -17,8 +16,8 @@ class PairwisePlugin::PairwiseContent < Article
   def view_url
     #pairwise content points to prompt page by default
     profile.url.merge(
-                      :controller => :pairwise_plugin_profile, 
-                      :action => :prompt, 
+                      :controller => :pairwise_plugin_profile,
+                      :action => :prompt,
                       :id => id)
   end
 
@@ -62,7 +61,7 @@ class PairwisePlugin::PairwiseContent < Article
   def description=(value)
     @description=value
   end
-  
+
   def description
     begin
       @description ||= question.name
@@ -109,7 +108,7 @@ class PairwisePlugin::PairwiseContent < Article
     errors.add_to_base(_("Choices invalid")) if choices.size == 0
     choices.each do | choice |
       if choice.empty?
-        errors.add_to_base(_("Choice empty")) 
+        errors.add_to_base(_("Choice empty"))
         break
       end
     end
@@ -151,13 +150,10 @@ class PairwisePlugin::PairwiseContent < Article
     end
   end
 
-  def call_destroy_in_pairwise
-    question.destroy unless question.nil?
-  end
-
   def create_pairwise_question
     question = pairwise_client.create_question(name, choices)
     question
   end
 
 end
+
