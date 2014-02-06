@@ -1,0 +1,48 @@
+<%
+  @question = @page.question
+ %>
+
+<% unless @page.errors[:base].nil? %>
+    <h3><%= _('Pairwise Integration Error') %></h3>
+    <p> <%= _('Please contact the administrator') %></p>
+    <pre>
+    <%= @page.errors[:base] %>
+    </pre>
+<% else %>
+
+  <table>
+    <tr>
+      <td><%= @page.name %></td>
+    </tr>
+  </table>
+  <br/>
+  <h5><%= _('Choices') %></h5>
+  <table>
+    <thead>
+    <tr>
+      <th><%= _('Choice Text') %></th>
+      <th><%= _('Choice Wins') %></th>
+      <th><%= _('Choice Losses') %></th>
+      <th><%= _('Choice Score') %></th>
+    </tr>
+  </thead>
+  <tbody>
+    <% @page.question.get_choices.each do |choice| %>
+    <tr>
+        <td><%= choice.data %></td>
+        <td><%= choice.wins %></td>
+        <td><%= choice.losses %></td>
+        <td><%= choice.score %></td>
+  	</tr>
+    <% end %>
+    </tbody>
+  </table>
+
+  <%= link_to _('Vote'), {:controller => "pairwise_plugin_profile",
+                                        :profile => @page.profile.identifier,
+                                        :action => "prompt",
+                                        :id => @page.id,
+                                        :question_id => @question.id}, :class=>"button with-text icon-edit" %>
+
+<% end %>
+
