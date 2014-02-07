@@ -2,46 +2,73 @@
 	width: 100%;
 	margin-top: 5px;
 	height:30px;
+
+}
+
+#pairwise_main {
+    width: 100%;
+
+    padding: 10px;
+    height: 600px;
+}
+
+.vote_question {
+
 }
 
 div.prompt {
-	width: 100%;
+	width: 45%;
+	float:left;
+	color:white;
 	min-height: 30px;
 	height:auto;
-	font-size: 18pt;
-	background-color: #eee;
+	padding: 0.2em;
+	word-wrap: break-word;
+	font-size: 14pt;
+	background-color: #006ccc;
 	text-align: center;
-	border-radius: 2px;
+    border-radius: 7px;
+    -webkit-border-radius: 7px;
+    -moz-border-radius: 7px;
 	border-color:#ccc;
 	border-width: 1px;
 	border-style: solid;
 }
 
-div.prompt > a {
+.block div.prompt  a {
 	width:100%;
-	color:black;
+	color:white;
 	display: block;
 	text-decoration: none;
 }
 
 
-div.prompt > a:visited {
-	color: black;
+.block div.prompt a:visited  {
+	color: white;
 }
-div.prompt:hover {
-	background-color: #eee;
-	border-radius: 2px;
-	border-color:#003366;
+
+.block div.prompt a:hover {
+    text-decoration:underline;
+}
+.block div.prompt:hover {
+	background-color: #006ccc;
+    border-radius: 7px;
+    -webkit-border-radius: 7px;
+    -moz-border-radius: 7px;
 	border-width: 1px;
 	border-style: solid;
+	color: white;
 }
 
 div.prompt-separator
 {
 	text-align:center;
-	color: gray;
-	background-color: white;
-	width: 100%;
+	width: 5%;
+	float: left;
 	height:30px;
 	font-size: 18pt;
 }
+
+div.footer {
+    width:100%;
+

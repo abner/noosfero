@@ -1,11 +1,31 @@
 <% extend PairwisePlugin::Helpers::ViewerHelper %>
 
-<h1><%= link_to @question.name, @pairwise_content.view_url %></h1>
+<%= pairwise_plugin_stylesheet  %>
 
-<p class='right'><%=  pairwise_result_link _('Results'), @pairwise_content %> | 
-	<%= pairwise_edit_link _('Edit Question'), @pairwise_content if @pairwise_content.allow_edit?(user)%></p>
+<div id="pairwise_main">
+<h2 class="vote_question"><%= link_to @question.name, @pairwise_content.view_url %></h2>
 
+<% unless @embeded %>
+  <p class='right'><%=  pairwise_result_link _('Results'), @pairwise_content, @embeded  %> |
+	<%= pairwise_edit_link _('Edit Question'), @pairwise_content if @pairwise_content.allow_edit?(user)  %></p>
+<% end %>
 <p><%= @pairwise_content.body %></p>
-	<div class="prompt"><%= choose_left_link(@pairwise_content, @question, @prompt) %></div>
-	<div class="prompt-separator"> <%= _('Or') %></div>
-	<div class="prompt"><%= choose_right_link(@pairwise_content, @question, @prompt) %></div>
+	<div class="prompt"><%= choose_left_link(@pairwise_content, @question, @prompt, @embeded) %></div>
+	<div class="prompt-separator"> </div>
+	<div class="prompt"><%= choose_right_link(@pairwise_content, @question, @prompt, @embeded) %></div>
+	<div class="footer"></footer>
+</div>
+<br clear="all">
+<% if @embeded %>
+  <div>
+    <div class="owner">
+      <span>Participa.br - </span><%= link_to @pairwise_content.profile.identifier,  @pairwise_content.profile.url %>
+    </div>
+    <a class="logo-acesso" href="http://www.acessoainformacao.gov.br/" target="_blank"><span>Acesso a Informação</span></a>
+    <div class="institucionais">
+      <a class="logo-sgpr" href="http://www.secretariageral.gov.br/" target="_blank"><span>Secretaria-geral da Presidência da República</span></a>
+      <a class="logo-brasil" href="http://www.brasil.gov.br/" target="_blank"><span>Brasil - Governo Federal</span></a>
+    </div>
+  </div>
+<% end %>
+

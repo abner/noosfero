@@ -1,3 +1,3 @@
-require 'active_resource'
-require 'active_support/all'
+#require 'active_resource'
+#require 'active_support/all'
 
