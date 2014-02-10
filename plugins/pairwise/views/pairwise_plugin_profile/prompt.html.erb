@@ -11,21 +11,7 @@
 <% end %>
 <p><%= @pairwise_content.body %></p>
 	<div class="prompt"><%= choose_left_link(@pairwise_content, @question, @prompt, @embeded) %></div>
-	<div class="prompt-separator"> </div>
 	<div class="prompt"><%= choose_right_link(@pairwise_content, @question, @prompt, @embeded) %></div>
 	<div class="footer"></footer>
 </div>
-<br clear="all">
-<% if @embeded %>
-  <div>
-    <div class="owner">
-      <span>Participa.br - </span><%= link_to @pairwise_content.profile.identifier,  @pairwise_content.profile.url %>
-    </div>
-    <a class="logo-acesso" href="http://www.acessoainformacao.gov.br/" target="_blank"><span>Acesso a Informação</span></a>
-    <div class="institucionais">
-      <a class="logo-sgpr" href="http://www.secretariageral.gov.br/" target="_blank"><span>Secretaria-geral da Presidência da República</span></a>
-      <a class="logo-brasil" href="http://www.brasil.gov.br/" target="_blank"><span>Brasil - Governo Federal</span></a>
-    </div>
-  </div>
-<% end %>
 
