@@ -24,7 +24,9 @@ module PairwisePlugin::Helpers::ViewerHelper
                                         :source => "YOUR_HOST",
                                         :only_path => false})
     embeded_code = "<iframe src='#{embeded_url}' style='width:100%;height:400px' ></iframe>"
-    label = "<hr/>" +  content_tag :h5, _('Pairwise Embeded')
+
+    label = "<hr/>"
+    label += content_tag :h5, _('Pairwise Embeded')
     textarea =  text_area_tag 'embeded_code', embeded_code, {:style => "width: 100%; background-color: #ccc; font-weight:bold", :rows => 7}
     hint = content_tag :quote, _("You can put this iframe in your site. Replace <b>source</b> param with your site address and make any needed adjusts in width and height.")
     label + textarea + hint + "<hr/>"
