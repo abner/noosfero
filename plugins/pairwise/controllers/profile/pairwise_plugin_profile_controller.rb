@@ -20,6 +20,7 @@ class PairwisePluginProfileController < ProfileController
     @question = @pairwise_content.question_with_prompt_for_visitor(user_identifier)
     visitor = user_identifier
     vote = @pairwise_content.vote_to(@question, params[:direction], visitor)
+    @pairwise_content.touch #altera o article pairwise_content para invalidar o cache da página de resultado
     next_prompt = vote['prompt']
     redirect_target = { :controller => :pairwise_plugin_profile,:action => 'prompt', :id => @pairwise_content.id,  :question_id => @question.id , :prompt_id => next_prompt["id"]}
     redirect_target.merge!(:embeded => 1) if params.has_key?("embeded")
