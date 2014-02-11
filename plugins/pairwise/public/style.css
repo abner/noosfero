@@ -38,7 +38,7 @@ div.prompt {
 
 }
 
-.block div.prompt  a {
+div.prompt  a {
 	width:100%;
 	color:white !important;
 	display: block;
@@ -46,14 +46,19 @@ div.prompt {
 }
 
 
+<<<<<<< HEAD
 .block div.prompt a:visited  {
+=======
+div.prompt a:visited  {
+>>>>>>> AI2942-pairwise_plugin
 	color: white  !important;
 }
 
-.block div.prompt a:hover {
+div.prompt a:hover {
     text-decoration:none;
 }
-.block div.prompt:hover {
+
+div.prompt:hover {
 	background-color: #2B88AD;
     border-radius: 7px;
     -webkit-border-radius: 7px;

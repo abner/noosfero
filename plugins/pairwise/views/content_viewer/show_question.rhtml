@@ -1,7 +1,7 @@
 <%
   @question = @page.question
  %>
-
+<% extend PairwisePlugin::Helpers::ViewerHelper %>
 <% unless @page.errors[:base].nil? %>
     <h3><%= _('Pairwise Integration Error') %></h3>
     <p> <%= _('Please contact the administrator') %></p>
@@ -9,7 +9,6 @@
     <%= @page.errors[:base] %>
     </pre>
 <% else %>
-
   <table>
     <tr>
       <td><%= @page.name %></td>
@@ -37,6 +36,11 @@
     <% end %>
     </tbody>
   </table>
+
+
+  <div id="pairwise_embeded_box">
+    <%= pairwise_embeded_code(@page) if @page.allow_edit?(user)%>
+  </div>
 
   <%= link_to _('Vote'), {:controller => "pairwise_plugin_profile",
                                         :profile => @page.profile.identifier,
