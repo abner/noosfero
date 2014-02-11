@@ -11,6 +11,7 @@ class PairwisePluginProfileController < ProfileController
     @question = @pairwise_content.question_with_prompt_for_visitor(user_identifier, prompt_id)
     @prompt = @question.prompt
     @embeded = params.has_key?("embeded")
+    @source = params[:source]
     return render :prompt, :layout => false if @embeded
   end
 
@@ -22,6 +23,7 @@ class PairwisePluginProfileController < ProfileController
     next_prompt = vote['prompt']
     redirect_target = { :controller => :pairwise_plugin_profile,:action => 'prompt', :id => @pairwise_content.id,  :question_id => @question.id , :prompt_id => next_prompt["id"]}
     redirect_target.merge!(:embeded => 1) if params.has_key?("embeded")
+    redirect_target.merge!(:source => params[:source]) if params.has_key?("source")
     redirect_to redirect_target
   end
 
@@ -32,9 +34,17 @@ class PairwisePluginProfileController < ProfileController
 
  protected
 
+   def is_external_vote
+     params.has_key?("source") && !params[:source].empty?
+   end
+
+  def external_source
+    params[:source]
+  end
+
    def user_identifier
      if user.nil?
-       "guest-#{request.session_options[:id]}"
+      is_external_vote ? "#{external_source}-#{request.session_options[:id]}" : "participa-#{request.session_options[:id]}"
      else
        user.identifier
      end
