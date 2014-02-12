@@ -24,11 +24,15 @@ class PairwisePluginProfileController < ProfileController
     visitor = user_identifier
     vote = @pairwise_content.vote_to(@question, params[:direction], visitor)
     @pairwise_content.touch #altera o article pairwise_content para invalidar o cache da página de resultado
-    next_prompt = vote['prompt']
-    redirect_target = { :controller => :pairwise_plugin_profile,:action => 'prompt', :id => @pairwise_content.id,  :question_id => @question.id , :prompt_id => next_prompt["id"]}
-    redirect_target.merge!(:embeded => 1) if params.has_key?("embeded")
-    redirect_target.merge!(:source => params[:source]) if params.has_key?("source")
-    redirect_to redirect_target
+    if params.has_key?("embeded")
+      next_prompt = vote['prompt']
+      redirect_target = { :controller => :pairwise_plugin_profile,:action => 'prompt', :id => @pairwise_content.id,  :question_id => @question.id , :prompt_id => next_prompt["id"]}
+      redirect_target.merge!(:embeded => 1) if params.has_key?("embeded")
+      redirect_target.merge!(:source => params[:source]) if params.has_key?("source")
+      redirect_to redirect_target
+    else
+      redirect_to @pairwise_content.url
+    end
   end
 
   def result
