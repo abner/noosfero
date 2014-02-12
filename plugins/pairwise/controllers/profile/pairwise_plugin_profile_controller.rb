@@ -7,12 +7,15 @@ class PairwisePluginProfileController < ProfileController
 
   def prompt
     prompt_id = params[:prompt_id]
-    @pairwise_content = find_content(params)
-    @question = @pairwise_content.question_with_prompt_for_visitor(user_identifier, prompt_id)
-    @prompt = @question.prompt
-    @embeded = params.has_key?("embeded")
-    @source = params[:source]
-    return render :prompt, :layout => false if @embeded
+    @page = find_content(params)
+    embeded = params.has_key?("embeded")
+    source = params[:source]
+    locals = {:embeded => embeded, :source => source, :prompt_id => prompt_id }
+    if embeded
+      render 'content_viewer/prompt', :layout => false, :locals => locals
+    else
+      render 'content_viewer/prompt', :locals => locals
+    end
   end
 
   def choose
@@ -21,16 +24,20 @@ class PairwisePluginProfileController < ProfileController
     visitor = user_identifier
     vote = @pairwise_content.vote_to(@question, params[:direction], visitor)
     @pairwise_content.touch #altera o article pairwise_content para invalidar o cache da página de resultado
-    next_prompt = vote['prompt']
-    redirect_target = { :controller => :pairwise_plugin_profile,:action => 'prompt', :id => @pairwise_content.id,  :question_id => @question.id , :prompt_id => next_prompt["id"]}
-    redirect_target.merge!(:embeded => 1) if params.has_key?("embeded")
-    redirect_target.merge!(:source => params[:source]) if params.has_key?("source")
-    redirect_to redirect_target
+    if params.has_key?("embeded")
+      next_prompt = vote['prompt']
+      redirect_target = { :controller => :pairwise_plugin_profile,:action => 'prompt', :id => @pairwise_content.id,  :question_id => @question.id , :prompt_id => next_prompt["id"]}
+      redirect_target.merge!(:embeded => 1) if params.has_key?("embeded")
+      redirect_target.merge!(:source => params[:source]) if params.has_key?("source")
+      redirect_to redirect_target
+    else
+      redirect_to @pairwise_content.url
+    end
   end
 
-  def show_question
+  def result
     @embeded = params.has_key?("embeded")
-    @article = @pairwise_content = find_content(params)
+    @page = @pairwise_content = find_content(params)
   end
 
  protected

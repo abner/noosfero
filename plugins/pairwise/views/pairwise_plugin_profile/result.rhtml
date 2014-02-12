@@ -9,13 +9,8 @@
     <%= @page.errors[:base] %>
     </pre>
 <% else %>
-  <table>
-    <tr>
-      <td><%= @page.name %></td>
-    </tr>
-  </table>
+   <h1 class="title"><%= @page.name %></h1>
   <br/>
-  <h5><%= _('Choices') %></h5>
   <table>
     <thead>
     <tr>
@@ -42,11 +37,7 @@
     <%= pairwise_embeded_code(@page) if @page.allow_edit?(user)%>
   </div>
 
-  <%= link_to _('Vote'), {:controller => "pairwise_plugin_profile",
-                                        :profile => @page.profile.identifier,
-                                        :action => "prompt",
-                                        :id => @page.id,
-                                        :question_id => @question.id}, :class=>"button with-text icon-edit" %>
+  <%= link_to _('Vote'), @page.url, :class=>"button with-text icon-edit" %>
 
 <% end %>
 

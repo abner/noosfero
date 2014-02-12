@@ -6,23 +6,18 @@ class PairwisePlugin::PairwiseContent < Article
 
   validate_on_create :validate_choices
 
- def initialize(*args)
+  def initialize(*args)
     super(*args)
     self.published = false
   end
 
-   alias_method :original_view_url, :view_url
-
-  def view_url
-    #pairwise content points to prompt page by default
-    profile.url.merge(
-                      :controller => :pairwise_plugin_profile,
-                      :action => :prompt,
-                      :id => id)
-  end
+  alias_method :original_view_url, :view_url
 
   def result_url
-    url
+    profile.url.merge(
+                      :controller => :pairwise_plugin_profile,
+                     :action => :result,
+                      :id => id)
   end
 
   def self.short_description
@@ -34,8 +29,13 @@ class PairwisePlugin::PairwiseContent < Article
   end
 
   def to_html(options = {})
+    source = options["source"]
+    embeded = options.has_key? "embeded"
+    prompt_id = options["prompt_id"]
+    pairwise_content = self
     lambda do
-      render :file => 'content_viewer/show_question.rhtml'
+      locals = {:pairwise_content =>  pairwise_content, :source => source, :embeded => embeded, :prompt_id => prompt_id }
+      render :file => 'content_viewer/prompt.rhtml', :locals => locals
     end
   end
 
@@ -44,6 +44,11 @@ class PairwisePlugin::PairwiseContent < Article
     @pairwise_client
   end
 
+
+  def prepare_prompt(user_identifier, prompt_id)
+        question = self.question_with_prompt_for_visitor(user_identifier, prompt_id)
+    question
+  end
 
   def question
     begin
