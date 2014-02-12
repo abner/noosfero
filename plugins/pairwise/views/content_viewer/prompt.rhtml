@@ -1,0 +1,20 @@
+<% extend PairwisePlugin::Helpers::ViewerHelper %>
+
+<%= pairwise_plugin_stylesheet  %>
+
+<%
+@question = @page.prepare_prompt(pairwise_user_identifier(user), prompt_id)
+%>
+<div id="pairwise_main">
+  <% unless embeded %>
+    <p class='right'><%=  pairwise_result_link _('Results'), @page, embeded  %> |
+	  <%= pairwise_edit_link _('Edit Question'), @page if @page.allow_edit?(user)  %></p>
+  <% end %>
+  <p><%= @page.body %></p>
+  <div class="prompt"><%= choose_left_link(@page, @question, @question.prompt, embeded, source) %></div>
+	<div class="prompt"><%= choose_right_link(@page, @question, @question.prompt, embeded, source) %></div>
+  <% if embeded %>
+   	<div class="footer"><%= _('Powered by') + ' ' + @page.environment.name%></div>
+  <% end %>
+</div>
+

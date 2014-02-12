@@ -1,7 +1,7 @@
 class Pairwise::Client
 
   private_class_method :new
-    
+
   ###
   # constructor for a pairwise client
   # local_identifier is the id of the question owner in the client app side
@@ -114,15 +114,15 @@ class Pairwise::Client
                        })
 
   end
-  
+
   def pairwise_config
     options = environment.settings[:pairwise_plugin]
      [:api_host, :username, :password].each do |key|
         if options.keys.include?(key.to_s)
           Pairwise::ResourceSettings[key] = options[key.to_s]
         end
-      end   
-    
+      end
+
   end
 
   def self.build(local_identifier, settings)
@@ -132,13 +132,14 @@ class Pairwise::Client
     end
     [Pairwise::Question, Pairwise::Prompt, Pairwise::Choice].each do | klas |
       if([Pairwise::Prompt, Pairwise::Choice].include?(klas))
-        klas.site = settings[:api_host] +  "questions/:question_id/" 
+        klas.site = settings[:api_host] +  "questions/:question_id/"
       else
         klas.site = settings[:api_host]
-      end      
+      end
       klas.user =  settings[:username]
       klas.password = settings[:password]
     end
     new local_identifier
   end
 end
+
