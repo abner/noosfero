@@ -2,7 +2,7 @@ class Pairwise::Question < ActiveResource::Base
   extend Pairwise::Resource
 
   self.element_name = "question"
-  
+
   def get_choices
     Pairwise::Choice.find(:all, :params => {:question_id => self.id })
   end
@@ -30,7 +30,7 @@ class Pairwise::Question < ActiveResource::Base
   def self.find_with_prompt(id, creator_id, visitor_id, prompt_id=nil)
      #ap Question, :raw => true
      if prompt_id.nil?
-      question = Pairwise::Question.find(id, 
+      question = Pairwise::Question.find(id,
                    :params => {
                                 :creator_id => creator_id,
                                 :with_prompt => true,
@@ -39,7 +39,7 @@ class Pairwise::Question < ActiveResource::Base
                               })
       question.set_prompt(Pairwise::Prompt.find(question.picked_prompt_id, :params => {:question_id => id}))
     else
-      question = Pairwise::Question.find(id, 
+      question = Pairwise::Question.find(id,
                   :params => {
                                 :creator_id => creator_id,
                                 :with_appearance => true,
@@ -58,3 +58,4 @@ class Pairwise::Question < ActiveResource::Base
     @prompt
   end
 end
+

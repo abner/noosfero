@@ -7,12 +7,15 @@ class PairwisePluginProfileController < ProfileController
 
   def prompt
     prompt_id = params[:prompt_id]
-    @pairwise_content = find_content(params)
-    @question = @pairwise_content.question_with_prompt_for_visitor(user_identifier, prompt_id)
-    @prompt = @question.prompt
-    @embeded = params.has_key?("embeded")
-    @source = params[:source]
-    return render :prompt, :layout => false if @embeded
+    @page = find_content(params)
+    embeded = params.has_key?("embeded")
+    source = params[:source]
+    locals = {:embeded => embeded, :source => source, :prompt_id => prompt_id }
+    if embeded
+      render 'content_viewer/prompt', :layout => false, :locals => locals
+    else
+      render 'content_viewer/prompt', :locals => locals
+    end
   end
 
   def choose
@@ -28,9 +31,9 @@ class PairwisePluginProfileController < ProfileController
     redirect_to redirect_target
   end
 
-  def show_question
+  def result
     @embeded = params.has_key?("embeded")
-    @article = @pairwise_content = find_content(params)
+    @page = @pairwise_content = find_content(params)
   end
 
  protected

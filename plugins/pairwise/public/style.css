@@ -7,16 +7,19 @@
 
 #pairwise_main {
     width: 100%;
-
     padding: 10px;
-    height: 600px;
 }
 
 .vote_question {
 
 }
 
-div.prompt {
+#pairwise_main div.footer {
+    text-align:right;
+    padding: 20px;
+}
+
+#pairwise_main  div.prompt {
 	width: 45%;
 	float:none;
 	color:white;
@@ -38,7 +41,7 @@ div.prompt {
 
 }
 
-div.prompt  a {
+#pairwise_main  div.prompt  a {
 	width:100%;
 	color:white !important;
 	display: block;
@@ -46,19 +49,15 @@ div.prompt  a {
 }
 
 
-<<<<<<< HEAD
-.block div.prompt a:visited  {
-=======
-div.prompt a:visited  {
->>>>>>> AI2942-pairwise_plugin
+#pairwise_main  div.prompt a:visited  {
 	color: white  !important;
 }
 
-div.prompt a:hover {
+#pairwise_main  div.prompt a:hover {
     text-decoration:none;
 }
 
-div.prompt:hover {
+#pairwise_main  div.prompt:hover {
 	background-color: #2B88AD;
     border-radius: 7px;
     -webkit-border-radius: 7px;
@@ -66,18 +65,5 @@ div.prompt:hover {
 	border-width: 1px;
 	border-style: solid;
 	color: white;
-}
-
-div.prompt-separator
-{
-	text-align:center;
-	width: 5%;
-	float: left;
-	height:30px;
-	font-size: 18pt;
-}
-
-div.footer {
-    width:100%;
 }
 

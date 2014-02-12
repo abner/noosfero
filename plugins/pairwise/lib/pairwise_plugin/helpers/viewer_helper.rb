@@ -14,6 +14,14 @@ module PairwisePlugin::Helpers::ViewerHelper
      link_to prompt.left_choice_text,  link_target
   end
 
+  def pairwise_user_identifier(user)
+     if user.nil?
+      is_external_vote ? "#{external_source}-#{request.session_options[:id]}" : "participa-#{request.session_options[:id]}"
+     else
+       user.identifier
+     end
+   end
+
   def pairwise_embeded_code(pairwise_content)
     embeded_url = url_for({:controller => "pairwise_plugin_profile",
                                         :profile => pairwise_content.profile.identifier,
@@ -21,9 +29,9 @@ module PairwisePlugin::Helpers::ViewerHelper
                                         :id => pairwise_content.id,
                                         :question_id => pairwise_content.question.id,
                                         :embeded => 1,
-                                        :source => "YOUR_HOST",
+                                        :source => "SOURCE_NAME",
                                         :only_path => false})
-    embeded_code = "<iframe src='#{embeded_url}' style='width:100%;height:400px' ></iframe>"
+    embeded_code = "<iframe src='#{embeded_url}' style='width:100%;height:400px'  frameborder='0' allowfullscreen ></iframe>"
 
     label = "<hr/>"
     label += content_tag :h5, _('Pairwise Embeded')
