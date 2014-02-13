@@ -60,5 +60,8 @@ module PairwisePlugin::Helpers::ViewerHelper
     link_to  label, link_target
   end
 
+  def pairwise_suggestion_url(question)
+    {:controller => :pairwise_plugin_profile, :action => 'suggest_idea', :id => question.id}
+  end
 end
 

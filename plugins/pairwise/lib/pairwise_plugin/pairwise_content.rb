@@ -1,6 +1,7 @@
 class PairwisePlugin::PairwiseContent < Article
   include ActionView::Helpers::TagHelper
   settings_items :pairwise_question_id
+  settings_items :allow_new_ideas, :default => true
 
   before_save :send_question_to_service
 
@@ -76,12 +77,14 @@ class PairwisePlugin::PairwiseContent < Article
     @description
   end
 
+  def inactive_choices
+    @inactive_choices ||= (question.choices_include_inactive - question.get_choices)
+  end
+
   def choices
-    #raise question.get_choices.inspect
     if @choices.nil?
       begin
         @choices ||= question.get_choices.map {|q| { q.id.to_s, q.data } }
-        #@choices = @choices.join("\n")
       rescue
         @choices = []
       end
@@ -101,7 +104,8 @@ class PairwisePlugin::PairwiseContent < Article
     @choices_saved = value
   end
 
-  def vote_to(question, direction, visitor='guest')
+  def vote_to(direction, visitor='guest')
+    question = question_with_prompt_for_visitor(visitor)
     raise _("Excepted question not found") if question.nil?
     raise _("Excepted prompt not found") if question.prompt.nil?
     next_prompt = pairwise_client.vote(question.prompt.id, question.id, direction, visitor, question.appearance_id)
@@ -160,5 +164,13 @@ class PairwisePlugin::PairwiseContent < Article
     question
   end
 
+  def allow_new_ideas?
+    return allow_new_ideas === true
+  end
+
+  def add_new_idea(text)
+    return false unless allow_new_ideas?
+    pairwise_client.add_new_idea(pairwise_question_id, text)
+  end
 end
 

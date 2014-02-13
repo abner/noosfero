@@ -2,9 +2,8 @@
 
 <%= pairwise_plugin_stylesheet  %>
 
-<%
-@question = @page.prepare_prompt(pairwise_user_identifier(user), prompt_id)
-%>
+<% @question = @page.prepare_prompt(pairwise_user_identifier(user), prompt_id) %>
+
 <div id="pairwise_main">
   <% unless embeded %>
     <p class='right'><%=  pairwise_result_link _('Results'), @page, embeded  %> |
@@ -16,5 +15,12 @@
   <% if embeded %>
    	<div class="footer"><%= _('Powered by') + ' ' + @page.environment.name%></div>
   <% end %>
+
+<div id="suggestions_box">
+ <%= render :partial => "pairwise_plugin_profile/suggestion_form", :locals => {:page => @page} %>
 </div>
+
+</div>
+
+
 

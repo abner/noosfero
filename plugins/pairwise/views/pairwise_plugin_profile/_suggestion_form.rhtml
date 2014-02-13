@@ -1,0 +1,19 @@
+	<% remote_form_for('idea', :url => pairwise_suggestion_url(page),
+	    :loading => "$('suggestion_box_fields').hide();$('suggestion_box_loading').show();", :loaded => "$('suggestion_box_fields').show();$('suggestion_box_loading').hide();") do  |f| %>
+	  <div id="suggestion_box_fields">
+		<div class="error">
+	       <%= flash[:error] %>
+	    </div>
+	    <div class="notice">
+	       <%= flash[:notice] %>
+	    </div>
+	    <%= f.label 'idea', 'idea', { :style => 'width: 100%'} %>
+	    <%= f.text_area 'text', :cols => 40, :style => 'width: 100%' %>
+	    <div style="width:100%;text-align:center">
+	      <%= submit_button('add', _('Suggest idea'), :id => 'new_idea_button') %>
+	    </div>
+	  </div>
+	  <div id="suggestion_box_loading" style="display: none;">
+	    <span>Processando...</span>
+	  </div>
+	<% end %>

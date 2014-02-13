@@ -26,6 +26,12 @@
 			<% end %>
 		</div>
 	</div>
+	<div id="choices_waiting_approval">
+		<h3>Choices waiting approval</h3>
+		<% @article.inactive_choices.each do |choice| %>
+			<li><%= choice.data %></li>
+		<% end %>
+	</div>
 	<div class="button-bar">
 		<input class="button with-text icon-add" type="button" id="add_new_choice" value="<%= _("New choice") %>">
 		<br style="clear: left;">

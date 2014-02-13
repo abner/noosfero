@@ -24,6 +24,11 @@ class Pairwise::Client
     q
   end
 
+  def toggle_autoactivate_ideas(question, value)
+    question.it_should_autoactivate_ideas = value
+    question.save
+  end
+
   def add_choice(question_id, choice_text)
     question = Pairwise::Question.find question_id
     raise Pairwise::Error.new("Question not found in pairwise") if question.nil?
@@ -140,6 +145,19 @@ class Pairwise::Client
       klas.password = settings[:password]
     end
     new local_identifier
+  end
+
+  def add_new_idea(question_id, text)
+    raise _("Idea text is empty") if text.empty?
+    question = Pairwise::Question.find question_id
+    raise Pairwise::Error.new("Question not found in pairwise") if question.nil?
+    choice_args = {
+                    :question_id => question_id,
+                    :local_identifier => @local_identifier.to_s,
+                    :visitor_identifier => @local_identifier.to_s,
+                    :data => text
+                  }
+    return Pairwise::Choice.create(choice_args)
   end
 end
 
