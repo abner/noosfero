@@ -111,6 +111,10 @@ class PairwisePlugin::PairwiseContent < Article
     next_prompt = pairwise_client.vote(question.prompt.id, question.id, direction, visitor, question.appearance_id)
   end
 
+  def skip_prompt(prompt_id, visitor, appearance_id)
+    next_prompt = pairwise_client.skip_prompt(question.id, prompt_id, visitor, appearance_id)
+  end
+
    def validate_choices
     errors.add_to_base(_("Choices empty")) if choices.nil?
     errors.add_to_base(_("Choices invalid format")) unless choices.is_a?(Array)

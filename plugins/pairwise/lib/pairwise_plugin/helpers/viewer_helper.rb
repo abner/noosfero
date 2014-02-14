@@ -14,6 +14,15 @@ module PairwisePlugin::Helpers::ViewerHelper
      link_to prompt.left_choice_text,  link_target
   end
 
+  def skip_vote_link(pairwise_content, question, prompt, embeded = false, source = nil)
+    link_target = {:controller => 'pairwise_plugin_profile',
+          :action => 'skip_prompt', :id => pairwise_content.id,:question_id => question.id , :prompt_id => prompt.id,
+          :appearance_id => question.appearance_id}
+     link_target.merge!(:embeded => 1) if embeded
+     link_target.merge!(:source => source) if source
+     link_to _('Skip vote'),  link_target
+  end
+
   def pairwise_user_identifier(user)
      if user.nil?
       is_external_vote ? "#{external_source}-#{request.session_options[:id]}" : "participa-#{request.session_options[:id]}"

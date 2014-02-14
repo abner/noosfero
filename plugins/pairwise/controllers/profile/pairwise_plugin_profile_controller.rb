@@ -22,6 +22,14 @@ class PairwisePluginProfileController < ProfileController
     redirect_to after_action_url
   end
 
+  def skip_prompt
+    raise 'Invalid request' unless params.has_key?('prompt_id')
+    raise 'Invalid request' unless params.has_key?('appearance_id')
+    @pairwise_content = find_content(params)
+    skip = @pairwise_content.skip_prompt(params[:prompt_id], user_identifier, params[:appearance_id])
+    redirect_to after_action_url
+  end
+
   def result
     @embeded = params.has_key?("embeded")
     @page = @pairwise_content = find_content(params)

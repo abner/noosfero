@@ -82,24 +82,45 @@ class Pairwise::Client
   end
 
   # register votes in response to a prompt to a pairwise question
-  def vote(prompt_id, question_id, direction, visitor_id="guest", appearance_lookup=nil)
+  def vote(prompt_id, question_id, direction, visitor="guest", appearance_lookup=nil)
     prompt = Pairwise::Prompt.find(prompt_id, :params => {:question_id => question_id})
     begin
       vote = prompt.post(:vote,
                          :question_id => question_id,
                          :vote => {
                            :direction => direction,
-                           :visitor_identifier => visitor_id,
+                           :visitor_identifier => visitor,
                            :appearance_lookup => appearance_lookup
                          },
                          :next_prompt => {
                            :with_appearance => true,
                            :with_visitor_stats => true,
-                           :visitor_identifier => visitor_id
+                           :visitor_identifier => visitor
                          })
       Hash.from_xml(vote.body)
     rescue ActiveResource::ResourceInvalid => e
       raise Pairwise::Error.new(_("Vote not registered. Please check if all the necessary parameters were passed."))
+    end
+  end
+
+  def skip_prompt(question_id, prompt_id, visitor="guest", appearance_lookup=nil)
+    prompt = Pairwise::Prompt.find(prompt_id, :params => {:question_id => question_id})
+    begin
+      skip = prompt.post(:skip, :question_id => question_id,
+         :skip => {
+            :appearance_lookup => appearance_lookup,
+            :visitor_identifier => visitor, 
+            :skip_reason => 'some not informed reason'
+          },
+           :next_prompt => {
+             :with_appearance => true,
+             :with_visitor_stats => true,
+             :visitor_identifier => visitor
+          }
+        )
+      Hash.from_xml(skip.body)
+    rescue ActiveResource::ResourceInvalid => e
+      raise Pairwise::Error.new(_("Could not skip vote. Check the parameters"))
     end
   end
 

@@ -1,3 +1,6 @@
+	<div class="suggestion_header">
+    	<span class="close_button">X</span>
+  	</div>
 	<% remote_form_for('idea', :url => pairwise_suggestion_url(page, embeded, source),
 	    :loading => "$('suggestion_box_fields').hide();$('suggestion_box_loading').show();", :loaded => "$('suggestion_box_fields').show();$('suggestion_box_loading').hide();") do  |f| %>
 	  <div id="suggestion_box_fields">
@@ -7,10 +10,9 @@
 	    <div class="notice">
 	       <%= flash[:notice] %>
 	    </div>
-	    <%= f.label 'idea', 'idea', { :style => 'width: 100%'} %>
-	    <%= f.text_area 'text', :cols => 40, :style => 'width: 100%' %>
+	    <%= f.text_area 'text', :maxlenght => 140, :rows => 4, :placeholder => _('Type here your idea') %>
 	    <div style="width:100%;text-align:center">
-	      <%= submit_button('add', _('Suggest idea'), :id => 'new_idea_button') %>
+	      <%= submit_button('', _('Suggest idea'), :id => 'new_idea_button') %>
 	    </div>
 	  </div>
 	  <div id="suggestion_box_loading" style="display: none;">

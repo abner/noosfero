@@ -32,7 +32,6 @@ class Pairwise::Question < ActiveResource::Base
   end
 
   def self.find_with_prompt(id, creator_id, visitor_id, prompt_id=nil)
-     #ap Question, :raw => true
      if prompt_id.nil?
       question = Pairwise::Question.find(id,
                    :params => {

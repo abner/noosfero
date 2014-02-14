@@ -69,13 +69,14 @@ div#pairwise_form_fields textarea {
 
 
 #pairwise_main div#suggestions_box {
-	border: 1px solid;
+	display: none;
+	/*border: 1px solid;
 	border-radius: 7px;
     -webkit-border-radius: 7px;
     -moz-border-radius: 7px;
     border-color: #ccc;
 	border-width: 1px;
-	border-style: solid;
+	border-style: solid;*/
 	padding: 10px;
 	margin-top: 15px;
 }
@@ -94,3 +95,105 @@ div#pairwise_form_fields textarea {
 	text-align: center;
 }
 
+
+#pairwise_main div#suggestions_box  textarea{
+	width: 100%;
+	border: 1px solid #99999;
+	border-radius: 5px;
+    -webkit-border-radius: 5px;
+    -moz-border-radius: 5px;
+}
+
+#pairwise_main div#suggestions_box  #new_idea_button{
+	background-color: #01bb00;
+	padding: 5px 10px 5px 10px;
+	cursor: pointer;
+	border-radius: 5px;
+    -webkit-border-radius: 5px;
+    -moz-border-radius: 5px;
+}
+
+#pairwise_main div#suggestions_box  div.suggestion_header {
+	text-align: right;
+	color: blue;
+}
+
+#pairwise_main div#suggestions_box  #new_idea_button:hover{
+	boder-color: gray;
+}
+
+#pairwise_main #suggestions_box span.close_button {
+	cursor: pointer;
+}
+
+#pairwise_main #suggestions_box span.close_button:hover {
+	cursor: pointer;
+	text-decoration: underline;
+}
+
+
+#pairwise_main  div.show_new_idea_box {
+	width: 150px;
+	float:none;
+	color:white;
+	min-height: 18px;
+	height:auto;
+	padding: 0.5em;
+	word-wrap: break-word;
+	font-size: 12pt;
+	background-color: #01bb00;
+	text-align: center;
+    border-radius: 7px;
+    -webkit-border-radius: 7px;
+    -moz-border-radius: 7px;
+	border-color:#CCCCCC;
+	border-width: 1px;
+	border-style: solid;
+	vertical-align: top;
+	margin-top: 12px;
+	margin-left: auto;
+	margin-right: auto;
+	text-align: center;
+}
+
+#pairwise_main  div.show_new_idea_box a{
+	color: white;
+	text-decoration: none;
+}
+
+#pairwise_main  div.show_new_idea_box a:hover{
+	text-decoration: underline;
+}
+
+#pairwise_main  div.skip_vote {
+	width: 150px;
+	float:none;
+	color:white;
+	min-height: 18px;
+	height:auto;
+	padding: 0.5em;
+	word-wrap: break-word;
+	font-size: 12pt;
+	background-color: #ccc;
+	text-align: center;
+    border-radius: 7px;
+    -webkit-border-radius: 7px;
+    -moz-border-radius: 7px;
+	border-color:#CCCCCC;
+	border-width: 1px;
+	border-style: solid;
+	vertical-align: top;
+	margin-top: 12px;
+	margin-left: auto;
+	margin-right: auto;
+	text-align: center;
+}
+
+#pairwise_main  div.skip_vote a{
+	color: white;
+	text-decoration: none;
+}
+
+#pairwise_main  div.skip_vote a:hover{
+	text-decoration: underline;
+}
