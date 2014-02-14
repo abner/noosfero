@@ -2,13 +2,17 @@
 
 <%= pairwise_plugin_stylesheet  %>
 
-<%
-@question = @page.prepare_prompt(pairwise_user_identifier(user), prompt_id)
-%>
+<script src="/plugins/pairwise/javascripts/pairwise.js" type="text/javascript"></script>
+
+<% @question = @page.prepare_prompt(pairwise_user_identifier(user), prompt_id) %>
+
 <div id="pairwise_main">
   <% unless embeded %>
-    <p class='right'><%=  pairwise_result_link _('Results'), @page, embeded  %> |
-	  <%= pairwise_edit_link _('Edit Question'), @page if @page.allow_edit?(user)  %></p>
+    <p class='right'><%=  pairwise_result_link _('Results'), @page, embeded  %> 
+      <% if @page.allow_edit?(user) %>
+      | <%= pairwise_edit_link _('Edit Question'), @page %>
+      <% end %>
+    </p>
   <% end %>
   <p><%= @page.body %></p>
   <div class="prompt"><%= choose_left_link(@page, @question, @question.prompt, embeded, source) %></div>
@@ -16,5 +20,15 @@
   <% if embeded %>
    	<div class="footer"><%= _('Powered by') + ' ' + @page.environment.name%></div>
   <% end %>
+<div class="skip_vote">
+    <%= skip_vote_link(@page, @question, @question.prompt, embeded, source) %>
+</div>
+<div class="show_new_idea_box">
+    <a href="javascript:;" id="suggestions_box_show_link"><%= _('Add your own idea') %></a>
+</div>
+<div id="suggestions_box">
+ <%= render :partial => "pairwise_plugin_profile/suggestion_form", 
+      :locals => {:page => @page, :embeded => embeded, :source => source} %>
 </div>
 
+</div>

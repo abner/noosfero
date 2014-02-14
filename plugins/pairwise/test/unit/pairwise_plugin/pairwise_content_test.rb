@@ -69,13 +69,6 @@ class PairwisePlugin::PairwiseContentTest < ActiveSupport::TestCase
     assert_equal question.id, pairwise_content.pairwise_question_id
   end 
 
-  should 'call pairwise service to remove if removed' do
-    pairwise_question = PairwiseContentFixtures.pairwise_content
-    pairwise_question.profile = @profile
-    pairwise_question.expects(:call_destroy_in_pairwise).once
-    pairwise_question.destroy
-  end
-
   should 'send changes in choices to pairwise service' do
     @pairwise_content.profile = @profile
     @question = Pairwise::Question.new(:id => @pairwise_content.pairwise_question_id, :name => 'Question 1', :active => false)
@@ -107,4 +100,21 @@ class PairwisePlugin::PairwiseContentTest < ActiveSupport::TestCase
     @pairwise_content.save
   end
 
+  should 'allow new ideas by default when created' do
+    assert_equal true, @pairwise_content.allow_new_ideas?
+  end
+
+  should 'add new ideas suggestions when new ideas are allowed' do
+    assert_equal true, @pairwise_content.allow_new_ideas?
+    @question = Pairwise::Question.new(:id => @pairwise_content.pairwise_question_id, :name => 'Question 1', :active => false)
+    @pairwise_content.expects(:pairwise_client).returns(@pairwise_client).at_least_once
+    @pairwise_client.expects(:add_new_idea).with(@question.id, "New idea").returns(true)
+    assert_equal true, @pairwise_content.add_new_idea("New idea")
+  end
+
+  should 'not add new ideas suggestions when new ideas are not allowed' do
+    assert_equal true, @pairwise_content.allow_new_ideas?
+    @question = Pairwise::Question.new(:id => @pairwise_content.pairwise_question_id, :name => 'Question 1', :active => false)      @pairwise_content.allow_new_ideas = false
+    assert_equal false, @pairwise_content.add_new_idea("New idea")
+  end
 end
