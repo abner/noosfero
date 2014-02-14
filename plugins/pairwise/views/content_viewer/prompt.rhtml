@@ -6,8 +6,11 @@
 
 <div id="pairwise_main">
   <% unless embeded %>
-    <p class='right'><%=  pairwise_result_link _('Results'), @page, embeded  %> |
-	  <%= pairwise_edit_link _('Edit Question'), @page if @page.allow_edit?(user)  %></p>
+    <p class='right'><%=  pairwise_result_link _('Results'), @page, embeded  %> 
+      <% if @page.allow_edit?(user) %>
+      | <%= pairwise_edit_link _('Edit Question'), @page %>
+      <% end %>
+    </p>
   <% end %>
   <p><%= @page.body %></p>
   <div class="prompt"><%= choose_left_link(@page, @question, @question.prompt, embeded, source) %></div>
@@ -17,10 +20,8 @@
   <% end %>
 
 <div id="suggestions_box">
- <%= render :partial => "pairwise_plugin_profile/suggestion_form", :locals => {:page => @page} %>
+ <%= render :partial => "pairwise_plugin_profile/suggestion_form", 
+      :locals => {:page => @page, :embeded => embeded, :source => source} %>
 </div>
 
 </div>
-
-
-

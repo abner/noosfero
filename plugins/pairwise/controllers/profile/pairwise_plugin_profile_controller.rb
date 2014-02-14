@@ -29,20 +29,27 @@ class PairwisePluginProfileController < ProfileController
 
   def suggest_idea
     @page = find_content(params)
+    @embeded = params.has_key?("embeded")
+    @source = params[:source]
+    flash_target = request.xhr? ? flash.now : flash
     begin
       if @page.add_new_idea(params[:idea][:text])
-        flash.now[:notice] = "Thanks for your contributtion!"
+        flash_target[:notice] = "Thanks for your contributtion!"
       else
         if(@page.allow_new_ideas?)
-          flash.now[:error] = "Unfortunatelly we could register your idea."
+          flash_target[:error] = "Unfortunatelly we could register your idea."
         else
-          flash.now[:notice] = "Unfortunatelly new ideas aren't allowed anymore."
+          flash_target[:notice] = "Unfortunatelly new ideas aren't allowed anymore."
         end
       end
     rescue Exception => e
-      flash.now[:error] = _(e.message)
+      flash_target[:error] = _(e.message)
     end
-    render 'suggestion_form.rjs'
+    if request.xhr?
+      render 'suggestion_form'
+    else
+      redirect_to after_action_url
+    end
   end
 
  protected
@@ -58,7 +65,7 @@ class PairwisePluginProfileController < ProfileController
                         :action => 'prompt',
                         :id => find_content(params).id,
                         :question_id => find_content(params).pairwise_question_id,
-                        :prompt_id => prompt_id,
+                        :prompt_id => params[:prompt_id],
                         :embeded => 1
                         }
       if params.has_key?("source")

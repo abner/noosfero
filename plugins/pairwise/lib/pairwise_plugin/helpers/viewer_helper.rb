@@ -60,8 +60,15 @@ module PairwisePlugin::Helpers::ViewerHelper
     link_to  label, link_target
   end
 
-  def pairwise_suggestion_url(question)
-    {:controller => :pairwise_plugin_profile, :action => 'suggest_idea', :id => question.id}
+  def pairwise_suggestion_url(question, embeded = false, source = nil)
+    target =  { :controller => :pairwise_plugin_profile, :action => 'suggest_idea', :id => question.id }
+    target.merge!({ :embeded => 1 }) if embeded
+    target.merge!({ :source => source }) if source
+    target
+  end
+
+  def is_external_vote
+    params.has_key?("source") && !params[:source].empty?
   end
 end
 

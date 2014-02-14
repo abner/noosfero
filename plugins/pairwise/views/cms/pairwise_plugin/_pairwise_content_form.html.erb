@@ -7,7 +7,7 @@
 
 	<div id="choices">
 		<span class="required-field">
-			<label for="choices"><%= _('Choices') %></label>
+			<label class="formlabel" for="choices"><%= _('Choices') %></label>
 		</span>
 		<%#new articles starts with two choices fields %>
 		<div id="pairwise_choices_list">
@@ -20,21 +20,23 @@
 					<% choice_hash.each do |id, data| %>
 						<%= required text_area_tag "article[choices_saved[#{id}]", 
 						data, :id => "choice_#{id}", :disabled => false  %>
-						<%##TODO disable if question got votes %>
 					<% end %>
 				<% end %>
 			<% end %>
 		</div>
 	</div>
-	<div id="choices_waiting_approval">
-		<h3>Choices waiting approval</h3>
-		<% @article.inactive_choices.each do |choice| %>
-			<li><%= choice.data %></li>
-		<% end %>
-	</div>
 	<div class="button-bar">
 		<input class="button with-text icon-add" type="button" id="add_new_choice" value="<%= _("New choice") %>">
 		<br style="clear: left;">
+	</div>
+
+	<div id="choices_waiting_approval">
+		<span class="formlabel">Choices waiting approval</span>
+		<ul>
+			<% @article.inactive_choices.each do |choice| %>
+				<li><%= choice.data %></li>
+			<% end %>
+		</ul>
 	</div>
 
 	<script type="text/javascript">

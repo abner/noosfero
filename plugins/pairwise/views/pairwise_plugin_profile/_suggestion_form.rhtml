@@ -1,4 +1,4 @@
-	<% remote_form_for('idea', :url => pairwise_suggestion_url(page),
+	<% remote_form_for('idea', :url => pairwise_suggestion_url(page, embeded, source),
 	    :loading => "$('suggestion_box_fields').hide();$('suggestion_box_loading').show();", :loaded => "$('suggestion_box_fields').show();$('suggestion_box_loading').hide();") do  |f| %>
 	  <div id="suggestion_box_fields">
 		<div class="error">
