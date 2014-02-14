@@ -17,8 +17,6 @@ class PairwisePluginProfileController < ProfileController
   def choose
     @pairwise_content = find_content(params)
     vote = @pairwise_content.vote_to(params[:prompt_id], params[:direction], user_identifier, params[:appearance_id])
-    #invalidates cache
-    @pairwise_content.touch
     redirect_to after_action_url
   end
 

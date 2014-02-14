@@ -107,10 +107,12 @@ class PairwisePlugin::PairwiseContent < Article
   def vote_to(prompt_id, direction, visitor, appearance_id)
     raise _("Excepted question not found") if question.nil?
     next_prompt = pairwise_client.vote(question.id, prompt_id, direction, visitor, appearance_id)
+    touch #invalidates cache
   end
 
   def skip_prompt(prompt_id, visitor, appearance_id)
     next_prompt = pairwise_client.skip_prompt(question.id, prompt_id, visitor, appearance_id)
+    touch #invalidates cache
   end
 
    def validate_choices
