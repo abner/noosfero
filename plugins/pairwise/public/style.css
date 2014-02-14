@@ -192,8 +192,10 @@ div#pairwise_form_fields textarea {
 #pairwise_main  div.skip_vote a{
 	color: white;
 	text-decoration: none;
+	width: 100%;
 }
 
 #pairwise_main  div.skip_vote a:hover{
 	text-decoration: underline;
+	width: 100%;
 }
