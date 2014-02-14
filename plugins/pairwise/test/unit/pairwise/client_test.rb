@@ -66,7 +66,7 @@ class Pairwise::ClientTest < ActiveSupport::TestCase
   should 'register votes' do
     @question = @client.question_with_prompt(@question.id)
     assert_not_nil @question.prompt
-    vote = @client.vote(@question.prompt.id, @question.id, 'left', 'guest-tester', @question.appearance_id)
+    vote = @client.vote(@question.id, @question.prompt.id, 'left', 'guest-tester', @question.appearance_id)
     assert vote.is_a?(Hash)
     assert_not_nil vote["prompt"], "Next prompt hash expected"
     assert_not_nil vote["prompt"]["id"], "Next prompt id expected"
@@ -80,7 +80,7 @@ class Pairwise::ClientTest < ActiveSupport::TestCase
     @question = @client.question_with_prompt(@question.id)
     assert_not_nil @question.prompt
     exception = assert_raises Pairwise::Error do
-      @client.vote(@question.prompt.id, @question.id, 'left', 'guest-tester')
+      @client.vote(@question.id, @question.prompt.id, 'left', 'guest-tester')
     end
     assert_equal "Vote not registered. Please check if all the necessary parameters were passed.", exception.message
   end
