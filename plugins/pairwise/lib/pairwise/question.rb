@@ -31,25 +31,15 @@ class Pairwise::Question < ActiveResource::Base
     Pairwise::Choice.create(:data => text, :question_id => self.id, :active => "true")
   end
 
-  def self.find_with_prompt(id, creator_id, visitor_id, prompt_id=nil)
-     if prompt_id.nil?
-      question = Pairwise::Question.find(id,
+  def self.find_with_prompt(id, creator_id, visitor_id)#, prompt_id=nil)
+     question = Pairwise::Question.find(id,
                    :params => {
                                 :creator_id => creator_id,
                                 :with_prompt => true,
                                 :with_appearance => true,
                                 :visitor_identifier => visitor_id
                               })
-      question.set_prompt(Pairwise::Prompt.find(question.picked_prompt_id, :params => {:question_id => id}))
-    else
-      question = Pairwise::Question.find(id,
-                  :params => {
-                                :creator_id => creator_id,
-                                :with_appearance => true,
-                                :visitor_identifier => visitor_id
-                              })
-      question.set_prompt(Pairwise::Prompt.find(prompt_id, :params => {:question_id => id}))
-    end
+     question.set_prompt(Pairwise::Prompt.find(question.picked_prompt_id, :params => {:question_id => id}))
      question
   end
 

@@ -114,7 +114,8 @@ class PairwisePlugin::PairwiseContentTest < ActiveSupport::TestCase
 
   should 'not add new ideas suggestions when new ideas are not allowed' do
     assert_equal true, @pairwise_content.allow_new_ideas?
-    @question = Pairwise::Question.new(:id => @pairwise_content.pairwise_question_id, :name => 'Question 1', :active => false)      @pairwise_content.allow_new_ideas = false
+    @question = Pairwise::Question.new(:id => @pairwise_content.pairwise_question_id, :name => 'Question 1', :active => false)
+    @pairwise_content.allow_new_ideas = false
     assert_equal false, @pairwise_content.add_new_idea("New idea")
   end
 end

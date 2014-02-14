@@ -46,7 +46,7 @@ class PairwisePlugin::PairwiseContent < Article
   end
 
 
-  def prepare_prompt(user_identifier, prompt_id)
+  def prepare_prompt(user_identifier, prompt_id=nil)
         question = self.question_with_prompt_for_visitor(user_identifier, prompt_id)
     question
   end
@@ -104,11 +104,9 @@ class PairwisePlugin::PairwiseContent < Article
     @choices_saved = value
   end
 
-  def vote_to(direction, visitor='guest')
-    question = question_with_prompt_for_visitor(visitor)
+  def vote_to(prompt_id, direction, visitor, appearance_id)
     raise _("Excepted question not found") if question.nil?
-    raise _("Excepted prompt not found") if question.prompt.nil?
-    next_prompt = pairwise_client.vote(question.prompt.id, question.id, direction, visitor, question.appearance_id)
+    next_prompt = pairwise_client.vote(question.id, prompt_id, direction, visitor, appearance_id)
   end
 
   def skip_prompt(prompt_id, visitor, appearance_id)

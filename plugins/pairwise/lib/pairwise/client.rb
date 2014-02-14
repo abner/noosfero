@@ -56,11 +56,6 @@ class Pairwise::Client
       choice.save
     end
   end
-  #def activate_question(question)
-  #  question.active = true
-  #  question.save
-  #  question
-  #end
 
   # finds a question by a given id
   def find_question_by_id(question_id)
@@ -76,13 +71,12 @@ class Pairwise::Client
 
   # get a question with a prompt, visitor_id (id of logged user) should be provided
   def question_with_prompt(question_id, visitor_id = "guest", prompt_id=nil)
-    #raise Pairwise::Question.site
-    question = Pairwise::Question.find_with_prompt(question_id, @local_identifier, visitor_id, prompt_id)
+    question = Pairwise::Question.find_with_prompt(question_id, @local_identifier, visitor_id)
     return question if question.local_identifier == @local_identifier.to_s
   end
 
   # register votes in response to a prompt to a pairwise question
-  def vote(prompt_id, question_id, direction, visitor="guest", appearance_lookup=nil)
+  def vote(question_id, prompt_id, direction, visitor="guest", appearance_lookup=nil)
     prompt = Pairwise::Prompt.find(prompt_id, :params => {:question_id => question_id})
     begin
       vote = prompt.post(:vote,

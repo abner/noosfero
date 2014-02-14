@@ -15,13 +15,13 @@
     </p>
   <% end %>
   <p><%= @page.body %></p>
-  <div class="prompt"><%= choose_left_link(@page, @question, @question.prompt, embeded, source) %></div>
-	<div class="prompt"><%= choose_right_link(@page, @question, @question.prompt, embeded, source) %></div>
+  <div class="prompt"><%= choose_left_link(@page, @question, @question.prompt, embeded, source, @question.appearance_id) %></div>
+	<div class="prompt"><%= choose_right_link(@page, @question, @question.prompt, embeded, source, @question.appearance_id) %></div>
   <% if embeded %>
    	<div class="footer"><%= _('Powered by') + ' ' + @page.environment.name%></div>
   <% end %>
 <div class="skip_vote">
-    <%= skip_vote_link(@page, @question, @question.prompt, embeded, source) %>
+    <%= skip_vote_link(@page, @question, @question.prompt, embeded, source, @question.appearance_id) %>
 </div>
 <div class="show_new_idea_box">
     <a href="javascript:;" id="suggestions_box_show_link"><%= _('Add your own idea') %></a>
