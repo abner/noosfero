@@ -32,12 +32,13 @@
 <div class="skip_vote">
     <%= skip_vote_link(@page, @question, @question.prompt, embeded, source, @question.appearance_id) %>
 </div>
-<div class="show_new_idea_box">
-    <a href="javascript:;" id="suggestions_box_show_link"><%= _('Add your own idea') %></a>
-</div>
-<div id="suggestions_box">
- <%= render :partial => "pairwise_plugin_profile/suggestion_form", 
-      :locals => {:page => @page, :embeded => embeded, :source => source} %>
-</div>
-
+<% if @page.allow_new_ideas %>
+  <div class="show_new_idea_box">
+      <a href="javascript:;" id="suggestions_box_show_link"><%= _('Add your own idea') %></a>
+  </div>
+  <div id="suggestions_box">
+   <%= render :partial => "pairwise_plugin_profile/suggestion_form",
+        :locals => {:page => @page, :embeded => embeded, :source => source} %>
+  </div>
+<% end %>
 </div>

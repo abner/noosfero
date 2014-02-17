@@ -26,7 +26,8 @@ class PairwiseContentFixtures
         :id => 1,
         :name => 'Question 1',
         :active => true,
-        :description => 'Some description'
+        :description => 'Some description',
+        :appearance_id =>  'abcdef'
       })
   end
 
