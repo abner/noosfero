@@ -78,7 +78,11 @@ class PairwisePlugin::PairwiseContent < Article
   end
 
   def inactive_choices
-    @inactive_choices ||= (question.choices_include_inactive - question.get_choices)
+    if(question)
+      @inactive_choices ||= (question.choices_include_inactive - question.get_choices)
+    else
+      []
+    end
   end
 
   def choices
