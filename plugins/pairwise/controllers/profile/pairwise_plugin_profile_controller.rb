@@ -34,22 +34,27 @@ class PairwisePluginProfileController < ProfileController
   end
 
   def suggest_idea
-    @page = find_content(params)
-    @embeded = params.has_key?("embeded")
-    @source = params[:source]
     flash_target = request.xhr? ? flash.now : flash
-    begin
-      if @page.add_new_idea(params[:idea][:text])
-        flash_target[:notice] = "Thanks for your contributtion!"
-      else
-        if(@page.allow_new_ideas?)
-          flash_target[:error] = "Unfortunatelly we could register your idea."
+
+    if user.nil?
+      flash_tager[:error] = _("Only logged user could suggest new ideas")
+    else
+      @page = find_content(params)
+      @embeded = params.has_key?("embeded")
+      @source = params[:source]
+      begin
+        if @page.add_new_idea(params[:idea][:text])
+          flash_target[:notice] = _("Thanks for your contributtion!")
         else
-          flash_target[:notice] = "Unfortunatelly new ideas aren't allowed anymore."
+          if(@page.allow_new_ideas?)
+            flash_target[:error] = _("Unfortunatelly we could register your idea.")
+          else
+            flash_target[:notice] = _("Unfortunatelly new ideas aren't allowed anymore.")
+          end
         end
+      rescue Exception => e
+        flash_target[:error] = _(e.message)
       end
-    rescue Exception => e
-      flash_target[:error] = _(e.message)
     end
     if request.xhr?
       render 'suggestion_form'
@@ -58,7 +63,7 @@ class PairwisePluginProfileController < ProfileController
     end
   end
 
- protected
+  protected
 
   def find_content(params)
     @pairwise_content ||= profile.articles.find(params[:id])
@@ -67,13 +72,13 @@ class PairwisePluginProfileController < ProfileController
   def after_action_url(prompt_id = nil)
     if params.has_key?("embeded")
       redirect_target = {
-                        :controller => :pairwise_plugin_profile,
-                        :action => 'prompt',
-                        :id => find_content(params).id,
-                        :question_id => find_content(params).pairwise_question_id,
-                        :prompt_id => params[:prompt_id],
-                        :embeded => 1
-                        }
+        :controller => :pairwise_plugin_profile,
+        :action => 'prompt',
+        :id => find_content(params).id,
+        :question_id => find_content(params).pairwise_question_id,
+        :prompt_id => params[:prompt_id],
+        :embeded => 1
+      }
       if params.has_key?("source")
         redirect_target.merge!(:source => params[:source])
       end
@@ -93,7 +98,7 @@ class PairwisePluginProfileController < ProfileController
 
   def user_identifier
     if user.nil?
-     is_external_vote ? "#{external_source}-#{request.session_options[:id]}" : "participa-#{request.session_options[:id]}"
+      is_external_vote ? "#{external_source}-#{request.session_options[:id]}" : "participa-#{request.session_options[:id]}"
     else
       user.identifier
     end
