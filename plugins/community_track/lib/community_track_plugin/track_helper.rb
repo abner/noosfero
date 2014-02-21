@@ -9,7 +9,7 @@ module CommunityTrackPlugin::TrackHelper
     excerpt(lead_stripped, lead_stripped.first(3), track.image ? 180 : 300)
   end
 
-  def track_color_style(track)
+  def track_color_style(track, bg = true)
     color = nil
     if !track.categories.empty?
       color = search_category_tree_for_color(track.categories.first)
@@ -17,7 +17,11 @@ module CommunityTrackPlugin::TrackHelper
     if color.nil?
       ''
     else
-      'background-color: #'+color+';'
+      if bg
+        'background-color: #'+color+';'
+      else
+        'color: #'+color+';'
+      end
     end
   end
 
