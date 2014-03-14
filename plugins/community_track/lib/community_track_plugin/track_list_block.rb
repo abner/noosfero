@@ -5,6 +5,32 @@ class CommunityTrackPlugin::TrackListBlock < Block
   settings_items :limit, :type => :integer, :default => 3
   settings_items :more_another_page, :type => :boolean, :default => false
   settings_items :category_ids, :type => Array, :default => []
+  settings_items :hidden_ids, :type => Array, :default => []
+  settings_items :priority_ids, :type => Array, :default => []
+
+  def hidden_ids(format="str")
+    if format == "str"
+      settings[:hidden_ids].join(",")
+    else
+      settings[:hidden_ids]
+    end
+  end
+
+  def hidden_ids=(ids)
+    settings[:hidden_ids] = ids.split(",").uniq.map{|item| item.to_i unless item.to_i.zero?}.compact
+  end
+
+  def priority_ids(format="str")
+    if format == "str"
+      settings[:priority_ids].join(",")
+    else
+      settings[:priority_ids]
+    end
+  end
+
+  def priority_ids=(ids)
+    settings[:priority_ids] = ids.split(",").uniq.map{|item| item.to_i unless item.to_i.zero?}.compact
+  end
 
   def self.description
     _('Track List')
@@ -19,7 +45,7 @@ class CommunityTrackPlugin::TrackListBlock < Block
   end
 
   def tracks(page=1, per_page=limit)
-    all_tracks.order('hits DESC').paginate(:per_page => per_page, :page => page)
+    all_tracks.paginate(:per_page => per_page, :page => page)
   end
 
   def count_tracks
@@ -39,11 +65,27 @@ class CommunityTrackPlugin::TrackListBlock < Block
   end
 
   def all_tracks
-    tracks = owner.articles.where(:type => 'CommunityTrackPlugin::Track')
-    if !category_ids.empty?
-      tracks = tracks.joins(:article_categorizations).where(:articles_categories => {:category_id => category_ids})
+
+    priority_tracks = []
+    hidden_tracks = []
+
+    if !priority_ids.empty?
+      priority_tracks = owner.articles.where(:type => 'CommunityTrackPlugin::Track', :id => priority_ids("ary"))
     end
-    tracks
+
+    no_priority_tracks = owner.articles.where(:type => 'CommunityTrackPlugin::Track').order('hits DESC')
+
+    if !category_ids.empty?
+      no_priority_tracks = no_priority_tracks.joins(:article_categorizations).where(:articles_categories => {:category_id => category_ids})
+    end
+
+    if !hidden_ids.empty?
+      hidden_tracks = owner.articles.where(:type => 'CommunityTrackPlugin::Track', :id => hidden_ids("ary"))
+    end
+
+    others_tracks = no_priority_tracks - hidden_tracks
+    tracks = priority_tracks + others_tracks
+
   end
 
   def content(args={})

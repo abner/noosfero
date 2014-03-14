@@ -1,5 +1,7 @@
 <div id='edit-track-list-block'>
   <%= labelled_form_field _('Limit of items'), text_field(:block, :limit, :size => 3) %>
+  <%= labelled_form_field _('Hidden items (separated by commas)'), text_field(:block, :hidden_ids) %>
+  <%= labelled_form_field _('Priority items (separated by commas)'), text_field(:block, :priority_ids) %>
   <%= labelled_form_field check_box(:block, :more_another_page) + _('Show more at another page'), '' %>
   <%= select_categories(:block, _('Select Categories')) %>
 <br/>
