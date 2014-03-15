@@ -1,5 +1,7 @@
 require File.dirname(__FILE__) + '/../../test_helper'
 
+module PairwisePlugin; class PairwiseContent; end; end
+
 class StepTest < ActiveSupport::TestCase
 
   def setup
@@ -235,8 +237,12 @@ class StepTest < ActiveSupport::TestCase
   end
 
   should 'return enabled tools for a step' do
-    assert_includes CommunityTrackPlugin::Step.enabled_tools, TinyMceArticle
-    assert_includes CommunityTrackPlugin::Step.enabled_tools, Forum
+    assert_equivalent [TinyMceArticle, Forum], @step.enabled_tools
+  end
+
+  should 'return pairwise content for enabled tools if pairwise is enabled' do
+    @step.environment.expects(:plugin_enabled?).with('PairwisePlugin').returns(true)
+    assert_equivalent [TinyMceArticle, Forum, PairwisePlugin::PairwiseContent], @step.enabled_tools
   end
 
   should 'return class for selected tool' do

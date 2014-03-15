@@ -58,8 +58,8 @@ class CommunityTrackPlugin::Step < Folder
     accept_comments
   end
 
-  def self.enabled_tools
-    [TinyMceArticle, Forum]
+  def enabled_tools
+    [TinyMceArticle, Forum] + (environment.plugin_enabled?('PairwisePlugin') ? [PairwisePlugin::PairwiseContent] : [])
   end
 
   def to_html(options = {})
