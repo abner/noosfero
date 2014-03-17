@@ -58,27 +58,16 @@ class CommunityTrackPlugin::TrackListBlock < Block
 
   def all_tracks
 
-    priority_tracks = []
-    hidden_tracks = []
-    others_tracks = []
-
-    if !priority_ids.empty?
-      priority_tracks = owner.articles.where(:type => 'CommunityTrackPlugin::Track', :published => true, :id => array_priority_ids).order('hits DESC')
-    end
-
-    if !hidden_ids.empty?
-      hidden_tracks = owner.articles.where(:type => 'CommunityTrackPlugin::Track', :published => true, :id => array_hidden_ids)
-    end
-
     no_priority_tracks = owner.articles.where(:type => 'CommunityTrackPlugin::Track', :published => true).order('hits DESC')
+    priority_tracks = owner.articles.where(:type => 'CommunityTrackPlugin::Track', :published => true, :id => array_priority_ids).order('hits DESC')
+    hidden_tracks = owner.articles.where(:type => 'CommunityTrackPlugin::Track', :published => true, :id => array_hidden_ids)
 
     if !category_ids.empty?
-      priority_tracks = priority_tracks.joins(:article_categorizations).where(:articles_categories => {:category_id => category_ids})
+      priority_tracks = priority_tracks.joins(:article_categorizations).where(:articles_categories => {:category_id => category_ids}) unless !priority_tracks.empty?
       no_priority_tracks = no_priority_tracks.joins(:article_categorizations).where(:articles_categories => {:category_id => category_ids})
     end
 
-    others_tracks = no_priority_tracks - hidden_tracks
-    tracks = (priority_tracks + others_tracks).uniq
+    tracks = (priority_tracks + (no_priority_tracks - hidden_tracks)).uniq
 
   end
 
