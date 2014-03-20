@@ -111,4 +111,47 @@ class TrackListBlockTest < ActiveSupport::TestCase
     assert_equivalent [], @block.categories
   end
 
+  should 'hidden items default to empty' do
+    assert_equal @block.hidden_ids, ""
+  end
+
+  should 'priority items default to empty' do
+    assert_equal @block.priority_ids, ""
+  end
+
+  should 'return only published tracks' do
+    @block.owner.articles.destroy_all
+    track_pri = create_track("track_pri", profile)
+    track_pub = create_track("track_pub", profile)
+    track_pri.published = false
+    track_pri.save!
+    assert_includes @block.all_tracks, track_pub
+    assert_not_includes @block.all_tracks, track_pri
+  end
+
+  should 'format hidden items ids array avoiding duplicates and zeros' do
+    @block.hidden_ids = "0,0,1,1,2"
+    assert_equal [1, 2], @block.array_hidden_ids
+  end
+
+  should 'format priority items ids array avoiding duplicates and zeros' do
+    @block.priority_ids = "0,0,1,1,2"
+    assert_equal [1, 2], @block.array_priority_ids
+  end
+
+  should 'do not return hidden tracks' do
+    @block.owner.articles.destroy_all
+    track_pub = create_track("track_pub", profile)
+    @block.hidden_ids = track_pub.id.to_s
+    assert_not_includes @block.all_tracks, track_pub
+  end
+
+  should 'return priority tracks firstly' do
+    @block.owner.articles.destroy_all
+    track1 = create_track("track1", profile)
+    track2 = create_track("track2", profile)
+    @block.priority_ids = track2.id.to_s
+    assert_equal [track2, track1], @block.all_tracks
+  end
+
 end
