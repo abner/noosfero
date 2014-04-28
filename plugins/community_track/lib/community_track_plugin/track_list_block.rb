@@ -8,6 +8,12 @@ class CommunityTrackPlugin::TrackListBlock < Block
   settings_items :hidden_ids, :type => String, :default => ""
   settings_items :priority_ids, :type => String, :default => ""
 
+  validate :limit_greater_than_zero
+
+  def limit_greater_than_zero
+    errors.add_to_base(N_('Limit must be greater than zero')) unless limit > 0
+  end
+
   def hidden_ids=(ids)
     settings[:hidden_ids] = ids
   end

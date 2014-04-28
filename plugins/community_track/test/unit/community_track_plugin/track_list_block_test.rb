@@ -29,6 +29,11 @@ class TrackListBlockTest < ActiveSupport::TestCase
     assert_equal [@track], @block.tracks
   end
 
+  should 'do not allow zero as limit' do
+    @block.limit = 0
+    assert !@block.save
+  end
+
   should 'list of articles be limited by block configuration' do
     (@block.limit + 1).times { |i| create_track("track#{i}", profile) }
     assert_equal @block.limit, @block.tracks.count
