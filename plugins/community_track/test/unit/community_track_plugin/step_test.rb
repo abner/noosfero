@@ -1,6 +1,6 @@
 require File.dirname(__FILE__) + '/../../test_helper'
 
-module PairwisePlugin; class PairwiseContent; end; end
+module PairwisePlugin; class PairwiseContent; end; end unless defined?(PairwisePlugin)
 
 class StepTest < ActiveSupport::TestCase
 
