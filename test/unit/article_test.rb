@@ -669,12 +669,14 @@ class ArticleTest < ActiveSupport::TestCase
 
   should 'moderate_comments? return true if moderate_comments variable is true' do
     a = Article.new
+    a.expects(:environment).returns(Environment.default)
     a.moderate_comments= true
     assert a.moderate_comments?
   end
 
   should 'moderate_comments? return false if moderate_comments variable is false' do
     a = Article.new
+    a.expects(:environment).returns(Environment.default)
     a.moderate_comments= false
     assert !a.moderate_comments?
   end

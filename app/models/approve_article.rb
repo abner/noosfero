@@ -52,7 +52,7 @@ class ApproveArticle < Task
   end
 
   def title
-    _("New article")
+    _("Publish article")
   end
 
   def icon

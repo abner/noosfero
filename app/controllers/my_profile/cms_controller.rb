@@ -152,13 +152,20 @@ class CmsController < MyProfileController
     if request.post?
       @article.article_privacy_exceptions = params[:q].split(/,/).map{|n| environment.people.find n.to_i} unless params[:q].nil?
 
-      if @article.save
-        if continue
-          redirect_to :action => 'edit', :id => @article
-        else
-          success_redirect
-        end
+      if environment.enabled?(:moderation)
+        task = ApproveNewArticle.create!(:article_attributes => @article.attributes.to_json, :target => environment, :requestor => profile)
+        session[:notice] = _('Your article is waiting for approval.')
+        redirect_to profile.url
         return
+      else
+        if @article.save
+          if continue
+            redirect_to :action => 'edit', :id => @article
+          else
+            success_redirect
+          end
+          return
+        end
       end
     end
 

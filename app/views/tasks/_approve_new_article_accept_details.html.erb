@@ -1,0 +1,20 @@
+<%= render :file => 'shared/tiny_mce' %>
+
+<% f.fields_for :article, task.article do |g| %>
+<div>
+  <%= labelled_form_field(_('Name'), g.text_field(:name)) %>
+</div>
+
+<div>
+  <%= _('Lead') %>
+  <%= task.article.lead %>
+</div>
+
+<div>
+  <%= _('Body') %>
+  <%= task.article.body %>
+</div>
+<% end %>
+
+<%= labelled_form_field _('Comment for author'), f.text_field(:closing_statment, :style => 'width: 488px;') %>
+
