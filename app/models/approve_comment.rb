@@ -82,7 +82,7 @@ class ApproveComment < Task
 
   def target_notification_message
     target_notification_description + "\n\n" +
-    _('You need to login on %{system} in order to approve or reject this comment.') % { :system => target.environment.name }
+    _('You need to login on %{system} in order to approve or reject this comment.') % { :system => environment.name }
   end
 
   def task_finished_message

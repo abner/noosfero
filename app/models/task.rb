@@ -213,7 +213,7 @@ class Task < ActiveRecord::Base
   end
 
   def environment
-    self.target.environment unless self.target.nil?
+    target.kind_of?(Environment) ? target : target.environment unless target.nil?
   end
 
   def activate

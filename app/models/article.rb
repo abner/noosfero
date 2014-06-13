@@ -512,7 +512,7 @@ class Article < ActiveRecord::Base
   end
 
   def moderate_comments?
-    moderate_comments == true
+    environment.enabled?(:moderation) || moderate_comments == true
   end
 
   def comments_updated

@@ -61,7 +61,7 @@ class CommentController < ApplicationController
 
     if @comment.need_moderation?
       @comment.created_at = Time.now
-      ApproveComment.create!(:requestor => @comment.author, :target => profile, :comment_attributes => @comment.attributes.to_json)
+      ApproveComment.create!(:requestor => @comment.author, :target => environment.enabled?(:moderation) ? environment : profile, :comment_attributes => @comment.attributes.to_json)
 
       respond_to do |format|
         format.js do
