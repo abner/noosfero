@@ -74,7 +74,7 @@ class Task < ActiveRecord::Base
   end
 
   def self.all_types
-    %w[Invitation EnterpriseActivation AddMember Ticket SuggestArticle  AddFriend CreateCommunity AbuseComplaint ApproveComment ApproveArticle CreateEnterprise ChangePassword EmailActivation InviteFriend InviteMember ApproveNewArticle]
+    %w[Invitation EnterpriseActivation AddMember Ticket SuggestArticle  AddFriend CreateCommunity AbuseComplaint ApproveComment ApproveArticle CreateEnterprise ChangePassword EmailActivation InviteFriend InviteMember ApproveNewArticle ApproveNewUploadedFile]
   end
 
   # this method finished the task. It calls #perform, which must be overriden

@@ -4,6 +4,7 @@ class ApproveNewArticle < Task
   settings_items :article_attributes, :closing_statment
 
   def article
+    return nil if self.article_attributes.nil?
     attributes = ActiveSupport::JSON.decode(self.article_attributes)
     @article ||= attributes['type'].constantize.new(attributes) unless self.article_attributes.nil?
   end
@@ -22,13 +23,9 @@ class ApproveNewArticle < Task
     result
   end
 
-  def linked_subject
-    {:text => article.name, :url => article.url}
-  end
-
   def information
     if article.profile
-      {:message => _('%{requestor} wants to publish the article: %{linked_subject}.')}
+      {:message => _('%{requestor} wants to create the article: %{article_name}.') % {:article_name => article.name} }
     else
       {:message => _("The profile was removed.")}
     end

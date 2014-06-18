@@ -326,6 +326,17 @@ class CmsControllerTest < ActionController::TestCase
     assert_not_nil profile.articles.find_by_path('rails.png')
   end
 
+  should 'create tasks for uploaded files if environment is moderated' do
+    profile.environment.enable(:moderation)
+    assert_no_difference UploadedFile, :count do
+      assert_difference ApproveNewUploadedFile, :count, 2 do
+        assert_difference profile.environment.tasks, :count, 2 do
+          post :upload_files, :profile => profile.identifier, :uploaded_files => [fixture_file_upload('/files/test.txt', 'text/plain'), fixture_file_upload('/files/rails.png', 'text/plain')]
+        end
+      end
+    end
+  end
+
   should 'upload to rigth folder' do
     f = Folder.new(:name => 'f'); profile.articles << f; f.save!
     post :upload_files, :profile => profile.identifier, :parent_id => f.id, :uploaded_files => [fixture_file_upload('/files/test.txt', 'text/plain')]

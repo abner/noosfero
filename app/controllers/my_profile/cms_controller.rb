@@ -195,7 +195,16 @@ class CmsController < MyProfileController
     end
     if request.post? && params[:uploaded_files]
       params[:uploaded_files].each do |file|
-        @uploaded_files << UploadedFile.create(:uploaded_data => file, :profile => profile, :parent => @parent, :last_changed_by => user) unless file == ''
+        uploaded_file = UploadedFile.new(:uploaded_data => file, :profile => profile, :parent => @parent, :last_changed_by => user) unless file == ''
+        if uploaded_file
+          if environment.enabled?(:moderation)
+            task = ApproveNewUploadedFile.create!(:article_attributes => uploaded_file.attributes.to_json, :target => environment, :requestor => profile, :uploaded_data => file)
+            session[:notice] = _('Your uploaded files are waiting for approval.')
+          else
+            uploaded_file.save
+            @uploaded_files << uploaded_file
+          end
+        end
       end
       @errors = @uploaded_files.select { |f| f.errors.any? }
       if @errors.any?

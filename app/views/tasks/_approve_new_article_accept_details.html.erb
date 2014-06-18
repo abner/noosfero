@@ -2,7 +2,9 @@
 
 <% f.fields_for :article, task.article do |g| %>
 <div>
-  <%= labelled_form_field(_('Name'), g.text_field(:name)) %>
+  <%#= labelled_form_field(_('Name'), g.text_field(:name)) %>
+  <%= _('Name') %>
+  <%= task.article.name %>
 </div>
 
 <div>
