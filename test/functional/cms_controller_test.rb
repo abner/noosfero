@@ -831,6 +831,18 @@ class CmsControllerTest < ActionController::TestCase
     end
   end
 
+  should 'create a task for article approval if environment is moderated' do
+    profile.environment.enable(:moderation)
+
+    assert_no_difference TextileArticle, :count do
+      assert_difference ApproveNewArticle, :count do
+        assert_difference profile.environment.tasks, :count do
+          post :new, :type => TextileArticle.name, :profile => profile.identifier, :article => {:name => 'something intresting', :body => 'ruby on rails'}
+        end
+      end
+    end
+  end
+
   should 'display categories if environment disable_categories disabled' do
     Environment.any_instance.stubs(:enabled?).with(anything).returns(false)
     a = profile.articles.create!(:name => 'test')

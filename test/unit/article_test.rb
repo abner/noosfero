@@ -681,6 +681,14 @@ class ArticleTest < ActiveSupport::TestCase
     assert !a.moderate_comments?
   end
 
+  should 'moderate_comments? return true if moderate_comments variable is false but environment has moderation enabled' do
+    a = Article.new
+    Environment.default.enable(:moderation)
+    a.expects(:environment).returns(Environment.default)
+    a.moderate_comments= false
+    assert a.moderate_comments?
+  end
+
   should 'hold hits count' do
     a = fast_create(Article, :name => 'Test article', :profile_id => profile.id)
     a.hits = 10

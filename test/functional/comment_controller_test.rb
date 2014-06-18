@@ -551,4 +551,16 @@ class CommentControllerTest < ActionController::TestCase
     assert_match /\{\"ids\":\[\"action1\",\"action2\"\]\}/, @response.body
   end
 
+  should 'create ApproveComment task when adding a comment in a moderated environment' do
+    login_as @profile.identifier
+    community = Community.create!(:name => 'testcomm')
+    page = community.articles.create!(:name => 'myarticle', :moderate_comments => false)
+    community.environment.enable(:moderation)
+
+    commenter = create_user('otheruser').person
+    assert_difference ApproveComment, :count, 1 do
+      xhr :post, :create, :profile => community.identifier, :id => page.id, :comment => {:body => 'Some comment...', :author => commenter}, :confirm => 'true'
+    end
+  end
+
 end

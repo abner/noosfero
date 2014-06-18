@@ -258,6 +258,13 @@ class TaskTest < ActiveSupport::TestCase
     assert_equal task.environment, nil
   end
 
+  should 'the task environment method return the target if it is an environment' do
+    task = Task.new
+    env = Environment.new
+    task.target = env
+    assert_equal env, task.environment
+  end
+
   should 'have blank string on target_notification_description in Task base class' do
     task = Task.new
     assert_equal '', task.target_notification_description
