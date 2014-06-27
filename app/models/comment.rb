@@ -211,7 +211,7 @@ class Comment < ActiveRecord::Base
   end
 
   def need_moderation?
-    article.moderate_comments? && (author.nil? || article.author != author)
+    (article.moderate_comments? && (author.nil? || article.author != author)) || environment.moderate_comment?(self)
   end
 
   def can_be_destroyed_by?(user)

@@ -545,8 +545,8 @@ class CommentTest < ActiveSupport::TestCase
 
   should 'not need moderation if article is not moderated' do
     article = Article.new
-    article.expects(:environment).returns(Environment.default)
     comment = Comment.new(:article => article)
+    comment.stubs(:environment).returns(Environment.default)
 
     assert !comment.need_moderation?
   end
@@ -555,11 +555,11 @@ class CommentTest < ActiveSupport::TestCase
     author = Person.new
     article = Article.new
 
-    article.expects(:environment).returns(Environment.default)
     article.stubs(:author).returns(author)
     article.moderate_comments = true
 
     comment = Comment.new(:article => article)
+    comment.stubs(:environment).returns(Environment.default)
     comment.stubs(:author).returns(author)
 
     assert !comment.need_moderation?

@@ -869,6 +869,14 @@ class Environment < ActiveRecord::Base
     locales_list
   end
 
+  def moderate_comment?(comment)
+    enabled?(:moderation)
+  end
+
+  def moderate_article?(article)
+    enabled?(:moderation)
+  end
+
   private
 
   def default_language_available
