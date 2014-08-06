@@ -39,4 +39,9 @@ Noosfero::Application.configure do
   # send emails to /tmp/mails
   config.action_mailer.delivery_method = :file
 
+  config.after_initialize do
+    Bullet.enable = true
+    Bullet.console = true
+  end
+
 end

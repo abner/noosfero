@@ -24,6 +24,10 @@ gem 'eita-jrails', '>= 0.9.5', :require => 'jrails'
 gem 'uglifier', '>= 1.0.3'
 gem 'sass-rails'
 
+group :development do
+  gem 'bullet'
+end
+
 group :production do
   gem 'dalli', '~> 2.7.0'
 end
