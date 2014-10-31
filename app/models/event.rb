@@ -9,6 +9,10 @@ class Event < Article
     _('Event')
   end
 
+  def self.lazy_load_comments?
+    true
+  end
+
   settings_items :address, :type => :string
 
   def link=(value)

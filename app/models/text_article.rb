@@ -9,6 +9,10 @@ class TextArticle < Article
     _('Article')
   end
 
+  def self.lazy_load_comments?
+    true
+  end
+
   include Noosfero::TranslatableContent
 
   def self.icon_name(article = nil)

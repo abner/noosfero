@@ -63,7 +63,11 @@ class ContentViewerController < ApplicationController
         @comments = @comments.reverse
       end
 
-      return render :partial => 'comment/comment', :collection => @comments
+      if params[:comment_list]
+        return render :file => 'content_viewer/comments_list', :formats => [:html], :locals => {:comments_loaded => true}
+      else
+        return render :partial => 'comment/comment', :collection => @comments
+      end
     end
 
     if params[:slideshow]
@@ -260,6 +264,8 @@ class ContentViewerController < ApplicationController
   end
 
   def process_comments(params)
+    return if !request.xhr? && @page.class.lazy_load_comments?
+
     @comments = @page.comments.without_spam
     @comments = @plugins.filter(:unavailable_comments, @comments)
     @comments_count = @comments.count

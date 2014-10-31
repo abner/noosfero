@@ -1156,7 +1156,7 @@ class ContentViewerControllerTest < ActionController::TestCase
     url = 'www.an.url.to.be.splited.com'
     a = fast_create(TextileArticle, :profile_id => @profile.id, :path => 'textile', :language => 'en')
     c = a.comments.create!(:author => @profile, :title => 'An url', :body => url)
-    get :view_page, :profile => @profile.identifier, :page => [ 'textile' ]
+    xhr :get, :view_page, :profile => @profile.identifier, :page => [ 'textile' ], :comment_order => 'oldest'
     assert_tag :a, :attributes => { :href => "http://" + url}, :content => url.scan(/.{4}/).join('&#x200B;')
   end
 

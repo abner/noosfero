@@ -305,6 +305,10 @@ class Article < ActiveRecord::Base
     self.class.icon_name(self)
   end
 
+  def self.lazy_load_comments?
+    false
+  end
+
   def mime_type
     'text/html'
   end

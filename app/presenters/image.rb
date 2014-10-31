@@ -16,4 +16,8 @@ class FilePresenter::Image < FilePresenter
   def download?(view = nil)
     view.blank? || view == 'false'
   end
+
+  def self.lazy_load_comments?
+    true
+  end
 end

@@ -1,0 +1,41 @@
+<% comments_loaded ||= false %>
+<div class="comments" id="comments_list">
+<% if @page.class.lazy_load_comments? && !comments_loaded %>
+  <span class="lazy-comments">
+    <img src="/images/loading.gif" alt="Loading" /><%= _("Loading comments...") %>
+  </span>
+<% else %>
+
+  <% if @page.accept_comments? || @comments_count > 0 %>
+    <h3 <%= 'class="no-comments-yet"' if @comments_count == 0 %>>
+      <%= display_number_of_comments(@comments_count) %>
+    </h3>
+  <% end %>
+
+  <% if @comments.present? && @comments.count > 1 %>
+    <%= link_to(_('Post a comment'), '#', :class => 'display-comment-form', :id => 'top-post-comment-button', :onclick => "jQuery('#page-comment-form .display-comment-form').first().click();") if @page.accept_comments? %>
+
+    <%= hidden_field_tag("page_url", url_for(:controller=>'content_viewer', :action=>'view_page', :profile=>profile.identifier, :page => @page.explode_path)) %>
+    <%= javascript_include_tag "comment_order.js" %>
+    <div class="comment-order">
+      <%= form_tag({:controller=>'content_viewer' , :action=>'view_page'}, {:method=>'get', :id=>"form_order"}) do %>
+        <%= select_tag 'comment_order', options_for_select({_('Oldest first')=>'oldest', _('Newest first')=>'newest'}, @comment_order) %>
+      <% end %>
+    </div>
+  <% end %>
+
+  <ul class="article-comments-list">
+    <% if @comments.present? %>
+      <%= render :partial => 'comment/comment', :collection => @comments %>
+      <%= pagination_links @comments, :param_name => 'comment_page' %>
+    <% elsif @page.class.lazy_load_comments? %>
+      <%= javascript_include_tag "comment_order.js" %>
+    <% end %>
+  </ul>
+
+  <% if @page.accept_comments? %>
+    <div id='page-comment-form' class='page-comment-form'><%= render :partial => 'comment/comment_form', :locals =>{:url => {:controller => :comment, :action => :create}, :display_link => true, :cancel_triggers_hide => true}%></div>
+  <% end %>
+<% end %>
+<%= javascript_include_tag "comments_list.js" %>
+</div><!-- end class="comments" -->

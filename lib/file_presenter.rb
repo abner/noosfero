@@ -118,6 +118,11 @@ class FilePresenter
   def method_missing(m, *args)
     @file.send(m, *args)
   end
+
+  def self.lazy_load_comments?
+    false
+  end
+
 end
 
 # Preload FilePresenters to allow `FilePresenter.for()` to work
