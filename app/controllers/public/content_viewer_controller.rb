@@ -264,7 +264,7 @@ class ContentViewerController < ApplicationController
   end
 
   def process_comments(params)
-    return if !request.xhr? && @page.class.lazy_load_comments?
+    return if !request.xhr? && @page.class.lazy_load_comments? && !params[:comment_page]
 
     @comments = @page.comments.without_spam
     @comments = @plugins.filter(:unavailable_comments, @comments)

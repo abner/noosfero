@@ -70,7 +70,7 @@
 
 <%= @plugins.dispatch(:article_extra_contents, @page).collect { |content| instance_exec(&content) }.join("") %>
 
-<%= render :file => 'content_viewer/comments_list' %>
+<%= render :file => 'content_viewer/comments_list', :locals => {:comments_loaded => @comments.present?} %>
 
 </div><!-- end id="article" -->
 <%= add_zoom_to_article_images %>
