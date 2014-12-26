@@ -1,0 +1,14 @@
+noosfero:
+  build: .
+  links:
+    - postgres
+  ports:
+    - "3000:3000"
+
+postgres:
+  image: postgres:9.1
+  environment:
+    - POSTGRES_USER=noosfero
+    - POSTGRES_PASSWORD=noosfero
+  volumes:
+    - data:/var/lib/postgresql/data

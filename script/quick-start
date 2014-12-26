@@ -61,6 +61,10 @@ setup_rubygems_path() {
   fi
 }
 
+skip_translations=false
+if test "$1" = '--skip-translations'; then
+  skip_translations=true
+fi
 
 force_install=false
 if test "$1" = '--force-install'; then
