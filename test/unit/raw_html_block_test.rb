@@ -22,4 +22,16 @@ class RawHTMLBlockTest < ActiveSupport::TestCase
     assert_match(/HTML$/, block.content)
   end
 
+  should 'not be editable for non admin users' do
+    block = RawHTMLBlock.new(:html => "HTML")
+    user = create_user('testuser').person
+    assert !block.editable?(user)
+  end
+
+  should 'be editable for admin users' do
+    block = RawHTMLBlock.new(:html => "HTML")
+    user = Person[create_admin_user(Environment.default)]
+    assert block.editable?(user)
+  end
+
 end

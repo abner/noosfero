@@ -210,7 +210,7 @@ module BoxesHelper
         end
       end
 
-      if block.editable?
+      if block.editable?(user)
         buttons << colorbox_icon_button(:edit, _('Edit'), { :action => 'edit', :id => block.id })
       end
 

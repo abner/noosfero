@@ -15,4 +15,9 @@ class RawHTMLBlock < Block
   def has_macro?
     true
   end
+
+  def editable?(user)
+    user.is_admin?(environment)
+  end
+
 end
