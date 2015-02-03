@@ -17,7 +17,7 @@ class RawHTMLBlock < Block
   end
 
   def editable?(user)
-    user.is_admin?(environment)
+    user.has_permission?('edit_raw_html_block', environment)
   end
 
 end
