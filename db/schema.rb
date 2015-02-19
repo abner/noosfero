@@ -11,7 +11,7 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 20150122165042) do
+ActiveRecord::Schema.define(:version => 20150219142654) do
 
   create_table "abuse_reports", :force => true do |t|
     t.integer  "reporter_id"
@@ -351,14 +351,18 @@ ActiveRecord::Schema.define(:version => 20150122165042) do
   add_index "friendships", ["person_id"], :name => "index_friendships_on_person_id"
 
   create_table "images", :force => true do |t|
-    t.integer "parent_id"
-    t.string  "content_type"
-    t.string  "filename"
-    t.string  "thumbnail"
-    t.integer "size"
-    t.integer "width"
-    t.integer "height"
-    t.boolean "thumbnails_processed", :default => false
+    t.integer  "parent_id"
+    t.string   "content_type"
+    t.string   "filename"
+    t.string   "thumbnail"
+    t.integer  "size"
+    t.integer  "width"
+    t.integer  "height"
+    t.boolean  "thumbnails_processed",       :default => false
+    t.string   "uploaded_data_file_name"
+    t.string   "uploaded_data_content_type"
+    t.integer  "uploaded_data_file_size"
+    t.datetime "uploaded_data_updated_at"
   end
 
   add_index "images", ["parent_id"], :name => "index_images_on_parent_id"
