@@ -18,6 +18,7 @@ gem 'rest-client',              '~> 1.6.7'
 gem 'exception_notification',   '~> 4.0.1'
 gem 'gettext',                  '~> 2.2.1', :require => false, :group => :development
 gem 'locale',                   '~> 2.0.5'
+gem 'paperclip',                '~> 4.2.1'
 
 gem 'whenever', :require => false
 
