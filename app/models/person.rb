@@ -505,7 +505,7 @@ roles] }
   include Noosfero::Gravatar
 
   def profile_custom_icon(gravatar_default=nil)
-    (self.image.present? && self.image.public_filename(:icon)) ||
+    (self.image.present? && self.image.uploaded_data.url(:icon)) ||
     gravatar_profile_image_url(self.email, :size=>20, :d => gravatar_default)
   end
 

@@ -2522,21 +2522,11 @@ div#activation_enterprise label, div#activation_enterprise input, div#activation
   text-align: center;
 }
 .profile-big-image {
-  position: relative;
-  display: table;
-  width: 156px;
-  height: 156px;
   margin: auto;
 }
 .profile-big-image-inner1 {
-  display: table-cell;
   text-align: center;
   vertical-align: middle;
-}
-.profile-big-image-inner2 {
-  position: relative;
-  left: 0px;
-  display: block;
 }
 .profile-big-image img {
   border: 1px solid #888;
@@ -2713,9 +2703,6 @@ div#activation_enterprise label, div#activation_enterprise input, div#activation
 }
 #profile_change_picture label {
   display: none;
-}
-#profile_change_picture img {
-  margin-left: 10px;
 }
 
 #profile-is-template {
@@ -7014,12 +7001,6 @@ li.profile-activity-item.upload_image .activity-gallery-images-count-1 img {
 
 #profile_change_picture {
   clear: both;
-  margin-top: 20px;
-}
-
-#profile_change_picture_title {
-  display: table-row;
-  width: 100%;
 }
 
 #profile_change_picture_title h2,
@@ -7028,7 +7009,6 @@ li.profile-activity-item.upload_image .activity-gallery-images-count-1 img {
 }
 
 #profile_change_picture_title h2 {
-  padding-top: 20px;
   width: auto;
 }
 
@@ -7159,3 +7139,41 @@ li.profile-activity-item.upload_image .activity-gallery-images-count-1 img {
 body .ui-widget-overlay {
   background: #000;
 }
+
+div#change-profile-image-container {
+  width: 770px;
+  padding: 15px;
+  color: #444;
+  /*border: 1px solid red;*/
+}
+
+div#change-profile-image-header {
+  padding-bottom: 5px;
+  border-bottom: 1px solid #c0c0c0;
+}
+
+#change-profile-image-container h3 {
+  margin: 0;
+  font-weight: normal;
+  font-family: "Arial Black", Liberation Sans, Arial, sans-serif;
+}
+
+div#change-profile-image-content {
+  background-color: #FFFFFF;
+  height: 200px;
+  text-align: center;
+  /*border: 1px solid red;*/
+  width: 770px;
+}
+
+div#change-profile-image-content > label,
+div#change-profile-image-content > input {
+  /*border: 1px solid red;*/
+}
+
+div#change-profile-image-footer {
+  padding-top: 5px;
+  text-align: left;
+  border-top: 1px solid #c0c0c0;
+}
+

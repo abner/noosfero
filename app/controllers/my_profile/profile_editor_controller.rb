@@ -132,6 +132,22 @@ class ProfileEditorController < MyProfileController
     redirect_to_previous_location
   end
 
+  def change_profile_image
+    if request.post?
+      Profile.transaction do
+        Image.transaction do
+          begin
+            profile.update_attributes!(params[:profile_data])
+            session[:notice] = _('The profile image was changed')
+            redirect_to :action => 'index', :profile => profile.identifier
+          end
+        end
+      end
+    else
+      render :action => 'change_profile_image', :layout => false
+    end
+  end
+
   protected
 
   def redirect_to_previous_location

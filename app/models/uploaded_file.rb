@@ -64,16 +64,9 @@ class UploadedFile < Article
   # default max_size is 1.megabyte to redefine it set options:
   #  :min_size => 2.megabytes
   #  :max_size => 5.megabytes
-  has_attachment :storage => :file_system,
-    :thumbnails => { :icon => [24,24], :thumb => '130x130>', :slideshow => '320x240>', :display => '640X480>' },
-    :thumbnail_class => Thumbnail,
-    :max_size => self.max_size
 
-  validates_attachment :size => N_("{fn} of uploaded file was larger than the maximum size of %{size}").sub('%{size}', self.max_size.to_humanreadable).fix_i18n
-
-  delay_attachment_fu_thumbnails
-
-  postgresql_attachment_fu
+  has_attached_file :uploaded_data
+  validates_attachment_content_type :uploaded_data, :content_type => /\Aimage\/.*\Z/
 
   # Use this method only to get the generic icon for this kind of content.
   # If you want the specific icon for a file type or the iconified version
@@ -103,7 +96,6 @@ class UploadedFile < Article
     _('Upload any kind of file you want.')
   end
 
-  alias :orig_set_filename :filename=
   def filename=(value)
     orig_set_filename(value)
     self.name ||= self.filename
@@ -165,6 +157,12 @@ class UploadedFile < Article
 
   def uploaded_file?
     true
+  end
+
+  CONTENT_TYPES = ["image/jpeg", "image/pjpeg", "image/jpg", "image/gif", "image/png", "image/x-png", "image/jpg", "image/x-ms-bmp", "image/bmp", "image/x-bmp", "image/x-bitmap", "image/x-xbitmap", "image/x-win-bitmap", "image/x-windows-bmp", "image/ms-bmp", "application/bmp", "application/x-bmp", "application/x-win-bitmap", "application/preview", "image/jp_", "application/jpg", "application/x-jpg", "image/pipeg", "image/vnd.swiftview-jpeg", "image/x-xbitmap", "application/png", "application/x-png", "image/gi_", "image/x-citrix-pjpeg"]
+
+  def self.content_types
+    CONTENT_TYPES
   end
 
 end

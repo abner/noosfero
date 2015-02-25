@@ -473,8 +473,8 @@ module ApplicationHelper
   def profile_icon( profile, size=:portrait, return_mimetype=false )
     filename, mimetype = '', 'image/png'
     if profile.image
-      filename = profile.image.public_filename( size )
-      mimetype = profile.image.content_type
+      filename = profile.image.uploaded_data.url(size)
+      mimetype = profile.image.uploaded_data.content_type
     else
       icon =
         if profile.organization?
@@ -484,7 +484,7 @@ module ApplicationHelper
             '/images/icons-app/enterprise-'+ size.to_s() +'.png'
           end
         else
-          pixels = Image.attachment_options[:thumbnails][size].split('x').first
+          pixels = Paperclip::Attachment.default_options[:styles][:thumb].split('x').first
           gravatar_profile_image_url(
             profile.email,
             :size => pixels,

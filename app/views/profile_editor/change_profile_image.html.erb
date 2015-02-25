@@ -1,0 +1,22 @@
+<div id="change-profile-image-container">
+
+  <%= form_for :profile_data, :html => { :id => 'profile-data', :multipart => true } do |f| %>
+
+    <div id="change-profile-image-header">
+      <h3><%= _('Select profile image') %></h3>
+    </div>
+
+    <div id="change-profile-image-content">
+      <br /><br /><br /><br /><br /><br />
+      <%= f.label :uploaded_data, _('Select a image from your computer') %><br />
+      <input id="profile_data_image_builder_uploaded_data" name="profile_data[image_builder][uploaded_data]" onchange="updateImg(this.value)" type="file" />
+    </div>
+
+    <div id="change-profile-image-footer">
+      <%= submit_button :save, _('Set as profile image'), :style => 'cursor: pointer;' %>
+      <%= button_to_function :cancel, _('Cancel'), "jQuery.colorbox.close()" %>
+    </div>
+
+  <% end %>
+
+</div>
