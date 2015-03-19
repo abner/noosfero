@@ -589,27 +589,28 @@ module ApplicationHelper
         trigger_class = 'enterprise-trigger'
       end
     end
-    extra_info = extra_info.nil? ? '' : content_tag( 'span', extra_info, :class => 'extra_info' )
+
+    extra_info_tag = ''
+    img_class = 'profile-image'
+
+    if extra_info.is_a? Hash
+      extra_info_tag = content_tag( 'span', extra_info[:value], :class => 'extra_info '+extra_info[:class])
+      img_class +=' '+extra_info[:class]
+    else
+      extra_info_tag = content_tag( 'span', extra_info, :class => 'extra_info' )
+    end
+
     links = links_for_balloon(profile)
-    content_tag('div', content_tag(tag,
-                                   (environment.enabled?(:show_balloon_with_profile_links_when_clicked) ? popover_menu(_('Profile links'),profile.short_name,links,{:class => trigger_class, :url => url}) : "") +
+    content_tag('div', content_tag(tag, (environment.enabled?(:show_balloon_with_profile_links_when_clicked) ? link_to( content_tag( 'span', _('Profile links')), '#', :onclick => "toggleSubmenu(this, '#{profile.short_name}', #{CGI::escapeHTML(links.to_json)}); return false", :class => "menu-submenu-trigger #{trigger_class}", :url => url) : "") +
     link_to(
-      content_tag( 'span', profile_image( profile, size ), :class => 'profile-image' ) +
+      content_tag( 'span', profile_image( profile, size ), :class => img_class ) +
       content_tag( 'span', h(name), :class => ( profile.class == Person ? 'fn' : 'org' ) ) +
-      extra_info + profile_sex_icon( profile ) + profile_cat_icons( profile ),
+      extra_info_tag + profile_sex_icon( profile ) + profile_cat_icons( profile ),
       profile.url,
       :class => 'profile_link url',
       :help => _('Click on this icon to go to the <b>%s</b>\'s home page') % profile.name,
       :title => profile.name ),
       :class => 'vcard'), :class => 'common-profile-list-block')
-  end
-
-  def popover_menu(title,menu_title,links,html_options={})
-    html_options[:class] = "" unless html_options[:class]
-    html_options[:class] << " menu-submenu-trigger"
-    html_options[:onclick] = "toggleSubmenu(this, '#{menu_title}', #{CGI::escapeHTML(links.to_json)}); return false"
-
-    link_to(content_tag(:span, title), '#', html_options)
   end
 
   def gravatar_default
@@ -726,7 +727,7 @@ module ApplicationHelper
   class NoosferoFormBuilder < ActionView::Helpers::FormBuilder
     extend ActionView::Helpers::TagHelper
 
-    def self.output_field(text, field_html, field_id = nil, options = {})
+    def self.output_field(text, field_html, field_id = nil)
       # try to guess an id if none given
       if field_id.nil?
         field_html =~ /id=['"]([^'"]*)['"]/
@@ -1058,7 +1059,7 @@ module ApplicationHelper
     end
 
     link_to(content_tag(:span, _('Contents'), :class => 'icon-menu-articles'), {:controller => "search", :action => 'contents', :category_path => nil}, :id => 'submenu-contents') +
-    popover_menu(_('Contents menu'),'',links,:class => 'up', :id => 'submenu-contents-trigger')
+    link_to(content_tag(:span, _('Contents menu')), '#', :onclick => "toggleSubmenu(this,'',#{CGI::escapeHTML(links.to_json)}); return false", :class => 'menu-submenu-trigger up', :id => 'submenu-contents-trigger')
   end
   alias :browse_contents_menu :search_contents_menu
 
@@ -1074,7 +1075,7 @@ module ApplicationHelper
      end
 
     link_to(content_tag(:span, _('People'), :class => 'icon-menu-people'), {:controller => "search", :action => 'people', :category_path => ''}, :id => 'submenu-people') +
-    popover_menu(_('People menu'),'',links,:class => 'up', :id => 'submenu-people-trigger')
+    link_to(content_tag(:span, _('People menu')), '#', :onclick => "toggleSubmenu(this,'',#{CGI::escapeHTML(links.to_json)}); return false", :class => 'menu-submenu-trigger up', :id => 'submenu-people-trigger')
   end
   alias :browse_people_menu :search_people_menu
 
@@ -1090,7 +1091,7 @@ module ApplicationHelper
      end
 
     link_to(content_tag(:span, _('Communities'), :class => 'icon-menu-community'), {:controller => "search", :action => 'communities'}, :id => 'submenu-communities') +
-    popover_menu(_('Communities menu'),'',links,:class => 'up', :id => 'submenu-communities-trigger')
+    link_to(content_tag(:span, _('Communities menu')), '#', :onclick => "toggleSubmenu(this,'',#{CGI::escapeHTML(links.to_json)}); return false", :class => 'menu-submenu-trigger up', :id => 'submenu-communities-trigger')
   end
   alias :browse_communities_menu :search_communities_menu
 

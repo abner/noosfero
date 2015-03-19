@@ -2219,6 +2219,21 @@ a.button.disabled, input.disabled {
   margin: 0px;
   padding: 0px;
 }
+
+/* New members of community added
+* by admin of environment feature
+* #issue 227
+*/
+.profile-list .extra_info.new-profile {
+  margin-top: 5px;
+  color: #0A0;
+  font-weight: bold;
+}
+
+span.new-profile img{
+  border-top: solid 2px #0A0;
+  margin-top: -2px;
+}
 .recent-documents-block a {
   text-decoration: none;
 }

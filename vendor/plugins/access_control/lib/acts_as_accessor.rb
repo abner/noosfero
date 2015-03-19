@@ -2,6 +2,8 @@ module ActsAsAccessor
 
   extend ActiveSupport::Concern
 
+  attr_reader :role_assignments
+
   module ClassMethods
     def acts_as_accessor
       has_many :role_assignments, :as => :accessor, :dependent => :destroy
@@ -55,10 +57,10 @@ module ActsAsAccessor
       resource = nil
     end
     if resource
-      attributes[:resource_id]   = resource.id 
+      attributes[:resource_id]   = resource.id
       attributes[:resource_type] = resource.class.base_class.name
     else
-      attributes[:resource_id]   = nil 
+      attributes[:resource_id]   = nil
       attributes[:resource_type] = nil
     end
     attributes

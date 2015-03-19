@@ -5,7 +5,8 @@
 <% cache_timeout(profile.members_cache_key(params), 4.hours) do %>
   <ul class='profile-list'>
     <% @members.each do |member| %>
-      <%= profile_image_link(member) %>
+      <% extra_info = member.member_since_date(profile) == Date.today ? {:value =>_('New'), :class => 'new-profile'}:'' %>
+      <%= profile_image_link(member, :portrait, 'li', extra_info) %>
     <% end %>
   </ul>
 
