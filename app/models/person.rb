@@ -430,19 +430,6 @@ roles] }
     Delayed::Job.enqueue NotifyActivityToProfilesJob.new(tracked_action.id)
   end
 
-  def member_relation_of(profile)
-    raise TypeError, "Expected instance of 'Profile' class, but was found #{profile.class.name}" unless profile.is_a? Profile
-
-    role_assignments.where(resource_id: profile.id)
-  end
-
-  def member_since_date(profile)
-    result = member_relation_of(profile).to_a
-    unless result.empty?
-      result.last.created_at ? result.last.created_at.to_date : Date.yesterday
-    end
-  end
-
   def is_member_of?(profile)
     profile.members.include?(self)
   end

@@ -1638,4 +1638,14 @@ class PersonTest < ActiveSupport::TestCase
     assert_equal false, person.follows?(nil)
   end
 
+  should 'check if a person is added like a member of a community today' do
+    person = create_user('person').person
+    community = fast_create(Community)
+
+    community.add_member person
+
+    assert !person.member_relation_of(community).empty?, "Person '#{person.identifier}' is not a member of Community '#{community.identifier}'"
+    assert person.member_since_date(community) == Date.today,"Person '#{person.identifier}' is not added like a member of Community '#{community.identifier}' today"
+  end
+
 end
