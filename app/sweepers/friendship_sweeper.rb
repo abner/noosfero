@@ -7,15 +7,15 @@ class FriendshipSweeper < ActiveRecord::Observer
   end
 
   def after_destroy(friendship)
-    if friendship.person
-      expire_cache(friendship.person)
+    if friendship.profile
+      expire_cache(friendship.profile)
     end
   end
 
 protected
 
   def expire_caches(friendship)
-    [friendship.person, friendship.friend].each do |profile|
+    [friendship.profile, friendship.friend].each do |profile|
       if profile
         expire_cache(profile)
       end

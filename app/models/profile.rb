@@ -22,6 +22,14 @@ class Profile < ActiveRecord::Base
     :display => %w[compact]
   }
 
+  scope :not_friends_of, lambda { |resources|
+    resources = Array(resources)
+    { :select => 'DISTINCT profiles.*', :conditions => ['"profiles"."id" NOT IN (SELECT DISTINCT profiles.id FROM "profiles" INNER JOIN "friendships" ON "friendships"."profile_id" = "profiles"."id" WHERE "friendships"."friend_id" IN (%s))' % resources.map(&:id)] }
+  }
+#
+#  scope :online, lambda {
+#    where(:active => true)
+#  }
   def self.default_search_display
     'compact'
   end
@@ -87,6 +95,9 @@ class Profile < ActiveRecord::Base
   scope :communities, lambda { {:conditions => (Community.send(:subclasses).map(&:name) << 'Community').map { |klass| "profiles.type = '#{klass}'"}.join(" OR ")} }
   scope :templates, {:conditions => {:is_template => true}}
   scope :no_templates, {:conditions => {:is_template => false}}
+
+  has_many :friendships, :dependent => :destroy
+  has_many :friends, :class_name => 'Profile', :through => :friendships
 
   def members
     scopes = plugins.dispatch_scopes(:organization_members, self)
@@ -1006,6 +1017,29 @@ private :generate_url, :url_options
 
   def allow_invitation_from(person)
     false
+  end
+
+  def add_friend(friend, group = nil)
+    unless self.is_a_friend?(friend)
+      friendship = self.friendships.build
+      friendship.friend = friend
+      friendship.group = group
+      friendship.save
+    end
+  end
+
+  def is_a_friend?(person)
+    self.friends.include?(person)
+  end
+
+  def friends_cache_key(params = {})
+    page = params[:npage] || '1'
+    cache_key + '-friends-page-' + page
+  end
+
+  def manage_friends_cache_key(params = {})
+    page = params[:npage] || '1'
+    cache_key + '-manage-friends-page-' + page
   end
 
 end

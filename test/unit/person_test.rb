@@ -1148,8 +1148,8 @@ class PersonTest < ActiveSupport::TestCase
     person.add_friend(friend)
     friend.add_friend(person)
 
-    assert_includes Person.not_friends_of(person), not_friend
-    assert_not_includes Person.not_friends_of(person), friend
+    assert_includes Profile.not_friends_of(person), not_friend
+    assert_not_includes Profile.not_friends_of(person), friend
   end
 
   should 'be able to pass array to members_of' do

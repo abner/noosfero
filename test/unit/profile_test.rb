@@ -485,7 +485,7 @@ class ProfileTest < ActiveSupport::TestCase
   should 'categorize in the entire category hierarchy' do
     c1 = fast_create(Category)
     c2 = fast_create(Category, :parent_id => c1.id)
-    c3 = fast_create(Category, :parent_id => c2.id) 
+    c3 = fast_create(Category, :parent_id => c2.id)
 
     profile = create_user('testuser').person
     profile.add_category(c3)
@@ -1006,7 +1006,7 @@ class ProfileTest < ActiveSupport::TestCase
 
   should 'copy header when applying template' do
     template = fast_create(Profile)
-    template[:custom_header] = '{name}' 
+    template[:custom_header] = '{name}'
     template.save!
 
     p = create(Profile, :name => 'test prof')
@@ -1260,7 +1260,7 @@ class ProfileTest < ActiveSupport::TestCase
     task2 = Task.create!(:requestor => person, :target => another)
 
     person.stubs(:is_admin?).with(other).returns(true)
-    Environment.find(:all).select{|i| i != other }.each do |env| 
+    Environment.find(:all).select{|i| i != other }.each do |env|
       person.stubs(:is_admin?).with(env).returns(false)
     end
 
@@ -1729,7 +1729,7 @@ class ProfileTest < ActiveSupport::TestCase
     assert profile.is_on_homepage?("/#{profile.identifier}/#{homepage.slug}", homepage)
   end
 
-  
+
   should 'find profiles with image' do
     env = fast_create(Environment)
     2.times do |n|
@@ -2039,5 +2039,20 @@ class ProfileTest < ActiveSupport::TestCase
     assert_includes Profile.enabled, p1
     assert_includes Profile.enabled, p2
     assert_not_includes Profile.enabled, p3
+  end
+
+  should 'have friends' do
+    p1 = fast_create(Profile)
+    p2 = fast_create(Profile)
+
+    p1.add_friend(p2)
+
+    p1.friends.reload
+    assert_equal [p2], p1.friends
+
+    p3 = create_user('testuser3').person
+    p1.add_friend(p3)
+
+    assert_equivalent [p2,p3], p1.friends(true) # force reload
   end
 end

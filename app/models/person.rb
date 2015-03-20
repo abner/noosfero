@@ -8,7 +8,6 @@ class Person < Profile
     :display => %w[compact]
   }
 
-
   def self.type_name
     _('Person')
   end
@@ -32,11 +31,6 @@ class Person < Profile
     roles = [roles] unless roles.kind_of?(Array)
     { :select => 'DISTINCT profiles.*', :joins => :role_assignments, :conditions => ['role_assignments.role_id IN (?)',
 roles] }
-  }
-
-  scope :not_friends_of, lambda { |resources|
-    resources = Array(resources)
-    { :select => 'DISTINCT profiles.*', :conditions => ['"profiles"."id" NOT IN (SELECT DISTINCT profiles.id FROM "profiles" INNER JOIN "friendships" ON "friendships"."person_id" = "profiles"."id" WHERE "friendships"."friend_id" IN (%s))' % resources.map(&:id)] }
   }
 
   def has_permission_with_admin?(permission, resource)
@@ -68,8 +62,8 @@ roles] }
     memberships.where('role_assignments.role_id = ?', role.id)
   end
 
-  has_many :friendships, :dependent => :destroy
-  has_many :friends, :class_name => 'Person', :through => :friendships
+  has_many :friendships, :foreign_key => 'profile_id', :dependent => :destroy
+  has_many :friends, :class_name => 'Person', :through => :friendships, :foreign_key => 'profile_id'
 
   scope :online, lambda { { :include => :user, :conditions => ["users.chat_status != '' AND users.chat_status_at >= ?", DateTime.now - User.expires_chat_status_every.minutes] } }
 
@@ -140,21 +134,12 @@ roles] }
     friendships.map { |item| item.group }.uniq
   end
 
-  def add_friend(friend, group = nil)
-    unless self.is_a_friend?(friend)
-      friendship = self.friendships.build
-      friendship.friend = friend
-      friendship.group = group
-      friendship.save
-    end
-  end
-
   def already_request_friendship?(person)
     person.tasks.where(requestor_id: self.id, type: 'AddFriend', status: Task::Status::ACTIVE).first
   end
 
   def remove_friend(friend)
-    Friendship.find(:first, :conditions => {:friend_id => friend, :person_id => id}).destroy
+    Friendship.find(:first, :conditions => {:friend_id => friend, :profile_id => id}).destroy
   end
 
   FIELDS = %w[
@@ -367,10 +352,6 @@ roles] }
     Contact.new(params.merge(:name => name, :email => email, :sender => self, :dest => profile))
   end
 
-  def is_a_friend?(person)
-    self.friends.include?(person)
-  end
-
   has_and_belongs_to_many :refused_communities, :class_name => 'Community', :join_table => 'refused_join_community'
 
   def ask_to_join?(community)
@@ -402,16 +383,6 @@ roles] }
   def communities_cache_key(params = {})
     page = params[:npage] || '1'
     cache_key + '-communities-page-' + page
-  end
-
-  def friends_cache_key(params = {})
-    page = params[:npage] || '1'
-    cache_key + '-friends-page-' + page
-  end
-
-  def manage_friends_cache_key(params = {})
-    page = params[:npage] || '1'
-    cache_key + '-manage-friends-page-' + page
   end
 
   def relationships_cache_key

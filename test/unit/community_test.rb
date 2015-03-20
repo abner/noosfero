@@ -393,4 +393,15 @@ class CommunityTest < ActiveSupport::TestCase
     assert_not_includes community.activities.map { |a| a.klass.constantize.find(a.id) }, article.activity
   end
 
+  should 'have friends' do
+    c1 = fast_create(Community, :name => 'testcommunity1')
+    c2 = fast_create(Community, :name => 'testcommunity2')
+    c1.add_friend(c2)
+    c1.friends.reload
+    assert_equal [c2], c1.friends
+    c3 = fast_create(Community, :name => 'testcommunity3')
+    c1.add_friend(c3)
+    assert_equivalent [c2,c3], c1.friends(true) # force reload
+  end
+
 end

@@ -12,6 +12,8 @@ class Community < Organization
 
   settings_items :language
 
+  has_many :friends, :class_name => 'Community', :through => :friendships, :foreign_key => 'profile_id'
+
   extend SetProfileRegionFromCityState::ClassMethods
   set_profile_region_from_city_state
 
