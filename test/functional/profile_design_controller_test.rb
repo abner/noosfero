@@ -1,4 +1,4 @@
-require File.dirname(__FILE__) + '/../test_helper'
+require_relative "../test_helper"
 require 'profile_design_controller'
 
 class ProfileDesignController; def rescue_action(e) raise e end; end
@@ -734,6 +734,32 @@ class ProfileDesignControllerTest < ActionController::TestCase
     assert_difference 'ProfileImageBlock.count', 1 do
       post :clone_block, :id => block.id, :profile => profile.identifier
       assert_response :redirect
+    end
+  end
+
+  test 'should forbid POST to save for fixed blocks' do
+    block = profile.blocks.last
+    block.fixed = true
+    block.save!
+
+    post :save, id: block.id, profile: profile.identifier
+    assert_response :forbidden
+  end
+
+  test 'should forbid POST to move_block for fixed blocks' do
+    block = profile.blocks.last
+    block.fixed = true
+    block.save!
+
+    post :move_block, id: block.id, profile: profile.identifier, target: "end-of-box-#{@box3.id}"
+    assert_response :forbidden
+  end
+
+  should 'guarantee main block is always visible to everybody' do
+    get :edit, :profile => 'designtestuser', :id => @b4.id
+    %w[logged not_logged followers].each do |option|
+    assert_no_tag :select, :attributes => {:name => 'block[display_user]'},
+     :descendant => {:tag => 'option', :attributes => {:value => option}}
     end
   end
 
