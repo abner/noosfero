@@ -1843,4 +1843,11 @@ class CmsControllerTest < ActionController::TestCase
     @controller.send(:special_article_types)
   end
 
+  should 'check if the article published date input is present' do
+    a = profile.articles.build(:name => 'test')
+    a.save!
+    get :edit, :profile => profile.identifier, :id => a.id
+    assert_tag :tag => 'input', :attributes => {:id => "article_published_at", :value=>a.published_at.strftime("%Y-%m-%d")}
+  end
+
 end
