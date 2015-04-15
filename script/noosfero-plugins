@@ -115,7 +115,7 @@ _enable(){
       if [ -e $source/Gemfile ]; then
         gemfile=$(mktemp --tmpdir=.)
         cat Gemfile $source/Gemfile > $gemfile
-        if ! RUBYOPT='' BUNDLE_GEMFILE="$gemfile" bundle --local --quiet; then
+        if ! RUBYOPT='' BUNDLE_GEMFILE="$gemfile" bundle --local --quiet;then
           dependencies_ok=false
         fi
         rm -f $gemfile $gemfile.lock

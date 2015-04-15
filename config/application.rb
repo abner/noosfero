@@ -5,7 +5,7 @@ require 'rails/all'
 # FIXME this silences the warnings about Rails 2.3-style plugins under
 # vendor/plugins, which are deprecated. Hiding those warnings makes it easier
 # to work for now, but we should really look at putting those plugins away.
-ActiveSupport::Deprecation.silenced = true
+# ActiveSupport::Deprecation.silenced = true
 
 if defined?(Bundler)
   # If you precompile assets before deploying to production, use this line

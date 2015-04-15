@@ -1135,6 +1135,10 @@ module ApplicationHelper
     user.is_admin?(environment) ? link_to('<i class="icon-menu-admin"></i><strong>' + _('Administration') + '</strong>', environment.admin_url, :title => _("Configure the environment"), :class => 'admin-link') : ''
   end
 
+  def inbox_messages
+    link_to('<i class="icon-menu-inbox"></i><strong>' + _('Inbox') + '</strong>', environment.admin_url, :title => _("View unread messages"), :class => 'inbox-link')
+  end
+
   def usermenu_logged_in
     pending_tasks_count = ''
     count = user ? Task.to(user).pending.count : -1
@@ -1144,6 +1148,7 @@ module ApplicationHelper
 
     (_("<span class='welcome'>Welcome,</span> %s") % link_to("<i style='background-image:url(#{user.profile_custom_icon(gravatar_default)})'></i><strong>#{user.identifier}</strong>", user.public_profile_url, :id => "homepage-link", :title => _('Go to your homepage'))) +
     render_environment_features(:usermenu) +
+    inbox_messages +
     admin_link +
     manage_enterprises +
     manage_communities +

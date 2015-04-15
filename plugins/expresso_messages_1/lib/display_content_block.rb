@@ -1,0 +1,220 @@
+class DisplayContentBlock < Block
+
+  MONTHS = [
+    N_('January'),
+    N_('February'),
+    N_('March'),
+    N_('April'),
+    N_('May'),
+    N_('June'),
+    N_('July'),
+    N_('August'),
+    N_('September'),
+    N_('October'),
+    N_('November'),
+    N_('December')
+  ]
+
+  AVAILABLE_SECTIONS = ['publish_date', 'title', 'abstract', 'body', 'image' ,'tags']
+
+  settings_items :nodes, :type => Array, :default => []
+  settings_items :sections,
+                 :type => Array,
+                 :default => [{:value => 'publish_date', :checked => true},
+                              {:value => 'title', :checked => true},
+                              {:value => 'abstract', :checked => true}]
+  settings_items :display_folder_children, :type => :boolean, :default => true
+  settings_items :types, :type => Array, :default => ['TextileArticle', 'TinyMceArticle', 'RawHTMLArticle']
+
+  attr_accessible :sections, :checked_nodes, :display_folder_children, :types
+
+  def self.description
+    _('Display your contents')
+  end
+
+  def help
+    _('This block displays articles chosen by you. You can edit the block to select which of your articles is going to be displayed in the block.')
+  end
+
+  def section_name(section)
+    {
+      'publish_date' => _('Publish date'),
+      'title' => _('Title'),
+      'abstract' => _('Abstract'),
+      'body' => _('Body'),
+      'image' => _('Image'),
+      'tags' => _('Tags')
+    }[section] || section
+  end
+
+  alias :orig_sections :sections
+  def sections
+    available_sections = AVAILABLE_SECTIONS
+    available_sections = available_sections - orig_sections.map{|e|e[:value]}
+    sections = available_sections.map do |section|
+      {:value => section, :checked => false}
+    end
+    sections + orig_sections
+  end
+
+  def available_content_types
+    @available_content_types ||= [TinyMceArticle, RawHTMLArticle, TextileArticle, UploadedFile, Event, Folder, Blog, Forum, Gallery, RssFeed] + plugins.dispatch(:content_types)
+    checked_types = types.map {|t| t.constantize}
+    checked_types + (@available_content_types - checked_types)
+  end
+
+  #FIXME make this test copy of Context Content
+  def first_content_types
+    available_content_types.first(first_types_count)
+  end
+
+  def more_content_types
+    available_content_types.drop(first_types_count)
+  end
+
+  def first_types_count
+    [2, types.length].max
+  end
+
+  def types=(new_types)
+    settings[:types] = new_types.reject(&:blank?)
+  end
+
+  def checked_nodes= params
+    self.nodes = params.keys
+  end
+
+  before_save :expand_nodes
+
+  def expand_nodes
+    return self.nodes if self.holder.nil?
+
+    articles = self.holder.articles.where(:id => nodes)
+    children = articles.map { |article| article.children }.compact.flatten
+
+    if display_folder_children
+      articles = articles - children
+    else
+      articles = (articles + children).uniq
+    end
+
+    self.nodes = articles.map(&:id)
+  end
+
+  def parent_nodes
+    @parent_nodes ||= self.holder.articles.where(:id => nodes).map { |article| get_parent(article) }.compact.flatten
+  end
+
+  VALID_CONTENT = ['RawHTMLArticle', 'TextArticle', 'TextileArticle', 'TinyMceArticle', 'Folder', 'Blog', 'Forum']
+
+  include Noosfero::Plugin::HotSpot
+
+  def articles_of_parent(parent = nil)
+    return [] if self.holder.nil?
+    types = VALID_CONTENT + plugins.dispatch(:content_types).map(&:name)
+    holder.articles.find(:all, :conditions => {:type => types, :parent_id => (parent.nil? ? nil : parent)})
+  end
+
+  def content(args={})
+    block = self
+    nodes_conditions = nodes.blank? ? '' : " AND articles.id IN(:nodes) "
+    nodes_conditions += ' OR articles.parent_id IN(:nodes) ' if !nodes.blank? && display_folder_children
+
+    docs = owner.articles.find(:all, :conditions => ["articles.type IN(:types) #{nodes.blank? ? '' : nodes_conditions}", {:nodes => self.nodes, :types => self.types}], :include => [:profile, :image, :tags])
+    proc do
+      block.block_title(block.title) +
+        content_tag('ul', docs.map {|item|
+        if !item.folder?
+          content_sections = ''
+          read_more_section = ''
+          tags_section = ''
+
+          block.sections.select { |section|
+            case section[:value]
+            when 'publish_date'
+              content_sections += (block.display_section?(section) ? (content_tag('div', show_date(item.published_at, false), :class => 'published-at') ) : '')
+            when 'title'
+              content_sections += (block.display_section?(section) ? (content_tag('div', link_to(h(item.title), item.url), :class => 'title') ) : '')
+            when 'abstract'
+              content_sections += (block.display_section?(section) ? (content_tag('div', item.abstract , :class => 'lead')) : '' )
+              if block.display_section?(section)
+                read_more_section = content_tag('div', link_to(_('Read more'), item.url), :class => 'read_more')
+              end
+            when 'body'
+              content_sections += (block.display_section?(section) ? (content_tag('div', item.body ,:class => 'body')) : '' )
+            when 'image'
+              image_section = image_tag item.image.public_filename if item.image
+              if !image_section.blank?
+                content_sections += (block.display_section?(section) ? (content_tag('div', link_to( image_section, item.url ) ,:class => 'image')) : '' )
+              end
+            when 'tags'
+              if !item.tags.empty?
+                tags_section = item.tags.map { |t| content_tag('span', t.name) }.join("")
+                content_sections += (block.display_section?(section) ? (content_tag('div', tags_section, :class => 'tags')) : '')
+              end
+            end
+          }
+
+          content_sections += read_more_section if !read_more_section.blank?
+#raise sections.inspect
+          content_tag('li', content_sections)
+        end
+      }.join(" "))
+    end
+  end
+
+  def url_params
+    params = {:block_id => self.id}
+    if self.owner.is_a?(Profile)
+      params.merge!(:controller => "display_content_plugin_myprofile")
+      params.merge!(:profile => self.holder.identifier)
+    else
+      params.merge!( :controller => "display_content_plugin_admin")
+    end
+    params
+  end
+
+  def display_section?(section)
+    section[:checked]
+  end
+
+  #FIXME: this should be in a helper
+  def show_date(date, use_numbers = false, year=true)
+    if date && use_numbers
+      date_format = year ? _('%{month}/%{day}/%{year}') : _('%{month}/%{day}')
+      date_format % { :day => date.day, :month => date.month, :year => date.year }
+    elsif date
+      date_format = year ? _('%{month_name} %{day}, %{year}') : _('%{month_name} %{day}')
+      date_format % { :day => date.day, :month_name => month_name(date.month), :year => date.year }
+    else
+      ''
+    end
+  end
+
+  def month_name(n)
+    _(MONTHS[n-1])
+  end
+
+  protected
+
+  def holder
+    return nil if self.box.nil? || self.owner.nil?
+    if self.owner.kind_of?(Environment)
+      return nil if self.owner.portal_community.nil?
+      self.owner.portal_community
+    else
+      self.owner
+    end
+  end
+
+  def get_parent(article)
+    return [] if article.parent_id.nil?
+    parents = [article.parent.id] + get_parent(article.parent)
+    return parents
+  end
+
+  def self.expire_on
+      { :profile => [:article], :environment => [:article] }
+  end
+
+end

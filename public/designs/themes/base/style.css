@@ -585,6 +585,11 @@ div#notice {
   clear: both;
 }
 
+.profile-image-block .inbox-link {
+  text-align: center;
+  font-size: 75%;
+  clear: both;
+}
 
 /*************************** My Network ******************************/
 
