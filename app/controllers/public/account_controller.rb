@@ -313,8 +313,6 @@ class AccountController < ApplicationController
   end
 
   def user_data
-    start_time = Time.now
-    #puts session.inspect
     unless (session[:user_data] && session[:user_data][:logged_in?]) || logged_in?
       render json: {}
       return
@@ -338,11 +336,7 @@ class AccountController < ApplicationController
       user_data_extras = instance_exec(&user_data_extras) if user_data_extras.kind_of?(Proc)
       user_data.merge!(user_data_extras)
     end
-    processing_time_ms = (Time.now - start_time).to_f * 1000
     render json: user_data.to_json
-    debug_data = user_data.clone
-    debug_data['processing_time_ms'] = processing_time_ms
-    File.open('/tmp/user_data_bechmark', 'a') { |file| file.write(debug_data.inspect + "\n\n")  }
   end
 
   def search_cities
