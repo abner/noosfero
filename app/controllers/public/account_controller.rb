@@ -16,7 +16,7 @@ class AccountController < ApplicationController
   def activate
     @user = User.find_by_activation_code(params[:activation_code]) if params[:activation_code]
     if @user
-      unless @user.environment.enabled?('admin_must_approve_new_users') 
+      unless @user.environment.enabled?('admin_must_approve_new_users')
         if @user.activate
           @message = _("Your account has been activated, now you can log in!")
           check_redirection
@@ -30,7 +30,7 @@ class AccountController < ApplicationController
           @user.activation_code = nil
           @user.save!
           redirect_to :controller => :home
-        end      
+        end
       end
     else
       session[:notice] = _("It looks like you're trying to activate an account. Perhaps have already activated this account?")
@@ -303,25 +303,44 @@ class AccountController < ApplicationController
     render :partial => 'email_status'
   end
 
+  def user_data_is_valid
+    #user_data_is_valid to 5 minutes
+    validity_time = 60 * 5
+    true if session[:user_data] && session[:user_data][:timestamp] && (session[:user_data][:timestamp] + validity_time) > Time.now
+  end
+
   def user_data
-    user_data =
-      if logged_in?
-        current_user.data_hash(gravatar_default)
-      else
-        { }
-      end
+    start_time = Time.now
+    #puts session.inspect
+    unless (session[:user_data] && session[:user_data][:logged_in?]) || logged_in?
+      render json: {}
+      return
+    end
+    #checks is there is previous user_data stored in session
+    if session[:user_data] && user_data_is_valid
+      #puts "entrou no if logged in"
+      user_data = session[:user_data]
+    else
+      #puts "entrou no else logged in"
+      user_data = current_user.data_hash(gravatar_default)
+      session[:user_data] = user_data
+      session[:user_data][:timestamp] = Time.now
+      session[:user_data][:logged_in?] = logged_in?
+    end
     if session[:notice]
       user_data['notice'] = session[:notice]
       session[:notice] = nil # consume the notice
     end
-
     @plugins.each do |plugin|
       user_data_extras = plugin.user_data_extras
       user_data_extras = instance_exec(&user_data_extras) if user_data_extras.kind_of?(Proc)
       user_data.merge!(user_data_extras)
     end
-
-    render :text => user_data.to_json, :layout => false, :content_type => "application/javascript"
+    processing_time_ms = (Time.now - start_time).to_f * 1000
+    user_data['processing_time_ms'] = processing_time_ms
+    #puts 'processing_time_ms' + processing_time_ms.to_s
+    render json: user_data.to_json
+    File.open('/tmp/user_data_bechmark', 'a') { |file| file.write(user_data.inspect + "\n\n")  }
   end
 
   def search_cities
