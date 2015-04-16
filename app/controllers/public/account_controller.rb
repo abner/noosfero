@@ -6,6 +6,10 @@ class AccountController < ApplicationController
   before_filter :redirect_if_logged_in, :only => [:login, :signup]
   before_filter :protect_from_bots, :only => :signup
 
+  def user_data_valid_time
+     #time in minutes
+     60 * 5
+  end
   # say something nice, you goof!  something sweet.
   def index
     unless logged_in?
@@ -40,6 +44,7 @@ class AccountController < ApplicationController
 
   # action to perform login to the application
   def login
+
     store_location(request.referer) unless params[:return_to] or session[:return_to]
 
     return unless request.post?
@@ -303,10 +308,8 @@ class AccountController < ApplicationController
     render :partial => 'email_status'
   end
 
-  def user_data_is_valid
-    #user_data_is_valid to 5 minutes
-    validity_time = 60 * 5
-    true if session[:user_data] && session[:user_data][:timestamp] && (session[:user_data][:timestamp] + validity_time) > Time.now
+  def user_data_is_valid?
+    session[:user_data] && session[:user_data][:timestamp] && (session[:user_data][:timestamp] + user_data_valid_time) > Time.now
   end
 
   def user_data
@@ -317,14 +320,13 @@ class AccountController < ApplicationController
       return
     end
     #checks is there is previous user_data stored in session
-    if session[:user_data] && user_data_is_valid
-      #puts "entrou no if logged in"
+    if session[:user_data] && user_data_is_valid?
       user_data = session[:user_data]
     else
-      #puts "entrou no else logged in"
       user_data = current_user.data_hash(gravatar_default)
       session[:user_data] = user_data
       session[:user_data][:timestamp] = Time.now
+      session[:user_data][:timestamp_milliseconds] = Time.now.to_f
       session[:user_data][:logged_in?] = logged_in?
     end
     if session[:notice]
@@ -337,10 +339,10 @@ class AccountController < ApplicationController
       user_data.merge!(user_data_extras)
     end
     processing_time_ms = (Time.now - start_time).to_f * 1000
-    user_data['processing_time_ms'] = processing_time_ms
-    #puts 'processing_time_ms' + processing_time_ms.to_s
     render json: user_data.to_json
-    File.open('/tmp/user_data_bechmark', 'a') { |file| file.write(user_data.inspect + "\n\n")  }
+    debug_data = user_data.clone
+    debug_data['processing_time_ms'] = processing_time_ms
+    File.open('/tmp/user_data_bechmark', 'a') { |file| file.write(debug_data.inspect + "\n\n")  }
   end
 
   def search_cities

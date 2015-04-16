@@ -709,7 +709,6 @@ class AccountControllerTest < ActionController::TestCase
         {:foo => 'bar'}
       end
     end
-
     class Plugin2 < Noosfero::Plugin
       def user_data_extras
         proc do
@@ -718,15 +717,16 @@ class AccountControllerTest < ActionController::TestCase
       end
     end
     Noosfero::Plugin.stubs(:all).returns([Plugin1.name, Plugin2.name])
-
     e = User.find_by_login('ze').environment
     e.enable_plugin(Plugin1.name)
     e.enable_plugin(Plugin2.name)
-
     login_as 'ze'
-
     xhr :get, :user_data
-    assert_equal User.find_by_login('ze').data_hash(@controller.gravatar_default).merge({ 'foo' => 'bar', 'test' => 5 }), ActiveSupport::JSON.decode(@response.body)
+    html = ActiveSupport::JSON.decode(@response.body)
+    html.delete('timestamp')
+    html.delete('timestamp_milliseconds')
+    html.delete('logged_in?')
+    assert_equal User.find_by_login('ze').data_hash(@controller.gravatar_default).merge({ 'foo' => 'bar', 'test' => 5 }), html
   end
 
   should 'activate user when activation code is present and correct' do
@@ -1028,5 +1028,49 @@ class AccountControllerTest < ActionController::TestCase
                                 :national_region_code => '431150',
                                 :national_region_type_id => NationalRegionType::CITY,
                                 :parent_national_region_code => parent_region.national_region_code)
+  end
+
+  should 'render {} if user not logged_in?' do
+    xhr :get, :user_data
+    assert_equal "{}", @response.body
+  end
+
+  should 'match data of logged user' do
+    login_as 'ze'
+    xhr :get, :user_data
+    html = ActiveSupport::JSON.decode(@response.body)
+    assert_equal html['login'], "ze"
+  end
+
+  should 'cache user_data' do
+    login_as 'ze'
+    xhr :get, :user_data
+    before = ActiveSupport::JSON.decode(@response.body)
+    xhr :get, :user_data
+    after = ActiveSupport::JSON.decode(@response.body)
+    assert_equal before, after
+  end
+
+  should 'expire user_data' do
+    login_as 'ze'
+    xhr :get, :user_data
+    before = ActiveSupport::JSON.decode(@response.body)
+    @controller.expects(:user_data_valid_time).returns(0)
+    xhr :get, :user_data
+    after = ActiveSupport::JSON.decode(@response.body)
+    assert_not_equal before, after
+  end
+
+  should 'expire user_data after changing user' do
+    user = create_user('testuser', :email => 'testuser@example.com', :password => 'test', :password_confirmation => 'test')
+    user.activate
+    login_as 'testuser'
+    xhr :get, :user_data
+    after = ActiveSupport::JSON.decode(@response.body)
+    get :logout
+    login_as 'ze'
+    xhr :get, :user_data
+    before = ActiveSupport::JSON.decode(@response.body)
+    assert_not_equal before, after
   end
 end
