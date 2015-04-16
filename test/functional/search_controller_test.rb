@@ -213,6 +213,13 @@ class SearchControllerTest < ActionController::TestCase
     assert_equal 1, assigns(:searches)[:enterprises][:results].size
   end
 
+  should 'not allow query injection' do
+    injection = '<iMg SrC=x OnErRoR=document.documentElement.innerHTML=1>'
+    get :tag, :tag => injection
+    tag = assigns(:tag)
+    assert !tag.upcase.include?('IMG')
+  end
+
   should 'display a given category' do
     get :category_index, :category_path => [ 'my-category' ]
     assert_equal @category, assigns(:category)

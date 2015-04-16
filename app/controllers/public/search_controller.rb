@@ -4,12 +4,23 @@ class SearchController < PublicController
   include SearchHelper
   include ActionView::Helpers::NumberHelper
 
+  before_filter :sanitize_params
   before_filter :redirect_asset_param, :except => [:assets, :suggestions]
   before_filter :load_category, :except => :suggestions
   before_filter :load_search_assets, :except => :suggestions
   before_filter :load_query, :except => :suggestions
   before_filter :load_order, :except => :suggestions
   before_filter :load_templates, :except => :suggestions
+
+  def sanitize_params
+    request.params.each { |k, v|
+      if v.is_a?(String)        
+        result = v
+        allowed_tags = %w(a acronym b strong i em li ul ol h1 h2 h3 h4 h5 h6 blockquote br cite sub sup ins p)
+        params[k] = ActionController::Base.helpers.sanitize(result, tags: allowed_tags, attributes: %w(href title))
+      end
+    }
+  end
 
   # Backwards compatibility with old URLs
   def redirect_asset_param
@@ -136,7 +147,11 @@ class SearchController < PublicController
 
   def tag
     @tag = params[:tag]
-    @tag_cache_key = "tag_#{CGI.escape(@tag.to_s)}_env_#{environment.id.to_s}_page_#{params[:npage]}"
+    begin
+      @tag_cache_key = "tag_#{CGI.escape(@tag.to_s)}_env_#{environment.id.to_s}_page_#{params[:npage]}"
+    rescue Exception=>ex
+      puts "Exception getting cache key: #{ex}"
+    end
     if is_cache_expired?(@tag_cache_key)
       @searches[@asset] = {:results => environment.articles.tagged_with(@tag).paginate(paginate_options)}
     end
