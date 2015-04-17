@@ -95,8 +95,9 @@
   %>
 
   <div id='signup-name'>
-    <%= labelled_form_field(_('Full name'), text_field(:profile_data, :name)) %>
+    <%= labelled_form_field(_('Full name'), text_field(:profile_data, :name, class: 'nohtml')) %>
     <%= content_tag(:small,_('Tell us your name, it will be used to identify yourself.'), :id => 'name-balloon') %>
+    <span class="invalid"></span>
   </div>
 
 </div>
@@ -136,6 +137,7 @@
 
 <% end -%>
 
+<%= javascript_include_tag "jquery-validation/additional/striptags.js" %>
 <script type="text/javascript">
 jQuery(function($) {
 
@@ -173,7 +175,13 @@ jQuery(function($) {
     $('#signup-balloon').fadeIn('slow');
   });
   $('#user_login').blur(function() { $('#signup-balloon').fadeOut('slow'); });
-  $('#signup-form').validate({ rules: { 'user[email]': { email: true } }, messages: { 'user[email]' : '' } });
+  $('#signup-form').validate({
+      rules: {
+          'user[email]': { email: true }
+      },
+      messages: {
+          'user[email]' : ''
+      } });
   $('#user_email').focus(function() {
     $('#email-balloon').fadeIn('slow');
   });
@@ -185,8 +193,8 @@ jQuery(function($) {
   });
   $('#profile_data_name').blur(function() {
     $('#name-balloon').fadeOut('slow');
-    if ($(this).val() == '') {
-      $(this).removeClass('validated');
+    if ($(this).val() == '' || $(this).valid() == 0) {
+      $(this).removeClass('validated').addClass('invalid');
     }
     else $(this).addClass('validated');
   });

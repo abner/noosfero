@@ -6446,12 +6446,18 @@ li.profile-activity-item.upload_image .activity-gallery-images-count-1 img {
   box-shadow: 0 0 7px red;
 }
 
-#signup-form span.invalid {
+#signup-form span.invalid, #signup-form label.error {
   border: none;
   padding: 0px;
   background: transparent;
   color: #7f0000;
   box-shadow: none;
+}
+
+/* Specific rules to jquery.validate errors */
+#signup-form label.error{
+  float: right;
+  font-size:11px;
 }
 
 #signup-form .checking {
