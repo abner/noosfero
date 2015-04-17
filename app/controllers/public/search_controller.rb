@@ -4,7 +4,9 @@ class SearchController < PublicController
   include SearchHelper
   include ActionView::Helpers::NumberHelper
 
+  include SanitizeParams
   before_filter :sanitize_params
+  
   before_filter :redirect_asset_param, :except => [:assets, :suggestions]
   before_filter :load_category, :except => :suggestions
   before_filter :load_search_assets, :except => :suggestions
@@ -12,15 +14,6 @@ class SearchController < PublicController
   before_filter :load_order, :except => :suggestions
   before_filter :load_templates, :except => :suggestions
 
-  def sanitize_params
-    request.params.each { |k, v|
-      if v.is_a?(String)        
-        result = v
-        allowed_tags = %w(a acronym b strong i em li ul ol h1 h2 h3 h4 h5 h6 blockquote br cite sub sup ins p)
-        params[k] = ActionController::Base.helpers.sanitize(result, tags: allowed_tags, attributes: %w(href title))
-      end
-    }
-  end
 
   # Backwards compatibility with old URLs
   def redirect_asset_param
