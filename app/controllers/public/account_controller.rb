@@ -2,9 +2,12 @@ class AccountController < ApplicationController
 
   no_design_blocks
 
+  include SanitizeParams
+
   before_filter :login_required, :only => [:activation_question, :accept_terms, :activate_enterprise, :change_password]
   before_filter :redirect_if_logged_in, :only => [:login, :signup]
   before_filter :protect_from_bots, :only => :signup
+  before_filter :sanitize_params
 
   # say something nice, you goof!  something sweet.
   def index
@@ -98,6 +101,7 @@ class AccountController < ApplicationController
     @block_bot = !!session[:may_be_a_bot]
     @invitation_code = params[:invitation_code]
     begin
+
       @user = User.new(params[:user])
       @user.terms_of_use = environment.terms_of_use
       @user.environment = environment

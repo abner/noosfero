@@ -2,6 +2,23 @@ module SanitizeParams
 
   protected
 
+  #Use this method instead 'sanitize_params'
+  #if you wish get the html content like a
+  #simple text
+  def escape_params
+
+    request.params.each { |k, v|
+      if v.is_a?(String)
+        params[k] = CGI.escapeHTML(v)
+      elsif v.is_a?(Hash)
+        v.each { |nested_key, nested_value|
+          params[k][nested_key] = CGI.escapeHTML(nested_value)
+        }
+      end
+    }
+
+  end
+
   # Check each request parameter for 
   # improper HTML or Script tags
   def sanitize_params
@@ -10,6 +27,10 @@ module SanitizeParams
         params[k] = sanitize_param v
       elsif v.is_a?(Array)
         params[k] = sanitize_array v
+      elsif v.is_a?(Hash)
+        v.each { |nested_key, nested_value|
+          params[k][nested_key] = sanitize_param nested_value
+        }
       end
     }
   end

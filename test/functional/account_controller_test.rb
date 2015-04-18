@@ -53,6 +53,12 @@ class AccountControllerTest < ActionController::TestCase
     end
   end
 
+  def test_should_deny_signup_fullname_with_not_sanitized
+    assert_no_difference 'User.count' do
+      new_user({}, profile_data: {name: '<script>alert("aaaa")</script>'})
+    end
+  end
+
   def test_should_require_login_on_signup
     assert_no_difference 'User.count' do
       new_user(:login => nil)
