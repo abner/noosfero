@@ -40,8 +40,15 @@ module Noosfero
 
           get ':id/children' do
             article = find_article(environment.articles, params[:id])
+
+            votes_order = params.delete(:order) if params[:order]=='votes_score'
             articles = select_filtered_collection_of(article, 'children', params)
             articles = articles.display_filter(current_person, nil)
+
+            if votes_order
+              articles = articles.joins('left join votes on articles.id=votes.voteable_id').group('articles.id').reorder('sum(coalesce(votes.vote, 0)) DESC')
+            end
+
             present articles, :with => Entities::Article, :fields => params[:fields]
           end
   
@@ -55,7 +62,7 @@ module Noosfero
           post ':id/children' do
 
             parent_article = environment.articles.find(params[:id])
-            return forbidden! unless current_person.can_post_content?(parent_article.profile)
+            return forbidden! unless parent_article.allow_create?(current_person)
 
             klass_type= params[:content_type].nil? ? 'TinyMceArticle' : params[:content_type]
             #FIXME see how to check the article types 
