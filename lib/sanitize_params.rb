@@ -21,7 +21,14 @@ module SanitizeParams
 
   # Check each request parameter for 
   # improper HTML or Script tags
-  def sanitize_params
+  #
+  # @param tags Array of additional allowed tags to sanitize helper
+  # @param attrs Array of additional allowed attributes sanitize helper
+  def sanitize_params(tags=[],attrs=[])
+
+    @allowed_tags = %w(a acronym b strong i em li ul ol h1 h2 h3 h4 h5 h6 blockquote br cite sub sup ins p) + tags
+    @attributes = %w(href title) + attrs
+
     request.params.each { |k, v|
       if v.is_a?(String)        
         params[k] = sanitize_param v
@@ -48,8 +55,8 @@ module SanitizeParams
 
   # Santitize a single value
   def sanitize_param(value)
-    allowed_tags = %w(a acronym b strong i em li ul ol h1 h2 h3 h4 h5 h6 blockquote br cite sub sup ins p)
-    ActionController::Base.helpers.sanitize(value, tags: allowed_tags, attributes: %w(href title))
+
+    ActionController::Base.helpers.sanitize(value, tags: @allowed_tags, attributes: @attributes)
   end
 
 end    
