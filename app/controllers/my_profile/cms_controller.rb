@@ -351,9 +351,14 @@ class CmsController < MyProfileController
 
   def suggest_an_article
     @back_to = params[:back_to] || request.referer || url_for(profile.public_profile_url)
-    @task = SuggestArticle.new(params[:task])
+    task_params = params[:task]
+    task_params[:article] = (task_params[:article] || {}).merge!(params[:article]) if params[:article].present?
+    @task = SuggestArticle.new(task_params)
+    @task.target = profile
+    @article = @task.article_object
+    translations if @article.translatable?
+
     if request.post?
-      @task.target = profile
       @task.ip_address = request.remote_ip
       @task.user_agent = request.user_agent
       @task.referrer = request.referrer

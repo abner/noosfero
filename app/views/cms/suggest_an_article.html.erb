@@ -1,12 +1,12 @@
 <%= error_messages_for 'task' %>
 
-<%= required_fields_message %>
-
-<%= render :file => 'shared/tiny_mce' %>
-
 <%= labelled_form_for 'task' do |f| %>
 
-  <%= required labelled_form_field(_('Title'), text_field('task[article]', 'name', :size => 50)) %>
+  <%= fields_for :article, @task.article_object do |a| %>
+    <%= render :partial => partial_for_class(@task.article_type), :locals => { :f => a } %>
+    <%= a.hidden_field(:type) %>
+    <%= a.hidden_field(:parent_id) %>
+  <% end %>
 
   <%= labelled_form_field(_('Source'), text_field('task[article]', 'source_name')) %>
 
@@ -16,8 +16,6 @@
     <%= required labelled_form_field(_('Your name'), text_field(:task, 'name')) %>
     <%= required labelled_form_field(_('Email'), text_field(:task, 'email')) %>
   <% end %>
-
-  <%= render :partial => 'shared/lead_and_body', :locals => {:tiny_mce => true, :object => 'task[article]'} %>
 
   <%= hidden_field_tag('back_to', @back_to) %>
 
