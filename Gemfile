@@ -32,6 +32,8 @@ group :test do
   gem 'rspec',                  '~> 2.14.0'
   gem 'rspec-rails',            '~> 2.14.1'
   gem 'mocha',                  '~> 1.1.0', :require => false
+  gem 'factory_girl_rails'
+  gem 'ffaker'
 end
 
 group :cucumber do
