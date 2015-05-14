@@ -38,7 +38,8 @@ module LayoutHelper
     output += theme_javascript_ng.to_s
     output += javascript_tag 'render_all_jquery_ui_widgets()'
 
-    output
+    # This output should be safe!
+    output.html_safe
   end
 
   def noosfero_stylesheets
@@ -62,7 +63,9 @@ module LayoutHelper
       output << stylesheet_link_tag(global_css_pub)
     end
     output << stylesheet_link_tag(theme_stylesheet_path)
-    output.join "\n"
+
+    # This output should be safe!
+    output.join("\n").html_safe
   end
 
   def noosfero_layout_features
