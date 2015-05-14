@@ -1182,6 +1182,18 @@ module ApplicationHelper
     link_to('<i class="icon-menu-logout"></i><strong>' + _('Logout') + '</strong>', { :controller => 'account', :action => 'logout'} , :id => "logout", :title => _("Leave the system"))
   end
 
+  def usermenu_notlogged_in
+    login_str = '<i class="icon-menu-login"></i><strong>' + _('Login') + '</strong>'
+    ret = _("<span class='login'>%s</span>") % modal_inline_link_to(login_str.html_safe, login_url, '#inlineLoginBox', :id => 'link_login')
+    return ret.html_safe
+  end
+
+  def usermenu_signup
+    signup_str = '<strong>' + _('Sign up') + '</strong>'
+    ret = _("<span class='or'>or</span> <span class='signup'>%s</span>") % link_to(signup_str.html_safe, :controller => 'account', :action => 'signup')
+    return ret.html_safe
+
+  end
   def limited_text_area(object_name, method, limit, text_area_id, options = {})
     content_tag(:div, [
       text_area(object_name, method, { :id => text_area_id, :onkeyup => "limited_text_area('#{text_area_id}', #{limit})" }.merge(options)),
