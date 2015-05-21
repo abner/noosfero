@@ -70,9 +70,10 @@ module BoxesHelper
 
   def display_box_content(box, main_content)
     context = { :article => @page, :request_path => request.path, :locale => locale, :params => request.params, :user => user, :controller => controller }
-    box_decorator.select_blocks(box, box.blocks.includes(:box), context).map do |item|
+    blocks = box_decorator.select_blocks(box, box.blocks.includes(:box), context).map do |item|
       display_block item, main_content
-    end.join("\n") + box_decorator.block_target(box)
+    end
+    safe_join(blocks, "\n") + box_decorator.block_target(box)
   end
 
   def select_blocks box, arr, context
@@ -147,14 +148,14 @@ module BoxesHelper
   module DontMoveBlocks
     # does nothing
     def self.block_target(box, block = nil)
-      ''
+      ''.html_safe
     end
     # does nothing
     def self.block_handle(block)
-      ''
+      ''.html_safe
     end
     def self.block_edit_buttons(block)
-      ''
+      ''.html_safe
     end
     def self.select_blocks box, arr, context
       arr = arr.select{ |block| block.visible? context }
@@ -199,7 +200,7 @@ module BoxesHelper
 
   # makes the given block draggable so it can be moved away.
   def block_handle(block)
-    movable?(block) ? draggable_element("block-#{block.id}", :revert => true) : ""
+    movable?(block) ? draggable_element("block-#{block.id}", :revert => true) : "".html_safe
   end
 
   def block_edit_buttons(block)
