@@ -44,7 +44,7 @@ module BoxesHelper
 
   def display_boxes(holder, main_content)
     boxes = holder.boxes.with_position.first(boxes_limit(holder))
-    content = boxes.reverse.map { |item| display_box(item, main_content) }.join("\n")
+    content = safe_join(boxes.reverse.map { |item| display_box(item, main_content) }, "\n")
     content = main_content if (content.blank?)
 
     content_tag('div', content, :class => 'boxes', :id => 'boxes' )
@@ -54,7 +54,7 @@ module BoxesHelper
     if holder.respond_to?(element)
       content_tag('div', holder.send(element), options)
     else
-      ''
+      ''.html_safe
     end
   end
 
