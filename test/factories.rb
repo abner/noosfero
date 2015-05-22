@@ -128,7 +128,7 @@ FactoryGirl.define do
   end
 
   factory :comment do
-    name FFaker::Lorem.word
+    title FFaker::Lorem.word
   end
 
   factory ActsAsTaggableOn::Tag do

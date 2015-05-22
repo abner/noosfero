@@ -346,8 +346,8 @@ class ArticleTest < ActiveSupport::TestCase
     a2 = create(TextileArticle, :name => "art 2", :profile_id => profile.id)
     a3 = create(TextileArticle, :name => "art 3", :profile_id => profile.id)
 
-    2.times { create(Comment, :title => 'test', :body => 'asdsad', :author => profile, :source => a2).save! }
-    4.times { create(Comment, :title => 'test', :body => 'asdsad', :author => profile, :source => a3).save! }
+    create_list(Comment,2, :title => 'test', :body => 'asdsad', :author => profile, :source => a2)
+    create_list(Comment,4, :title => 'test', :body => 'asdsad', :author => profile, :source => a3)
 
     # should respect the order (more commented comes first)
     assert_equal [a3, a2, a1], profile.articles.most_commented(3)
@@ -362,6 +362,7 @@ class ArticleTest < ActiveSupport::TestCase
   end
 
   should 'always display if public content' do
+#FIXME fix this test
 User.delete_all
 Person.delete_all
 #    person = create(:user).person
@@ -882,6 +883,7 @@ Person.delete_all
 
   should 'list only published articles' do
     profile = create(Person)
+    Article.delete_all
 
     published  = create(Article, :name => 'Published',  :published => true, :profile_id => profile.id)
     unpublished = create(Article, :name => 'Unpublished', :published => false, :profile_id => profile.id)
@@ -1634,13 +1636,9 @@ Person.delete_all
 
   should 'show more popular articles' do
     Article.destroy_all
-    art1 = create(Article, :name => 'article 1', :profile_id => create(Person).id)
-    art2 = create(Article, :name => 'article 2', :profile_id => create(Person).id)
-    art3 = create(Article, :name => 'article 3', :profile_id => create(Person).id)
-
-    art1.hits = 56; art1.save!
-    art3.hits = 92; art3.save!
-    art2.hits = 3; art2.save!
+    art1 = create(Article, :name => 'article 1', :hits => 56)
+    art2 = create(Article, :name => 'article 2', :hits => 2)
+    art3 = create(Article, :name => 'article 3', :hits => 92)
 
     assert_equal [art3, art1, art2], Article.more_popular
   end
