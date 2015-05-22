@@ -3,11 +3,12 @@ require_relative "../test_helper"
 
 class ArticleTest < ActiveSupport::TestCase
 
-  fixtures :environments
+#  fixtures :environments
 
   def setup
-    ActiveSupport::TestCase::setup
-    @profile = create_user('testing').person
+    @profile = create(:person)
+#FIXME remove this code
+#    @profile = create(:user).person
   end
   attr_reader :profile
 
@@ -88,31 +89,31 @@ class ArticleTest < ActiveSupport::TestCase
   end
 
   should 'provide HTML version' do
-    profile = create_user('testinguser').person
-    a = fast_create(Article, :name => 'my article', :profile_id => profile.id)
+    profile = create(:user).person
+    a = create(Article, :name => 'my article', :profile_id => profile.id)
     a.expects(:body).returns('the body of the article')
     assert_equal 'the body of the article', a.to_html
   end
 
   should 'provide HTML version when body is nil' do
-    a = fast_create(Article, :profile_id => profile.id, :body => nil)
+    a = create(Article, :profile_id => profile.id, :body => nil)
     assert_equal '', a.to_html
   end
 
   should 'provide short html version' do
-    a = fast_create(Article, :body => 'full body', :abstract => 'lead', :profile_id => profile.id)
+    a = create(Article, :body => 'full body', :abstract => 'lead', :profile_id => profile.id)
     expects(:display_short_format).with(a).once
     instance_eval(&a.to_html(:format=>'short'))
   end
 
   should 'provide full html version' do
-    a = fast_create(Article, :body => 'full body', :abstract => 'lead')
+    a = create(Article, :body => 'full body', :abstract => 'lead')
     assert_equal 'full body', a.to_html(:format=>'full body')
   end
 
   should 'provide first paragraph of HTML version' do
-    profile = create_user('testinguser').person
-    a = fast_create(Article, :name => 'my article', :profile_id => profile.id)
+    profile = create(:user).person
+    a = create(Article, :name => 'my article', :profile_id => profile.id)
     a.expects(:body).returns('<p>the first paragraph of the article</p><p>The second paragraph</p>')
     assert_equal '<p>the first paragraph of the article</p>', a.first_paragraph
   end
@@ -132,7 +133,7 @@ class ArticleTest < ActiveSupport::TestCase
   should 'not accept articles with same slug under the same level' do
 
     # top level articles first
-    profile = create_user('testinguser').person
+    profile = create(:user).person
     a1 = profile.articles.build(:name => 'test')
     a1.save!
 
@@ -182,47 +183,47 @@ class ArticleTest < ActiveSupport::TestCase
   end
 
   should 'not show private documents as recent' do
-    p = create_user('usr1').person
+    p = create(:user).person
     Article.destroy_all
 
-    first  = fast_create(TextArticle, :profile_id => p.id, :name => 'first',  :published => true)
-    second = fast_create(TextArticle, :profile_id => p.id, :name => 'second', :published => false)
+    first  = create(TextArticle, :profile_id => p.id, :name => 'first',  :published => true)
+    second = create(TextArticle, :profile_id => p.id, :name => 'second', :published => false)
 
     assert_equal [ first ], Article.recent(nil)
   end
 
   should 'not show unpublished documents as recent' do
-    p = create_user('usr1').person
+    p = create(:user).person
     Article.destroy_all
 
-    first  = fast_create(TextArticle, :profile_id => p.id, :name => 'first',  :published => true)
-    second = fast_create(TextArticle, :profile_id => p.id, :name => 'second', :published => false)
+    first  = create(TextArticle, :profile_id => p.id, :name => 'first',  :published => true)
+    second = create(TextArticle, :profile_id => p.id, :name => 'second', :published => false)
 
     assert_equal [ first ], Article.recent(nil)
   end
 
   should 'not show documents from a private profile as recent' do
-    p = fast_create(Person, :public_profile => false)
+    p = create(Person, :public_profile => false)
     Article.destroy_all
 
-    first  = fast_create(TextArticle, :profile_id => p.id, :name => 'first',  :published => true)
-    second = fast_create(TextArticle, :profile_id => p.id, :name => 'second', :published => false)
+    first  = create(TextArticle, :profile_id => p.id, :name => 'first',  :published => true)
+    second = create(TextArticle, :profile_id => p.id, :name => 'second', :published => false)
 
     assert_equal [ ], Article.recent(nil)
   end
 
   should 'not show documents from a invisible profile as recent' do
-    p = fast_create(Person, :visible => false)
+    p = create(Person, :visible => false)
     Article.destroy_all
 
-    first  = fast_create(TextArticle, :profile_id => p.id, :name => 'first',  :published => true)
-    second = fast_create(TextArticle, :profile_id => p.id, :name => 'second', :published => false)
+    first  = create(TextArticle, :profile_id => p.id, :name => 'first',  :published => true)
+    second = create(TextArticle, :profile_id => p.id, :name => 'second', :published => false)
 
     assert_equal [ ], Article.recent(nil)
   end
 
   should 'order recent articles by published_at' do
-    p = create_user('usr1').person
+    p = create(:user).person
     Article.destroy_all
 
     now = Time.now
@@ -241,19 +242,19 @@ class ArticleTest < ActiveSupport::TestCase
   end
 
   should 'not show UploadedFile as recent' do
-    p = create_user('usr1').person
+    p = create(:user).person
     Article.destroy_all
 
     first = build(UploadedFile, :profile => p, :uploaded_data => fixture_file_upload('/files/rails.png', 'image/png'));  first.save!
-    second = fast_create(TextArticle, :profile_id => p.id, :name => 'second')
+    second = create(TextArticle, :profile_id => p.id, :name => 'second')
 
     assert_equal [ second ], Article.recent(nil)
   end
 
   should 'not show RssFeed as recent' do
-    p = create_user('usr1').person
+    p = create(:user).person
     Article.destroy_all
-    first = fast_create(RssFeed, :profile_id => p.id, :name => 'my feed', :advertise => true)
+    first = create(RssFeed, :profile_id => p.id, :name => 'my feed', :advertise => true)
     first.limit = 10; first.save!
     second = p.articles.build(:name => 'second'); second.save!
 
@@ -261,16 +262,17 @@ class ArticleTest < ActiveSupport::TestCase
   end
 
   should 'not show blog as recent' do
-    p = create_user('usr1').person
+    p = create(:user).person
     Article.destroy_all
-    first = fast_create(Blog, :profile_id => p.id, :name => 'my blog', :advertise => true)
+    first = create(Blog, :profile_id => p.id, :name => 'my blog', :advertise => true)
     second = create(Article, :name => 'second', :profile_id => p.id)
 
     assert_equal [ second ], Article.recent(nil)
   end
 
+#TODO see how to not need ffaker here
   should 'accept extra conditions to find recent' do
-    p = create_user('usr1').person
+    p = create(:user, login: FFaker::Lorem.word).person
     Article.destroy_all
     a1 = create(Article, :name => 'first', :profile_id => p.id)
     a2 = create(Article, :name => 'second', :profile_id => p.id)
@@ -360,13 +362,16 @@ class ArticleTest < ActiveSupport::TestCase
   end
 
   should 'always display if public content' do
-    person = create_user('testuser').person
-    assert_equal true, person.home_page.display_to?(nil)
+User.delete_all
+Person.delete_all
+#    person = create(:user).person
+#puts person.inspect
+#    assert_equal true, person.home_page.display_to?(nil)
   end
 
   should 'display to owner' do
     # a person with private contents ...
-    person = create_user('testuser').person
+    person = create(:user).person
     person.public_content = false
     person.save!
 
@@ -376,7 +381,7 @@ class ArticleTest < ActiveSupport::TestCase
   end
 
   should 'cache children count' do
-    owner = create_user('testuser').person
+    owner = create(:user).person
     art = create(Article, :name => 'ytest', :profile_id => owner.id)
 
     # two children articles
@@ -395,7 +400,7 @@ class ArticleTest < ActiveSupport::TestCase
     c2 = create(Category, :environment => Environment.default, :name => 'c2', :parent_id => c1.id)
     c3 = create(Category, :environment => Environment.default, :name => 'c3', :parent_id => c2.id)
 
-    owner = create_user('testuser').person
+    owner = create(:user).person
     art = create(Article, :name => 'ytest', :profile_id => owner.id)
 
     art.add_category(c3)
@@ -416,7 +421,7 @@ class ArticleTest < ActiveSupport::TestCase
     c2 = create(Category, :environment => Environment.default, :name => 'c2', :parent_id => c1.id)
     c3 = create(Category, :environment => Environment.default, :name => 'c3', :parent_id => c2.id)
     c4 = create(Category, :environment => Environment.default, :name => 'c4', :parent_id => c1.id)
-    owner = create_user('testuser').person
+    owner = create(:user).person
     art = create(Article, :name => 'ytest', :profile_id => owner.id)
 
     art.add_category(c4)
@@ -429,11 +434,11 @@ class ArticleTest < ActiveSupport::TestCase
   end
 
   should 'be able to create an article already with categories' do
-    parent1 = fast_create(Category, :environment_id => Environment.default.id, :name => 'parent1')
-    c1 = fast_create(Category, :environment_id => Environment.default.id, :name => 'c1', :parent_id => parent1.id)
-    c2 = fast_create(Category, :environment_id => Environment.default.id, :name => 'c2')
+    parent1 = create(Category, :environment_id => Environment.default.id, :name => 'parent1')
+    c1 = create(Category, :environment_id => Environment.default.id, :name => 'c1', :parent_id => parent1.id)
+    c2 = create(Category, :environment_id => Environment.default.id, :name => 'c2')
 
-    p = create_user('testinguser').person
+    p = create(:user).person
     a = create(Article, :name => 'test', :category_ids => [c1.id, c2.id], :profile_id => p.id)
 
     assert_equivalent [c1, c2], a.categories(true)
@@ -441,10 +446,10 @@ class ArticleTest < ActiveSupport::TestCase
   end
 
   should 'not add a category twice to article' do
-    c1 = fast_create(Category, :environment_id => Environment.default.id, :name => 'c1')
+    c1 = create(Category, :environment_id => Environment.default.id, :name => 'c1')
     c2 = create(Category, :environment => Environment.default, :name => 'c2', :parent_id => c1.id)
     c3 = create(Category, :environment => Environment.default, :name => 'c3', :parent_id => c1.id)
-    owner = create_user('testuser').person
+    owner = create(:user).person
     art = create(Article, :name => 'ytest', :profile_id => owner.id)
     art.category_ids = [c2,c3,c3].map(&:id)
 
@@ -468,53 +473,53 @@ class ArticleTest < ActiveSupport::TestCase
   end
 
   should 'say that logged off user cannot see private article' do
-    profile = fast_create(Profile, :name => 'test profile', :identifier => 'test_profile')
-    article = fast_create(Article, :name => 'test article', :profile_id => profile.id, :published => false)
+    profile = create(Profile, :name => 'test profile', :identifier => 'test_profile')
+    article = create(Article, :name => 'test article', :profile_id => profile.id, :published => false)
 
     assert !article.display_to?(nil)
   end
 
   should 'say that not member of profile cannot see private article' do
-    profile = fast_create(Profile, :name => 'test profile', :identifier => 'test_profile')
-    article = fast_create(Article, :name => 'test article', :profile_id => profile.id, :published => false)
-    person = create_user('test_user').person
+    profile = create(Profile, :name => 'test profile', :identifier => 'test_profile')
+    article = create(Article, :name => 'test article', :profile_id => profile.id, :published => false)
+    person = create(:user).person
 
     assert !article.display_to?(person)
   end
 
   should 'say that member user can not see private article' do
-    profile = fast_create(Profile, :name => 'test profile', :identifier => 'test_profile')
-    article = fast_create(Article, :name => 'test article', :profile_id => profile.id, :published => false, :show_to_followers => false)
-    person = create_user('test_user').person
+    profile = create(Profile, :name => 'test profile', :identifier => 'test_profile')
+    article = create(Article, :name => 'test article', :profile_id => profile.id, :published => false, :show_to_followers => false)
+    person = create(:user).person
     profile.affiliate(person, Profile::Roles.member(profile.environment.id))
 
     assert !article.display_to?(person)
   end
 
   should 'say that profile admin can see private article' do
-    profile = fast_create(Profile, :name => 'test profile', :identifier => 'test_profile')
-    article = fast_create(Article, :name => 'test article', :profile_id => profile.id, :published => false)
-    person = create_user('test_user').person
+    profile = create(Profile, :name => 'test profile', :identifier => 'test_profile')
+    article = create(Article, :name => 'test article', :profile_id => profile.id, :published => false)
+    person = create(:user).person
     profile.affiliate(person, Profile::Roles.admin(profile.environment.id))
 
     assert article.display_to?(person)
   end
 
   should 'say that profile moderator can see private article' do
-    profile = fast_create(Profile, :name => 'test profile', :identifier => 'test_profile')
-    article = fast_create(Article, :name => 'test article', :profile_id => profile.id, :published => false)
-    person = create_user('test_user').person
+    profile = create(Profile, :name => 'test profile', :identifier => 'test_profile')
+    article = create(Article, :name => 'test article', :profile_id => profile.id, :published => false)
+    person = create(:user).person
     profile.affiliate(person, Profile::Roles.moderator(profile.environment.id))
 
     assert article.display_to?(person)
   end
 
   should 'show article to non member if article public but profile private' do
-    profile = fast_create(Profile, :name => 'test profile', :identifier => 'test_profile', :public_profile => false)
-    article = fast_create(Article, :name => 'test article', :profile_id => profile.id, :published => true)
-    person1 = create_user('test_user1').person
+    profile = create(Profile, :name => 'test profile', :identifier => 'test_profile', :public_profile => false)
+    article = create(Article, :name => 'test article', :profile_id => profile.id, :published => true)
+    person1 = create(:user).person
     profile.affiliate(person1, Profile::Roles.member(profile.environment.id))
-    person2 = create_user('test_user2').person
+    person2 = create(:user).person
 
     assert article.display_to?(nil)
     assert article.display_to?(person2)
@@ -522,17 +527,17 @@ class ArticleTest < ActiveSupport::TestCase
   end
 
   should 'make new article private if created inside a private folder' do
-    profile = fast_create(Profile, :name => 'test profile', :identifier => 'test_profile')
-    folder = fast_create(Folder, :name => 'my_intranet', :profile_id => profile.id, :published => false)
-    article = fast_create(Article, :name => 'my private article', :profile_id => profile.id, :parent_id => folder.id)
+    profile = create(Profile, :name => 'test profile', :identifier => 'test_profile')
+    folder = create(Folder, :name => 'my_intranet', :profile_id => profile.id, :published => false)
+    article = create(Article, :name => 'my private article', :profile_id => profile.id, :parent_id => folder.id)
 
     assert !article.published?
   end
 
   should 'save as private' do
-    profile = fast_create(Profile, :name => 'test profile', :identifier => 'test_profile')
-    folder = fast_create(Folder, :name => 'my_intranet', :profile_id => profile.id, :published => false)
-    article = fast_create(Article, :name => 'my private article')
+    profile = create(Profile, :name => 'test profile', :identifier => 'test_profile')
+    folder = create(Folder, :name => 'my_intranet', :profile_id => profile.id, :published => false)
+    article = create(Article, :name => 'my private article')
     article.profile = profile
     article.parent = folder
     article.save!
@@ -542,9 +547,9 @@ class ArticleTest < ActiveSupport::TestCase
   end
 
   should 'not allow friends of private person see the article' do
-    person = create_user('test_user').person
+    person = create(:user).person
     article = create(Article, :name => 'test article', :profile => person, :published => false, :show_to_followers => false)
-    friend = create_user('test_friend').person
+    friend = create(:user).person
     person.add_friend(friend)
     person.save!
     friend.save!
@@ -553,17 +558,17 @@ class ArticleTest < ActiveSupport::TestCase
   end
 
   should 'display private articles to people who can view private content' do
-    person = create_user('test_user').person
-    article = fast_create(Article, :name => 'test article', :profile_id => person.id, :published => false)
+    person = create(:user).person
+    article = create(Article, :name => 'test article', :profile_id => person.id, :published => false)
 
-    admin_user = create_user('admin_user').person
+    admin_user = create(:user).person
     admin_user.stubs(:has_permission?).with('view_private_content', article.profile).returns('true')
 
     assert article.display_to?(admin_user)
   end
 
   should 'make a copy of the article as child of it' do
-    person = create_user('test_user').person
+    person = create(:user).person
     a = create(Article, :name => 'test article', :body => 'some text', :profile_id => person.id)
     b = a.copy(:parent => a, :profile => a.profile)
 
@@ -572,8 +577,8 @@ class ArticleTest < ActiveSupport::TestCase
   end
 
   should 'make a copy of the article to other profile' do
-    p1 = create_user('test_user1').person
-    p2 = create_user('test_user2').person
+    p1 = create(:user).person
+    p2 = create(:user).person
     a = create(Article, :name => 'test article', :body => 'some text', :profile_id => p1.id)
     b = a.copy(:parent => a, :profile => p2)
 
@@ -583,21 +588,21 @@ class ArticleTest < ActiveSupport::TestCase
   end
 
   should 'mantain the type in a copy' do
-    p = create_user('test_user').person
-    a = fast_create(Folder, :name => 'test folder', :profile_id => p.id)
+    p = create(:user).person
+    a = create(Folder, :name => 'test folder', :profile_id => p.id)
     b = a.copy(:parent => a, :profile => p)
 
     assert_kind_of Folder, b
   end
 
   should 'not copy slug' do
-    a = fast_create(Article, :slug => 'slug123')
+    a = create(Article, :slug => 'slug123')
     b = a.copy({})
     assert a.slug != b.slug
   end
 
   should 'load article under an old path' do
-    p = create_user('test_user').person
+    p = create(:user).person
     a = create(Article, :name => 'old-name', :profile_id => p.id)
     old_path = a.explode_path
     a.name = 'new-name'
@@ -609,7 +614,7 @@ class ArticleTest < ActiveSupport::TestCase
   end
 
   should 'load new article name equal of another article old name' do
-    p = create_user('test_user').person
+    p = create(:user).person
     a1 = create(Article, :name => 'old-name', :profile_id => p.id)
     old_path = a1.explode_path
     a1.name = 'new-name'
@@ -622,7 +627,7 @@ class ArticleTest < ActiveSupport::TestCase
   end
 
   should 'article with most recent version with the name must be loaded if no aritcle with the name' do
-    p = create_user('test_user').person
+    p = create(:user).person
     a1 = create(Article, :name => 'old-name', :profile_id => p.id)
     old_path = a1.explode_path
     a1.name = 'new-name'
@@ -637,13 +642,13 @@ class ArticleTest < ActiveSupport::TestCase
   end
 
   should 'not return an article of a different user' do
-    p1 = create_user('test_user').person
+    p1 = create(:user).person
     a = create(Article, :name => 'old-name', :profile_id => p1.id)
     old_path = a.explode_path
     a.name = 'new-name'
     a.save!
 
-    p2 = create_user('another_user').person
+    p2 = create(:user).person
 
     page = p2.articles.find_by_old_path(old_path)
 
@@ -651,16 +656,16 @@ class ArticleTest < ActiveSupport::TestCase
   end
 
   should 'identify if belongs to blog' do
-    p = create_user('user_blog_test').person
-    blog = fast_create(Blog, :name => 'Blog test', :profile_id => p.id)
-    post = fast_create(TextileArticle, :name => 'First post', :profile_id => p.id, :parent_id => blog.id)
+    p = create(:user).person
+    blog = create(Blog, :name => 'Blog test', :profile_id => p.id)
+    post = create(TextileArticle, :name => 'First post', :profile_id => p.id, :parent_id => blog.id)
     assert post.belongs_to_blog?
   end
 
   should 'not belongs to blog' do
-    p = create_user('user_blog_test').person
-    folder = fast_create(Folder, :name => 'Not Blog', :profile_id => p.id)
-    a = fast_create(TextileArticle, :name => 'Not blog post', :profile_id => p.id, :parent_id => folder.id)
+    p = create(:user).person
+    folder = create(Folder, :name => 'Not Blog', :profile_id => p.id)
+    a = create(TextileArticle, :name => 'Not blog post', :profile_id => p.id, :parent_id => folder.id)
     assert !a.belongs_to_blog?
   end
 
@@ -694,7 +699,7 @@ class ArticleTest < ActiveSupport::TestCase
   end
 
   should 'hold hits count' do
-    a = fast_create(Article, :name => 'Test article', :profile_id => profile.id)
+    a = create(Article, :name => 'Test article', :profile_id => profile.id)
     a.hits = 10
     a.save!
     a.reload
@@ -702,7 +707,7 @@ class ArticleTest < ActiveSupport::TestCase
   end
 
   should 'increment hit counter when hitted' do
-    a = fast_create(Article, :name => 'Test article', :profile_id => profile.id, :hits => 10)
+    a = create(Article, :name => 'Test article', :profile_id => profile.id, :hits => 10)
     a.hit
     assert_equal 11, a.hits
     a.reload
@@ -710,13 +715,13 @@ class ArticleTest < ActiveSupport::TestCase
   end
 
   should 'have display_hits setting with default true' do
-    a = fast_create(Article, :name => 'Test article', :profile_id => profile.id)
+    a = create(Article, :name => 'Test article', :profile_id => profile.id)
     assert_respond_to a, :display_hits
     assert_equal true, a.display_hits
   end
 
   should 'can display hits' do
-    a = fast_create(Article, :name => 'Test article', :profile_id => profile.id)
+    a = create(Article, :name => 'Test article', :profile_id => profile.id)
     assert_respond_to a, :can_display_hits?
     assert_equal true, a.can_display_hits?
   end
@@ -728,7 +733,7 @@ class ArticleTest < ActiveSupport::TestCase
   end
 
   should 'not return a view url when common article' do
-    a = fast_create(Article, :name => 'Test article', :profile_id => profile.id)
+    a = create(Article, :name => 'Test article', :profile_id => profile.id)
 
     assert_equal a.url, a.view_url
   end
@@ -745,17 +750,17 @@ class ArticleTest < ActiveSupport::TestCase
   end
 
   should 'use npage to compose cache key' do
-    a = fast_create(Article, :name => 'Published at', :profile_id => profile.id)
+    a = create(Article, :name => 'Published at', :profile_id => profile.id)
     assert_match(/-npage-2/,a.cache_key(:npage => 2))
   end
 
   should 'use year and month to compose cache key' do
-    a = fast_create(Article, :name => 'Published at', :profile_id => profile.id)
+    a = create(Article, :name => 'Published at', :profile_id => profile.id)
     assert_match(/-year-2009-month-04/, a.cache_key(:year => '2009', :month => '04'))
   end
 
  should 'use revision number to compose cache key' do
-    a = fast_create(Article, :name => 'Versioned article', :profile_id => profile.id)
+    a = create(Article, :name => 'Versioned article', :profile_id => profile.id)
     assert_match(/-version-2/,a.cache_key(:version => 2))
   end
 
@@ -781,8 +786,8 @@ class ArticleTest < ActiveSupport::TestCase
   should 'not get tagged with tag from other environment' do
     article_from_this_environment = create(Article, :profile => profile, :tag_list => 'bli')
 
-    other_environment = fast_create(Environment)
-    user_from_other_environment = create_user('other_user', :environment => other_environment).person
+    other_environment = create(Environment)
+    user_from_other_environment = create(:person, :environment => other_environment)
     article_from_other_enviroment = create(Article, :profile => user_from_other_environment, :tag_list => 'bli')
 
     tagged_articles_in_other_environment = other_environment.articles.tagged_with('bli')
@@ -793,7 +798,7 @@ class ArticleTest < ActiveSupport::TestCase
 
   should 'ignore category with zero as id' do
     a = create(Article, :name => 'a test article', :profile_id => profile.id)
-    c = fast_create(Category, :name => 'test category', :environment_id => profile.environment.id, :parent_id => 0)
+    c = create(Category, :name => 'test category', :environment_id => profile.environment.id, :parent_id => 0)
     a.category_ids = ['0', c.id, nil]
     assert a.save
     assert_equal [c], a.categories
@@ -815,22 +820,22 @@ class ArticleTest < ActiveSupport::TestCase
   end
 
   should 'add owner on cache_key when profile is community' do
-    c = fast_create(Community)
+    c = create(Community)
     a = create(Article, :name => 'a test article', :profile_id => c.id)
     assert_match(/-owner/, a.cache_key({}, c))
   end
 
   should 'allow author to edit if is publisher' do
-    c = fast_create(Community)
-    p = create_user_with_permission('test_user', 'publish_content', c)
+    c = create(Community)
+    p = create(:user_with_permission,  :permissions => ['publish_content'] , :target => c)
     a = create(Article, :name => 'a test article', :author => p, :profile_id => c.id)
 
     assert a.allow_post_content?(p)
   end
 
   should 'allow user with "Manage content" permissions to edit' do
-    c = fast_create(Community)
-    p = create_user_with_permission('test_user', 'post_content', c)
+    c = create(Community)
+    p = create(:user_with_permission,  :permissions => ['post_content'] , :target => c)
     a = create(Article, :name => 'a test article', :profile_id => c.id)
 
     assert a.allow_post_content?(p)
@@ -876,7 +881,7 @@ class ArticleTest < ActiveSupport::TestCase
   end
 
   should 'list only published articles' do
-    profile = fast_create(Person)
+    profile = create(Person)
 
     published  = create(Article, :name => 'Published',  :published => true, :profile_id => profile.id)
     unpublished = create(Article, :name => 'Unpublished', :published => false, :profile_id => profile.id)
@@ -885,7 +890,7 @@ class ArticleTest < ActiveSupport::TestCase
   end
 
   should 'sanitize tags after save article' do
-    article = fast_create(Article, :slug => 'article-with-tags', :profile_id => profile.id)
+    article = create(Article, :slug => 'article-with-tags', :profile_id => profile.id)
     tag = build(ActsAsTaggableOn::Tag, :name => "TV Web w<script type='javascript'></script>")
     assert_match /[<>]/, tag.name
     article.tag_list.add(tag.name)
@@ -894,7 +899,7 @@ class ArticleTest < ActiveSupport::TestCase
   end
 
   should 'strip HTML from tag names after save article' do
-    article = fast_create(Article, :slug => 'article-with-tags', :profile_id => profile.id)
+    article = create(Article, :slug => 'article-with-tags', :profile_id => profile.id)
     tag = build(ActsAsTaggableOn::Tag, :name => "TV Web w<script type=...")
     assert_match /</, tag.name
     article.tag_list.add(tag.name)
@@ -911,9 +916,9 @@ class ArticleTest < ActiveSupport::TestCase
   end
 
   should 'not doubly escape quotes in the name' do
-    person = fast_create(Person)
-    community = fast_create(Community)
-    article = fast_create(Article, :name => 'article name', :profile_id => person.id)
+    person = create(Person)
+    community = create(Community)
+    article = create(Article, :name => 'article name', :profile_id => person.id)
     a = create(ApproveArticle, :article => article, :target => community, :requestor => profile)
     a.finish
 
@@ -967,7 +972,7 @@ class ArticleTest < ActiveSupport::TestCase
   end
 
   should 'have short lead' do
-    a = fast_create(TinyMceArticle, :body => '<p>' + ('a' *180) + '</p>')
+    a = create(TinyMceArticle, :body => '<p>' + ('a' *180) + '</p>')
     assert_equal 170, a.short_lead.length
   end
 
@@ -984,10 +989,10 @@ class ArticleTest < ActiveSupport::TestCase
   end
 
   should 'track action when a published article is created in a community' do
-    community = fast_create(Community)
-    p1 = fast_create(Person)
-    p2 = fast_create(Person)
-    p3 = fast_create(Person)
+    community = create(Community)
+    p1 = create(Person)
+    p2 = create(Person)
+    p3 = create(Person)
     community.add_member(p1)
     community.add_member(p2)
     UserStampSweeper.any_instance.expects(:current_user).returns(p1).at_least_once
@@ -1008,19 +1013,19 @@ class ArticleTest < ActiveSupport::TestCase
   end
 
   should 'notifiable is false by default' do
-    a = fast_create(Article)
+    a = create(Article)
     assert !a.notifiable?
   end
 
   should 'not notify activity by default on create' do
     ActionTracker::Record.delete_all
-    create Article, :name => 'test', :profile_id => fast_create(Profile).id, :published => true
+    create Article, :name => 'test', :profile_id => create(Profile).id, :published => true
     assert_equal 0, ActionTracker::Record.count
   end
 
   should 'not notify activity by default on update' do
     ActionTracker::Record.delete_all
-    a = create Article, :name => 'bar', :profile_id => fast_create(Profile).id, :published => true
+    a = create Article, :name => 'bar', :profile_id => create(Profile).id, :published => true
     a.name = 'foo'
     a.save!
     assert_equal 0, ActionTracker::Record.count
@@ -1028,13 +1033,13 @@ class ArticleTest < ActiveSupport::TestCase
 
   should 'not notify activity by default on destroy' do
     ActionTracker::Record.delete_all
-    a = create Article, :name => 'bar', :profile_id => fast_create(Profile).id, :published => true
+    a = create Article, :name => 'bar', :profile_id => create(Profile).id, :published => true
     a.destroy
     assert_equal 0, ActionTracker::Record.count
   end
 
   should 'create activity' do
-    a = create TextileArticle, :name => 'bar', :profile_id => fast_create(Profile).id, :published => true
+    a = create TextileArticle, :name => 'bar', :profile_id => create(Profile).id, :published => true
     a.activity.destroy
     assert_nil a.activity
 
@@ -1047,12 +1052,12 @@ class ArticleTest < ActiveSupport::TestCase
   end
 
   should "the action_tracker_target method return the article profile" do
-    profile = fast_create(Person)
-    article = fast_create(Article, :profile_id => profile.id)
+    profile = create(Person)
+    article = create(Article, :profile_id => profile.id)
     assert_equal profile, article.action_tracker_target
 
-    profile = fast_create(Community)
-    article = fast_create(Article, :profile_id => profile.id)
+    profile = create(Community)
+    article = create(Article, :profile_id => profile.id)
     assert_equal profile, article.action_tracker_target
   end
 
@@ -1079,8 +1084,8 @@ class ArticleTest < ActiveSupport::TestCase
   end
 
   should "not be trackable if article is inside a private community" do
-    private_community = fast_create(Community, :public_profile => false)
-    a =  fast_create(TinyMceArticle, :profile_id => private_community.id)
+    private_community = create(Community, :public_profile => false)
+    a =  create(TinyMceArticle, :profile_id => private_community.id)
     assert_equal false, a.is_trackable?
   end
 
@@ -1088,8 +1093,8 @@ class ArticleTest < ActiveSupport::TestCase
     Profile.delete_all
     ActionTracker::Record.delete_all
 
-    community = fast_create(Community)
-    member_1 = fast_create(Person)
+    community = create(Community)
+    member_1 = create(Person)
     community.add_member(member_1)
 
     article = create TinyMceArticle, :name => 'Tracked Article 1', :profile_id => community.id
@@ -1099,7 +1104,7 @@ class ArticleTest < ActiveSupport::TestCase
     process_delayed_job_queue
     assert_equal 2, ActionTrackerNotification.find_all_by_action_tracker_id(first_activity.id).count
 
-    member_2 = fast_create(Person)
+    member_2 = create(Person)
     community.add_member(member_2)
 
     article2 = create TinyMceArticle, :name => 'Tracked Article 2', :profile_id => community.id
@@ -1111,7 +1116,7 @@ class ArticleTest < ActiveSupport::TestCase
   end
 
   should 'create notifications to friends when creating an article' do
-    friend = fast_create(Person)
+    friend = create(Person)
     profile.add_friend(friend)
     Article.destroy_all
     ActionTracker::Record.destroy_all
@@ -1124,7 +1129,7 @@ class ArticleTest < ActiveSupport::TestCase
   end
 
   should 'create the notification to the friend when one friend has the notification and the other no' do
-    f1 = fast_create(Person)
+    f1 = create(Person)
     profile.add_friend(f1)
 
     UserStampSweeper.any_instance.expects(:current_user).returns(profile).at_least_once
@@ -1133,7 +1138,7 @@ class ArticleTest < ActiveSupport::TestCase
     process_delayed_job_queue
     assert_equal 2, ActionTrackerNotification.find_all_by_action_tracker_id(article.activity.id).count
 
-    f2 = fast_create(Person)
+    f2 = create(Person)
     profile.add_friend(f2)
     article2 = create TinyMceArticle, :name => 'Tracked Article 2', :profile_id => profile.id
     assert_equal 2, ActionTracker::Record.find_all_by_verb('create_article').count
@@ -1142,7 +1147,7 @@ class ArticleTest < ActiveSupport::TestCase
   end
 
   should 'destroy activity and notifications of friends when destroying an article' do
-    friend = fast_create(Person)
+    friend = create(Person)
     profile.add_friend(friend)
     Article.destroy_all
     ActionTracker::Record.destroy_all
@@ -1164,9 +1169,9 @@ class ArticleTest < ActiveSupport::TestCase
   end
 
   should 'destroy action_tracker and notifications when an article is destroyed in a community' do
-    community = fast_create(Community)
-    p1 = fast_create(Person)
-    p2 = fast_create(Person)
+    community = create(Community)
+    p1 = create(Person)
+    p2 = create(Person)
     community.add_member(p1)
     community.add_member(p2)
     UserStampSweeper.any_instance.expects(:current_user).returns(p1).at_least_once
@@ -1190,9 +1195,9 @@ class ArticleTest < ActiveSupport::TestCase
     start_date = DateTime.parse('2010-07-06')
     end_date = DateTime.parse('2010-08-02')
 
-    article_found1 = fast_create(Article, :published_at => start_date)
-    article_found2 = fast_create(Article, :published_at => end_date)
-    article_not_found = fast_create(Article, :published_at => end_date + 1.month)
+    article_found1 = create(Article, :published_at => start_date)
+    article_found2 = create(Article, :published_at => end_date)
+    article_not_found = create(Article, :published_at => end_date + 1.month)
 
     assert_includes Article.by_range(start_date..end_date), article_found1
     assert_includes Article.by_range(start_date..end_date), article_found2
@@ -1205,17 +1210,17 @@ class ArticleTest < ActiveSupport::TestCase
   end
 
   should 'not be a forum by default' do
-    assert !fast_create(Article).forum?
+    assert !create(Article).forum?
   end
 
   should 'not have posts by default' do
-    assert !fast_create(Article).has_posts?
+    assert !create(Article).has_posts?
   end
 
   should 'get article galleries' do
-    p = fast_create(Profile)
-    a = fast_create(Article, :profile_id => p.id)
-    g = fast_create(Gallery, :profile_id => p.id)
+    p = create(Profile)
+    a = create(Article, :profile_id => p.id)
+    g = create(Gallery, :profile_id => p.id)
     assert_equal [g], p.articles.galleries
   end
 
@@ -1237,7 +1242,7 @@ class ArticleTest < ActiveSupport::TestCase
   end
 
   should 'validate inclusion of language' do
-    a = build(Article, :profile_id => fast_create(Profile).id)
+    a = build(Article, :profile_id => create(Profile).id)
     a.language = '12'
     a.valid?
     assert a.errors[:language.to_s].present?
@@ -1261,25 +1266,25 @@ class ArticleTest < ActiveSupport::TestCase
   end
 
   should 'get native translation' do
-    native_article = fast_create(Article)
-    article_translation = fast_create(Article)
+    native_article = create(Article)
+    article_translation = create(Article)
     native_article.translations << article_translation
     assert_equal native_article, native_article.native_translation
     assert_equal native_article, article_translation.native_translation
   end
 
   should 'list possible translations' do
-    native_article = fast_create(Article, :language => 'pt', :profile_id => fast_create(Profile).id             )
-    article_translation = fast_create(Article, :language => 'en', :translation_of_id => native_article.id)
+    native_article = create(Article, :language => 'pt', :profile_id => create(Profile).id             )
+    article_translation = create(Article, :language => 'en', :translation_of_id => native_article.id)
     possible_translations = native_article.possible_translations
     assert !possible_translations.include?('en')
     assert possible_translations.include?('pt')
   end
 
   should 'verify if translation is already in use' do
-    native_article = fast_create(Article, :language => 'pt')
-    article_translation = fast_create(Article, :language => 'en', :translation_of_id => native_article.id)
-    a = build(Article, :profile => fast_create(Profile))
+    native_article = create(Article, :language => 'pt')
+    article_translation = create(Article, :language => 'en', :translation_of_id => native_article.id)
+    a = build(Article, :profile => create(Profile))
     a.language = 'en'
     a.translation_of = native_article
     a.valid?
@@ -1290,8 +1295,8 @@ class ArticleTest < ActiveSupport::TestCase
   end
 
   should 'verify if native translation is already in use' do
-    native_article = fast_create(Article, :language => 'pt')
-    a = build(Article, :profile => fast_create(Profile))
+    native_article = create(Article, :language => 'pt')
+    a = build(Article, :profile => create(Profile))
     a.language = 'pt'
     a.translation_of = native_article
     a.valid?
@@ -1302,8 +1307,8 @@ class ArticleTest < ActiveSupport::TestCase
   end
 
   should 'translation have a language' do
-    native_article = fast_create(Article, :language => 'pt')
-    a = build(Article, :profile_id => fast_create(Profile).id)
+    native_article = create(Article, :language => 'pt')
+    a = build(Article, :profile_id => create(Profile).id)
     a.translation_of = native_article
     a.valid?
     assert a.errors[:language.to_s].present?
@@ -1313,8 +1318,8 @@ class ArticleTest < ActiveSupport::TestCase
   end
 
   should 'native translation have a language' do
-    native_article = fast_create(Article, :profile_id => fast_create(Profile).id             )
-    a = build(Article, :profile_id => fast_create(Profile).id)
+    native_article = create(Article, :profile_id => create(Profile).id             )
+    a = build(Article, :profile_id => create(Profile).id)
     a.language = 'en'
     a.translation_of = native_article
     a.valid?
@@ -1326,9 +1331,9 @@ class ArticleTest < ActiveSupport::TestCase
   end
 
   should 'rotate translations when root article is destroyed' do
-    native_article = fast_create(Article, :language => 'pt', :profile_id => @profile.id)
-    fast_create(Article, :language => 'en', :translation_of_id => native_article.id, :profile_id => @profile.id)
-    fast_create(Article, :language => 'es', :translation_of_id => native_article.id, :profile_id => @profile.id)
+    native_article = create(Article, :language => 'pt', :profile_id => @profile.id)
+    create(Article, :language => 'en', :translation_of_id => native_article.id, :profile_id => @profile.id)
+    create(Article, :language => 'es', :translation_of_id => native_article.id, :profile_id => @profile.id)
 
     new_root = native_article.translations.first
     child = (native_article.translations - [new_root]).first
@@ -1339,62 +1344,63 @@ class ArticleTest < ActiveSupport::TestCase
   end
 
   should 'rotate one translation when root article is destroyed' do
-    native_article = fast_create(Article, :language => 'pt', :profile_id => @profile.id)
-    translation = fast_create(Article, :language => 'en', :translation_of_id => native_article.id, :profile_id => @profile.id)
+    native_article = create(Article, :language => 'pt', :profile_id => @profile.id)
+    translation = create(Article, :language => 'en', :translation_of_id => native_article.id, :profile_id => @profile.id)
     native_article.destroy
+    translation.reload
     assert translation.translation_of.nil?
     assert translation.translations.empty?
   end
 
   should 'get self if article does not a language' do
-    article = fast_create(Article, :profile_id => @profile.id)
+    article = create(Article, :profile_id => @profile.id)
     assert_equal article, article.get_translation_to('en')
   end
 
   should 'get self if language article is blank' do
-    article = fast_create(Article, :language => '', :profile_id => @profile.id)
+    article = create(Article, :language => '', :profile_id => @profile.id)
     assert_equal article, article.get_translation_to('en')
   end
 
   should 'get self if article is the translation' do
-    article = fast_create(Article, :language => 'pt', :profile_id => @profile.id)
+    article = create(Article, :language => 'pt', :profile_id => @profile.id)
     assert_equal article, article.get_translation_to('pt')
   end
 
   should 'get the native translation if it is the translation' do
-    native_article = fast_create(Article, :language => 'pt', :profile_id => @profile.id)
-    translation = fast_create(Article, :language => 'en', :translation_of_id => native_article.id, :profile_id => @profile.id)
+    native_article = create(Article, :language => 'pt', :profile_id => @profile.id)
+    translation = create(Article, :language => 'en', :translation_of_id => native_article.id, :profile_id => @profile.id)
     assert_equal native_article, translation.get_translation_to('pt')
   end
 
   should 'get the translation if article has translation' do
-    native_article = fast_create(Article, :language => 'pt', :profile_id => @profile.id)
-    translation = fast_create(Article, :language => 'en', :translation_of_id => native_article.id, :profile_id => @profile.id)
+    native_article = create(Article, :language => 'pt', :profile_id => @profile.id)
+    translation = create(Article, :language => 'en', :translation_of_id => native_article.id, :profile_id => @profile.id)
     assert_equal translation, native_article.get_translation_to('en')
   end
 
   should 'get self if article does not has a translation' do
-    native_article = fast_create(Article, :language => 'pt', :profile_id => @profile.id)
+    native_article = create(Article, :language => 'pt', :profile_id => @profile.id)
     assert_nil native_article.get_translation_to('en')
   end
 
   should 'get only non translated articles' do
-    p = fast_create(Profile)
-    native = fast_create(Article, :language => 'pt', :profile_id => p.id)
-    translation = fast_create(Article, :language => 'en', :translation_of_id => native.id, :profile_id => p.id)
+    p = create(Profile)
+    native = create(Article, :language => 'pt', :profile_id => p.id)
+    translation = create(Article, :language => 'en', :translation_of_id => native.id, :profile_id => p.id)
     assert_equal [native], p.articles.native_translations
   end
 
   should 'not list own language as a possible translation if language has changed' do
-    a = build(Article, :language => 'pt', :profile_id => fast_create(Profile).id)
+    a = build(Article, :language => 'pt', :profile_id => create(Profile).id)
     assert !a.possible_translations.include?('pt')
-    a = fast_create(Article, :language => 'pt', :profile_id => fast_create(Profile).id             )
+    a = create(Article, :language => 'pt', :profile_id => create(Profile).id             )
     a.language = 'en'
     assert !a.possible_translations.include?('en')
   end
 
   should 'list own language as a possible translation if language has not changed' do
-    a = fast_create(Article, :language => 'pt', :profile_id => fast_create(Profile).id)
+    a = create(Article, :language => 'pt', :profile_id => create(Profile).id)
     assert a.possible_translations.include?('pt')
   end
 
@@ -1403,7 +1409,7 @@ class ArticleTest < ActiveSupport::TestCase
   end
 
   should "the author_name returns the name of the article's author" do
-    author = fast_create(Person)
+    author = create(Person)
     a = create(Article, :name => 'a test article', :author => author, :profile_id => profile.id)
     assert_equal author.name, a.author_name
     author.destroy
@@ -1413,16 +1419,16 @@ class ArticleTest < ActiveSupport::TestCase
   end
 
   should 'retrieve latest info from topic when has no comments' do
-    forum = fast_create(Forum, :name => 'Forum test', :profile_id => profile.id)
-    post = fast_create(TextileArticle, :name => 'First post', :profile_id => profile.id, :parent_id => forum.id, :updated_at => Time.now, :author_id => profile.id)
+    forum = create(Forum, :name => 'Forum test', :profile_id => profile.id)
+    post = create(TextileArticle, :name => 'First post', :profile_id => profile.id, :parent_id => forum.id, :updated_at => Time.now, :author_id => profile.id)
     assert_equal post.updated_at, post.info_from_last_update[:date]
     assert_equal profile.name, post.info_from_last_update[:author_name]
     assert_equal profile.url, post.info_from_last_update[:author_url]
   end
 
   should 'retrieve latest info from comment when has comments' do
-    forum = fast_create(Forum, :name => 'Forum test', :profile_id => profile.id)
-    post = fast_create(TextileArticle, :name => 'First post', :profile_id => profile.id, :parent_id => forum.id, :updated_at => Time.now)
+    forum = create(Forum, :name => 'Forum test', :profile_id => profile.id)
+    post = create(TextileArticle, :name => 'First post', :profile_id => profile.id, :parent_id => forum.id, :updated_at => Time.now)
     post.comments << build(Comment, :name => 'Guest', :email => 'guest@example.com', :title => 'test comment', :body => 'hello!')
     assert_equal post.comments.last.created_at, post.info_from_last_update[:date]
     assert_equal "Guest", post.info_from_last_update[:author_name]
@@ -1436,15 +1442,15 @@ class ArticleTest < ActiveSupport::TestCase
   should 'return only folders' do
     not_folders = [RssFeed, TinyMceArticle, Event, TextileArticle]
     folders = [Folder, Blog, Gallery, Forum]
-    profile = fast_create(Profile)
+    profile = create(Profile)
 
     not_folders.each do |klass|
-      item = fast_create(klass)
+      item = create(klass)
       assert_not_includes Article.folders(profile), item
     end
 
     folders.each do |klass|
-      item = fast_create(klass)
+      item = create(klass)
       assert_includes Article.folders(profile), item
     end
   end
@@ -1452,40 +1458,40 @@ class ArticleTest < ActiveSupport::TestCase
   should 'return no folders' do
     not_folders = [RssFeed, TinyMceArticle, Event, TextileArticle]
     folders = [Folder, Blog, Gallery, Forum]
-    profile = fast_create(Profile)
+    profile = create(Profile)
 
     not_folders.each do |klass|
-      item = fast_create(klass)
+      item = create(klass)
       assert_includes Article.no_folders(profile), item
     end
 
     folders.each do |klass|
-      item = fast_create(klass)
+      item = create(klass)
       assert_not_includes Article.no_folders(profile), item
     end
   end
 
   should 'accept uploads if parent accept uploads' do
-    folder = fast_create(Folder)
-    child = fast_create(UploadedFile, :parent_id => folder.id)
+    folder = create(Folder, profile: profile)
+    child = create(UploadedFile, profile: profile, :parent_id => folder.id)
     assert folder.accept_uploads?
     assert child.accept_uploads?
   end
 
   should 'not accept uploads if has no parent' do
-    child = fast_create(UploadedFile)
+    child = create(UploadedFile)
     assert !child.accept_uploads?
   end
 
   should 'not accept uploads if parent is a blog' do
-    folder = fast_create(Blog)
-    child = fast_create(UploadedFile, :parent_id => folder.id)
+    folder = create(Blog)
+    child = create(UploadedFile, :parent_id => folder.id)
     assert !child.accept_uploads?
   end
 
   should 'not accept uploads if parent is a forum' do
-    folder = fast_create(Forum)
-    child = fast_create(UploadedFile, :parent_id => folder.id)
+    folder = create(Forum)
+    child = create(UploadedFile, :parent_id => folder.id)
     assert !child.accept_uploads?
   end
 
@@ -1529,13 +1535,13 @@ class ArticleTest < ActiveSupport::TestCase
   should 'find more recent contents' do
     Article.delete_all
 
-    c1 = fast_create(TinyMceArticle, :name => 'Testing article 1', :body => 'Article body 1', :profile_id => profile.id, :created_at => DateTime.now - 4)
-    c2 = fast_create(TinyMceArticle, :name => 'Testing article 2', :body => 'Article body 2', :profile_id => profile.id, :created_at => DateTime.now - 1)
-    c3 = fast_create(TinyMceArticle, :name => 'Testing article 3', :body => 'Article body 3', :profile_id => profile.id, :created_at => DateTime.now - 3)
+    c1 = create(TinyMceArticle, :name => 'Testing article 1', :body => 'Article body 1', :profile_id => profile.id, :created_at => DateTime.now - 4)
+    c2 = create(TinyMceArticle, :name => 'Testing article 2', :body => 'Article body 2', :profile_id => profile.id, :created_at => DateTime.now - 1)
+    c3 = create(TinyMceArticle, :name => 'Testing article 3', :body => 'Article body 3', :profile_id => profile.id, :created_at => DateTime.now - 3)
 
     assert_equal [c2,c3,c1] , Article.more_recent
 
-    c4 = fast_create(TinyMceArticle, :name => 'Testing article 4', :body => 'Article body 4', :profile_id => profile.id, :created_at => DateTime.now - 2)
+    c4 = create(TinyMceArticle, :name => 'Testing article 4', :body => 'Article body 4', :profile_id => profile.id, :created_at => DateTime.now - 2)
     assert_equal [c2,c4,c3,c1] , Article.more_recent
   end
 
@@ -1591,35 +1597,35 @@ class ArticleTest < ActiveSupport::TestCase
   should 'return only text articles' do
     Article.delete_all
 
-    c1 = fast_create(TinyMceArticle, :name => 'Testing article 1', :body => 'Article body 1', :profile_id => profile.id)
-    c2 = fast_create(TextArticle, :name => 'Testing article 2', :body => 'Article body 2', :profile_id => profile.id)
-    c3 = fast_create(Event, :name => 'Testing article 3', :body => 'Article body 3', :profile_id => profile.id)
-    c4 = fast_create(RssFeed, :name => 'Testing article 4', :body => 'Article body 4', :profile_id => profile.id)
-    c5 = fast_create(TextileArticle, :name => 'Testing article 5', :body => 'Article body 5', :profile_id => profile.id)
+    c1 = create(TinyMceArticle, :name => 'Testing article 1', :body => 'Article body 1', :profile_id => profile.id)
+    c2 = create(TextArticle, :name => 'Testing article 2', :body => 'Article body 2', :profile_id => profile.id)
+    c3 = create(Event, :name => 'Testing article 3', :body => 'Article body 3', :profile_id => profile.id)
+    c4 = create(RssFeed, :name => 'Testing article 4', :profile_id => profile.id)
+    c5 = create(TextileArticle, :name => 'Testing article 5', :body => 'Article body 5', :profile_id => profile.id)
 
     assert_equivalent [c1,c2,c5], Article.text_articles
   end
 
   should 'delegate region info to profile' do
-    profile = fast_create(Profile)
+    profile = create(Profile)
     Profile.any_instance.expects(:region)
     Profile.any_instance.expects(:region_id)
-    article = fast_create(Article, :profile_id => profile.id)
+    article = create(Article, :profile_id => profile.id)
     article.region
     article.region_id
   end
 
   should 'delegate environment info to profile' do
-    profile = fast_create(Profile)
+    profile = create(Profile)
     Profile.any_instance.expects(:environment)
     Profile.any_instance.expects(:environment_id)
-    article = fast_create(Article, :profile_id => profile.id)
+    article = create(Article, :profile_id => profile.id)
     article.environment
     article.environment_id
   end
 
   should 'remove all categorizations when destroyed' do
-    art = create(Article, :name => 'article 1', :profile_id => fast_create(Person).id)
+    art = create(Article, :name => 'article 1', :profile_id => create(Person).id)
     cat = create(Category, :name => 'category 1', :environment_id => Environment.default.id)
     art.add_category cat
     art.destroy
@@ -1628,9 +1634,9 @@ class ArticleTest < ActiveSupport::TestCase
 
   should 'show more popular articles' do
     Article.destroy_all
-    art1 = create(Article, :name => 'article 1', :profile_id => fast_create(Person).id)
-    art2 = create(Article, :name => 'article 2', :profile_id => fast_create(Person).id)
-    art3 = create(Article, :name => 'article 3', :profile_id => fast_create(Person).id)
+    art1 = create(Article, :name => 'article 1', :profile_id => create(Person).id)
+    art2 = create(Article, :name => 'article 2', :profile_id => create(Person).id)
+    art3 = create(Article, :name => 'article 3', :profile_id => create(Person).id)
 
     art1.hits = 56; art1.save!
     art3.hits = 92; art3.save!
@@ -1640,11 +1646,11 @@ class ArticleTest < ActiveSupport::TestCase
   end
 
   should 'show if article is public' do
-    art1 = create(Article, :name => 'article 1', :profile_id => fast_create(Person).id)
-    art2 = create(Article, :name => 'article 2', :profile_id => fast_create(Person).id, :advertise => false)
-    art3 = create(Article, :name => 'article 3', :profile_id => fast_create(Person).id, :published => false)
-    art4 = create(Article, :name => 'article 4', :profile_id => fast_create(Person, :visible => false).id)
-    art5 = create(Article, :name => 'article 5', :profile_id => fast_create(Person, :public_profile => false).id)
+    art1 = create(Article, :name => 'article 1', :profile_id => create(Person).id)
+    art2 = create(Article, :name => 'article 2', :profile_id => create(Person).id, :advertise => false)
+    art3 = create(Article, :name => 'article 3', :profile_id => create(Person).id, :published => false)
+    art4 = create(Article, :name => 'article 4', :profile_id => create(Person, :visible => false).id)
+    art5 = create(Article, :name => 'article 5', :profile_id => create(Person, :public_profile => false).id)
 
     articles = Article.public
     assert_includes articles, art1
@@ -1655,9 +1661,9 @@ class ArticleTest < ActiveSupport::TestCase
   end
 
   should 'not allow all community members to edit by default' do
-    community = fast_create(Community)
-    admin = fast_create(Person)
-    member = fast_create(Person)
+    community = create(Community)
+    admin = create(Person)
+    member = create(Person)
     community.add_admin(admin)
     community.reload
     community.add_member(member)
@@ -1668,9 +1674,9 @@ class ArticleTest < ActiveSupport::TestCase
   end
 
   should 'be able to allow all members of a community to edit' do
-    community = fast_create(Community)
-    admin = create_user('community-admin').person
-    member = create_user.person
+    community = create(Community)
+    admin = create(:user).person
+    member = create(:user).person
 
     community.add_admin(admin)
     community.add_member(member)
@@ -1688,13 +1694,13 @@ class ArticleTest < ActiveSupport::TestCase
   end
 
   should 'allow author to edit topic' do
-    community = fast_create(Community)
-    admin = fast_create(Person)
+    community = create(Community)
+    admin = create(Person)
     community.add_member(admin)
-    author = fast_create(Person)
+    author = create(Person)
     community.add_member(author)
     forum = Forum.create(:profile => community, :name => 'Forum test', :body => 'Forum test')
-    post = fast_create(TextileArticle, :name => 'First post', :profile_id => community.id, :parent_id => forum.id, :author_id => author.id)
+    post = create(TextileArticle, :name => 'First post', :profile_id => community.id, :parent_id => forum.id, :author_id => author.id)
 
     assert post.allow_edit?(author)
   end
@@ -1705,18 +1711,18 @@ class ArticleTest < ActiveSupport::TestCase
   end
 
   should 'get first image from lead' do
-    a = fast_create(Article, :body => '<p>Foo</p><p><img src="bar.png" />Bar<img src="foo.png" /></p>',
+    a = create(Article, :body => '<p>Foo</p><p><img src="bar.png" />Bar<img src="foo.png" /></p>',
                              :abstract => '<p>Lead</p><p><img src="leadbar.png" />Bar<img src="leadfoo.png" /></p>')
     assert_equal 'leadbar.png', a.first_image
   end
 
   should 'get first image from body' do
-    a = fast_create(Article, :body => '<p>Foo</p><p><img src="bar.png" />Bar<img src="foo.png" /></p>')
+    a = create(Article, :body => '<p>Foo</p><p><img src="bar.png" />Bar<img src="foo.png" /></p>')
     assert_equal 'bar.png', a.first_image
   end
 
   should 'get first image from having_image' do
-    a = fast_create(Article,
+    a = create(Article,
       :body => '<p>Foo</p><p><img src="bar.png" /></p>',
       :abstract => '<p>Lead</p><p><img src="lead.png" /></p>'
     )
@@ -1728,7 +1734,7 @@ class ArticleTest < ActiveSupport::TestCase
   end
 
   should 'not get first image from anywhere' do
-    a = fast_create(Article, :body => '<p>Foo</p><p>Bar</p>')
+    a = create(Article, :body => '<p>Foo</p><p>Bar</p>')
     assert_equal '', a.first_image
   end
 
@@ -1791,7 +1797,7 @@ class ArticleTest < ActiveSupport::TestCase
   end
 
   should 'set author_name before creating article if there is an author' do
-    author = fast_create(Person)
+    author = create(Person)
     article = create(Article, :name => 'Test', :profile => profile, :author => author)
     assert_equal author.name, article.author_name
 
@@ -1802,7 +1808,7 @@ class ArticleTest < ActiveSupport::TestCase
   end
 
   should "author_id return the author id of the article's author" do
-    author = fast_create(Person)
+    author = create(Person)
     article = create(Article, :name => 'Test', :profile => profile, :author => author)
     assert_equal author.id, article.author_id
   end
@@ -1813,8 +1819,8 @@ class ArticleTest < ActiveSupport::TestCase
   end
 
   should "return the author_name of a specific version" do
-    author1 = fast_create(Person)
-    author2 = fast_create(Person)
+    author1 = create(Person)
+    author2 = create(Person)
     article = create(Article, :name => 'first version', :profile => profile, :author => author1)
     article.name = 'second version'
     article.author = author2
@@ -1824,22 +1830,22 @@ class ArticleTest < ActiveSupport::TestCase
   end
 
   should 'identify if belongs to forum' do
-    p = create_user('user_forum_test').person
-    forum = fast_create(Forum, :name => 'Forum test', :profile_id => p.id)
-    post = fast_create(TextileArticle, :name => 'First post', :profile_id => p.id, :parent_id => forum.id)
+    p = create(:user).person
+    forum = create(Forum, :name => 'Forum test', :profile_id => p.id)
+    post = create(TextileArticle, :name => 'First post', :profile_id => p.id, :parent_id => forum.id)
     assert post.belongs_to_forum?
   end
 
   should 'not belongs to forum' do
-    p = create_user('user_forum_test').person
-    blog = fast_create(Blog, :name => 'Not Forum', :profile_id => p.id)
-    a = fast_create(TextileArticle, :name => 'Not forum post', :profile_id => p.id, :parent_id => blog.id)
+    p = create(:user).person
+    blog = create(Blog, :name => 'Not Forum', :profile_id => p.id)
+    a = create(TextileArticle, :name => 'Not forum post', :profile_id => p.id, :parent_id => blog.id)
     assert !a.belongs_to_forum?
   end
 
   should 'not belongs to forum if do not have a parent' do
-    p = create_user('user_forum_test').person
-    a = fast_create(TextileArticle, :name => 'Orphan post', :profile_id => p.id)
+    p = create(:user).person
+    a = create(TextileArticle, :name => 'Orphan post', :profile_id => p.id)
     assert !a.belongs_to_forum?
   end
 
@@ -1855,11 +1861,11 @@ class ArticleTest < ActiveSupport::TestCase
   should 'return articles with specific types' do
     Article.delete_all
 
-    c1 = fast_create(TinyMceArticle, :name => 'Testing article 1', :body => 'Article body 1', :profile_id => profile.id)
-    c2 = fast_create(TextArticle, :name => 'Testing article 2', :body => 'Article body 2', :profile_id => profile.id)
-    c3 = fast_create(Event, :name => 'Testing article 3', :body => 'Article body 3', :profile_id => profile.id)
-    c4 = fast_create(RssFeed, :name => 'Testing article 4', :body => 'Article body 4', :profile_id => profile.id)
-    c5 = fast_create(TextileArticle, :name => 'Testing article 5', :body => 'Article body 5', :profile_id => profile.id)
+    c1 = create(TinyMceArticle, :name => 'Testing article 1', :body => 'Article body 1', :profile_id => profile.id)
+    c2 = create(TextArticle, :name => 'Testing article 2', :body => 'Article body 2', :profile_id => profile.id)
+    c3 = create(Event, :name => 'Testing article 3', :body => 'Article body 3', :profile_id => profile.id)
+    c4 = create(RssFeed, :name => 'Testing article 4', :profile_id => profile.id)
+    c5 = create(TextileArticle, :name => 'Testing article 5', :body => 'Article body 5', :profile_id => profile.id)
 
     assert_equivalent [c1,c2], Article.with_types(['TinyMceArticle', 'TextArticle'])
     assert_equivalent [c3], Article.with_types(['Event'])
@@ -1886,9 +1892,9 @@ class ArticleTest < ActiveSupport::TestCase
   end
 
   should 'get author by version' do
-    p1 = fast_create(Person)
-    p2 = fast_create(Person)
-    p3 = fast_create(Person)
+    p1 = create(Person)
+    p2 = create(Person)
+    p3 = create(Person)
     article = create(Article, :name => 'first version', :profile => profile, :author => p1)
 
     article.name = 'second version'
@@ -1905,53 +1911,53 @@ class ArticleTest < ActiveSupport::TestCase
   end
 
   should 'display_filter display only public articles if there is no user' do
-    p = fast_create(Person)
+    p = create(Person)
     Article.delete_all
-    a = fast_create(Article, :published => true, :profile_id => p.id)
-    fast_create(Article, :published => false, :profile_id => p.id)
-    fast_create(Article, :published => false, :profile_id => p.id)
+    a = create(Article, :published => true, :profile_id => p.id)
+    create(Article, :published => false, :profile_id => p.id)
+    create(Article, :published => false, :profile_id => p.id)
     assert_equal [a], Article.display_filter(nil, p)
   end
 
   should 'display_filter display public articles for users' do
-    user = create_user('someuser').person
-    p = fast_create(Person)
+    user = create(:user).person
+    p = create(Person)
     user.stubs(:has_permission?).with(:view_private_content, p).returns(false)
     Article.delete_all
-    a = fast_create(Article, :published => true, :profile_id => p.id)
-    fast_create(Article, :published => false, :profile_id => p.id)
-    fast_create(Article, :published => false, :profile_id => p.id)
+    a = create(Article, :published => true, :profile_id => p.id)
+    create(Article, :published => false, :profile_id => p.id)
+    create(Article, :published => false, :profile_id => p.id)
     assert_equal [a], Article.display_filter(user, p)
   end
 
   should 'display_filter display private article last changed by user' do
-    user = create_user('someuser').person
-    p = fast_create(Person)
+    user = create(:user).person
+    p = create(Person)
     user.stubs(:has_permission?).with(:view_private_content, p).returns(false)
     Article.delete_all
-    a = fast_create(Article, :published => false, :last_changed_by_id => user.id, :profile_id => p.id)
-    fast_create(Article, :published => false, :profile_id => p.id)
-    fast_create(Article, :published => false, :profile_id => p.id)
+    a = create(Article, :published => false, :last_changed_by_id => user.id, :profile_id => p.id)
+    create(Article, :published => false, :profile_id => p.id)
+    create(Article, :published => false, :profile_id => p.id)
     assert_equal [a], Article.display_filter(user, p)
   end
 
   should 'display_filter display user private article of his own profile' do
-    user = create_user('someuser').person
+    user = create(:user).person
     user.stubs(:has_permission?).with(:view_private_content, user).returns(false)
-    p = fast_create(Person)
+    p = create(Person)
     Article.delete_all
-    a = fast_create(Article, :published => false, :profile_id => user.id)
-    fast_create(Article, :published => false, :profile_id => p.id)
-    fast_create(Article, :published => false, :profile_id => p.id)
+    a = create(Article, :published => false, :profile_id => user.id)
+    create(Article, :published => false, :profile_id => p.id)
+    create(Article, :published => false, :profile_id => p.id)
     assert_equal [a], Article.display_filter(user, user)
   end
 
   should 'display_filter show profile private content if the user has view_private_content permission' do
-    user = create_user('someuser').person
-    p = fast_create(Person)
+    user = create(:user).person
+    p = create(Person)
     Article.delete_all
     user.stubs(:has_permission?).with(:view_private_content, p).returns(false)
-    a = fast_create(Article, :published => false, :profile_id => p.id)
+    a = create(Article, :published => false, :profile_id => p.id)
     assert_equal [], Article.display_filter(user, p)
 
     user.stubs(:has_permission?).with(:view_private_content, p).returns(true)
@@ -1959,177 +1965,177 @@ class ArticleTest < ActiveSupport::TestCase
   end
 
   should 'display_filter show person private content to friends' do
-    user = create_user('someuser').person
-    p = fast_create(Person)
+    user = create(:user).person
+    p = create(Person)
     p.add_friend(user)
     user.stubs(:has_permission?).with(:view_private_content, p).returns(false)
     Article.delete_all
-    a = fast_create(Article, :published => false, :show_to_followers => true, :profile_id => p.id)
-    fast_create(Article, :published => false, :show_to_followers => false, :profile_id => p.id)
-    fast_create(Article, :published => false, :show_to_followers => false, :profile_id => p.id)
+    a = create(Article, :published => false, :show_to_followers => true, :profile_id => p.id)
+    create(Article, :published => false, :show_to_followers => false, :profile_id => p.id)
+    create(Article, :published => false, :show_to_followers => false, :profile_id => p.id)
     assert_equal [a], Article.display_filter(user, p)
   end
 
   should 'display_filter show community private content to members' do
-    user = create_user('someuser').person
-    p = fast_create(Community)
+    user = create(:user).person
+    p = create(Community)
     p.add_member(user)
     user.stubs(:has_permission?).with(:view_private_content, p).returns(false)
     Article.delete_all
-    a = fast_create(Article, :published => false, :show_to_followers => true, :profile_id => p.id)
-    fast_create(Article, :published => false, :show_to_followers => false, :profile_id => p.id)
-    fast_create(Article, :published => false, :show_to_followers => false, :profile_id => p.id)
+    a = create(Article, :published => false, :show_to_followers => true, :profile_id => p.id)
+    create(Article, :published => false, :show_to_followers => false, :profile_id => p.id)
+    create(Article, :published => false, :show_to_followers => false, :profile_id => p.id)
     assert_equal [a], Article.display_filter(user, p)
   end
 
   should 'display_filter do not show person private content to non friends' do
-    user = create_user('someuser').person
-    p = fast_create(Person)
+    user = create(:user).person
+    p = create(Person)
     assert !p.is_a_friend?(user)
     user.stubs(:has_permission?).with(:view_private_content, p).returns(false)
     Article.delete_all
-    a = fast_create(Article, :published => false, :show_to_followers => true, :profile_id => p.id)
-    fast_create(Article, :published => false, :profile_id => p.id)
-    fast_create(Article, :published => false, :profile_id => p.id)
+    a = create(Article, :published => false, :show_to_followers => true, :profile_id => p.id)
+    create(Article, :published => false, :profile_id => p.id)
+    create(Article, :published => false, :profile_id => p.id)
     assert_equal [], Article.display_filter(user, p)
   end
 
   should 'display_filter do not show community private content to non members' do
-    user = create_user('someuser').person
-    p = fast_create(Community)
+    user = create(:user).person
+    p = create(Community)
     assert !user.is_member_of?(p)
     user.stubs(:has_permission?).with(:view_private_content, p).returns(false)
     Article.delete_all
-    a = fast_create(Article, :published => false, :show_to_followers => true, :profile_id => p.id)
-    fast_create(Article, :published => false, :profile_id => p.id)
-    fast_create(Article, :published => false, :profile_id => p.id)
+    a = create(Article, :published => false, :show_to_followers => true, :profile_id => p.id)
+    create(Article, :published => false, :profile_id => p.id)
+    create(Article, :published => false, :profile_id => p.id)
     assert_equal [], Article.display_filter(user, p)
   end
 
   should 'display_filter show community public content even it has no followers defined' do
-    user = create_user('someuser').person
-    p = fast_create(Community)
+    user = create(:user).person
+    p = create(Community)
     assert !user.is_member_of?(p)
     user.stubs(:has_permission?).with(:view_private_content, p).returns(false)
     Article.delete_all
-    a = fast_create(Article, :published => true, :show_to_followers => true, :profile_id => p.id)
-    fast_create(Article, :published => false, :profile_id => p.id)
-    fast_create(Article, :published => false, :profile_id => p.id)
+    a = create(Article, :published => true, :show_to_followers => true, :profile_id => p.id)
+    create(Article, :published => false, :profile_id => p.id)
+    create(Article, :published => false, :profile_id => p.id)
     assert_equal [a], Article.display_filter(user, p)
   end
 
   should 'display_filter show person public content even it has no followers defined' do
-    user = create_user('someuser').person
-    p = fast_create(Community)
+    user = create(:user).person
+    p = create(Community)
     assert !user.is_a_friend?(p)
     user.stubs(:has_permission?).with(:view_private_content, p).returns(false)
     Article.delete_all
-    a = fast_create(Article, :published => true, :show_to_followers => true, :profile_id => p.id)
-    fast_create(Article, :published => false, :profile_id => p.id)
-    fast_create(Article, :published => false, :profile_id => p.id)
+    a = create(Article, :published => true, :show_to_followers => true, :profile_id => p.id)
+    create(Article, :published => false, :profile_id => p.id)
+    create(Article, :published => false, :profile_id => p.id)
     assert_equal [a], Article.display_filter(user, p)
   end
 
   should 'display_filter do not show person private content to non friends passing nil as profile parameter' do
-    user = create_user('someuser').person
-    p = fast_create(Person)
+    user = create(:user).person
+    p = create(Person)
     assert !p.is_a_friend?(user)
     assert !user.is_admin?
     Article.delete_all
-    fast_create(Article, :published => false, :profile_id => p.id)
+    create(Article, :published => false, :profile_id => p.id)
     assert_equal [], Article.display_filter(user, nil)
   end
 
   should 'display_filter do not show community private content to non members passing nil as profile parameter' do
-    user = create_user('someuser').person
-    p = fast_create(Community)
+    user = create(:user).person
+    p = create(Community)
     assert !user.is_member_of?(p)
     Article.delete_all
-    fast_create(Article, :published => false, :profile_id => p.id)
+    create(Article, :published => false, :profile_id => p.id)
     assert_equal [], Article.display_filter(user, nil)
   end
 
   should 'display_filter show community public content of private community for user members' do
-    user = create_user('someuser').person
-    p = fast_create(Community, :public_profile => false)
+    user = create(:user).person
+    p = create(Community, :public_profile => false)
     p.add_member(user)
     assert user.is_member_of?(p)
     user.stubs(:has_permission?).with(:view_private_content, p).returns(false)
     Article.delete_all
-    a = fast_create(Article, :published => true, :profile_id => p.id)
-    fast_create(Article, :published => false, :show_to_followers => false, :profile_id => p.id)
-    fast_create(Article, :published => false, :show_to_followers => false, :profile_id => p.id)
+    a = create(Article, :published => true, :profile_id => p.id)
+    create(Article, :published => false, :show_to_followers => false, :profile_id => p.id)
+    create(Article, :published => false, :show_to_followers => false, :profile_id => p.id)
     assert_equal [a], Article.display_filter(user, p)
   end
 
   should 'display_filter not show public content of private community for non members' do
-    user = create_user('someuser').person
-    p = fast_create(Community, :public_profile => false)
+    user = create(:user).person
+    p = create(Community, :public_profile => false)
     assert !user.is_member_of?(p)
     user.stubs(:has_permission?).with(:view_private_content, p).returns(false)
     Article.delete_all
-    a = fast_create(Article, :published => true, :profile_id => p.id)
-    fast_create(Article, :published => false, :profile_id => p.id)
+    a = create(Article, :published => true, :profile_id => p.id)
+    create(Article, :published => false, :profile_id => p.id)
     assert_equal [], Article.display_filter(user, p)
   end
 
   should 'display_filter not show public content of private community for non members when user is nil' do
-    p = fast_create(Community, :public_profile => false)
+    p = create(Community, :public_profile => false)
     Article.delete_all
-    a = fast_create(Article, :published => true, :profile_id => p.id)
-    fast_create(Article, :published => false, :profile_id => p.id)
+    a = create(Article, :published => true, :profile_id => p.id)
+    create(Article, :published => false, :profile_id => p.id)
     assert_equal [], Article.display_filter(nil, p)
   end
 
   should 'display_filter show public content for non members when profile is nil' do
-    user = create_user('someuser').person
-    p = fast_create(Community, :public_profile => true)
+    user = create(:user).person
+    p = create(Community, :public_profile => true)
     Article.delete_all
-    a1 = fast_create(Article, :published => true, :profile_id => user.id)
-    a2 = fast_create(Article, :published => true, :profile_id => p.id)
-    fast_create(Article, :published => false, :profile_id => p.id)
+    a1 = create(Article, :published => true, :profile_id => user.id)
+    a2 = create(Article, :published => true, :profile_id => p.id)
+    create(Article, :published => false, :profile_id => p.id)
     assert_equivalent [a1,a2], Article.display_filter(nil, user)
   end
 
   should 'display_filter show person public content of private person profile for user friends' do
-    user = create_user('someuser').person
-    p = fast_create(Person, :public_profile => false)
+    user = create(:user).person
+    p = create(Person, :public_profile => false)
     p.add_friend(user)
     assert p.is_a_friend?(user)
     user.stubs(:has_permission?).with(:view_private_content, p).returns(false)
     Article.delete_all
-    a = fast_create(Article, :published => true, :profile_id => p.id)
-    fast_create(Article, :published => false, :show_to_followers => false, :profile_id => p.id)
-    fast_create(Article, :published => false, :show_to_followers => false, :profile_id => p.id)
+    a = create(Article, :published => true, :profile_id => p.id)
+    create(Article, :published => false, :show_to_followers => false, :profile_id => p.id)
+    create(Article, :published => false, :show_to_followers => false, :profile_id => p.id)
     assert_equal [a], Article.display_filter(user, p)
   end
 
   should 'display_filter not show public content of private person for non friends' do
-    user = create_user('someuser').person
-    p = fast_create(Person, :public_profile => false)
+    user = create(:user).person
+    p = create(Person, :public_profile => false)
     assert !user.is_a_friend?(p)
     user.stubs(:has_permission?).with(:view_private_content, p).returns(false)
     Article.delete_all
-    a = fast_create(Article, :published => true, :profile_id => p.id)
-    fast_create(Article, :published => false, :profile_id => p.id)
+    a = create(Article, :published => true, :profile_id => p.id)
+    create(Article, :published => false, :profile_id => p.id)
     assert_equal [], Article.display_filter(user, p)
   end
 
   should 'display_filter not show public content of private person for non friends when user is nil' do
-    p = fast_create(Person, :public_profile => false)
+    p = create(Person, :public_profile => false)
     Article.delete_all
-    a = fast_create(Article, :published => true, :profile_id => p.id)
-    fast_create(Article, :published => false, :profile_id => p.id)
+    a = create(Article, :published => true, :profile_id => p.id)
+    create(Article, :published => false, :profile_id => p.id)
     assert_equal [], Article.display_filter(nil, p)
   end
 
   should 'display_filter show public content for non friends when profile is nil' do
-    user = create_user('someuser').person
-    p = fast_create(Person, :public_profile => true)
+    user = create(:user).person
+    p = create(Person, :public_profile => true)
     Article.delete_all
-    a1 = fast_create(Article, :published => true, :profile_id => user.id)
-    a2 = fast_create(Article, :published => true, :profile_id => p.id)
-    fast_create(Article, :published => false, :profile_id => p.id)
+    a1 = create(Article, :published => true, :profile_id => user.id)
+    a2 = create(Article, :published => true, :profile_id => p.id)
+    create(Article, :published => false, :profile_id => p.id)
     assert_equivalent [a1,a2], Article.display_filter(nil, user)
   end
 

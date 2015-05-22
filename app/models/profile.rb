@@ -875,6 +875,7 @@ private :generate_url, :url_options
 
   # FIXME: horrible workaround to circular dependancy in environment.rb
   after_create do |profile|
+#puts profile.inspect
     ProfileSweeper.new().after_create(profile)
   end
 

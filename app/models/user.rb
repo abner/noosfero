@@ -41,6 +41,9 @@ class User < ActiveRecord::Base
   end
 
   after_create do |user|
+#puts "USUARIOOOo"
+#puts user.inspect
+#puts user.person.inspect
     unless user.person
       p = Person.new
 
@@ -50,6 +53,7 @@ class User < ActiveRecord::Base
       p.environment = user.environment
       p.name ||= user.name || user.login
       p.visible = false unless user.activated?
+#puts p.inspect
       p.save!
 
       user.person = p
@@ -61,6 +65,7 @@ class User < ActiveRecord::Base
         user.activate
       end
     end
+#puts 'CRIOUUUUUUUUUUUUUUUUUUUUUU'
   end
   after_create :deliver_activation_code
   after_create :delay_activation_check
@@ -121,10 +126,12 @@ class User < ActiveRecord::Base
 
   # Activates the user in the database.
   def activate
+#puts "ATIVANDOOOOOOOO"
     return false unless self.person
     self.activated_at = Time.now.utc
     self.activation_code = nil
     self.person.visible = true
+#puts "ATIVAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAADOOOOOOOOOOOOOOOOOOOO"
     begin
       self.person.save! && self.save!
     rescue Exception => exception

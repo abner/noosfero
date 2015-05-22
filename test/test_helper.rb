@@ -6,7 +6,7 @@ require 'mocha'
 
 require 'noosfero/test'
 require 'authenticated_test_helper'
-require File.dirname(__FILE__) + '/factories'
+#require File.dirname(__FILE__) + '/factories'
 require File.dirname(__FILE__) + '/noosfero_doc_test'
 require File.dirname(__FILE__) + '/action_tracker_test_helper'
 
@@ -45,7 +45,9 @@ class ActiveSupport::TestCase
   # for fixture_file_upload
   include ActionDispatch::TestProcess
 
-  include Noosfero::Factory
+#  include Noosfero::Factory
+
+  include FactoryGirl::Syntax::Methods
 
   include AuthenticatedTestHelper
 
