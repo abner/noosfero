@@ -98,9 +98,11 @@ FactoryGirl.define do
       end
 
     end
-    factory :community, class: Community do
+    factory :organization, class: Organization do
     end
 
+    factory :community, class: Community do
+    end
   end
 
   factory :role do
@@ -135,6 +137,10 @@ FactoryGirl.define do
 
   factory ActsAsTaggableOn::Tag do
     name FFaker::Lorem.word
+  end
+
+  factory ActionTracker::Record do
+    verb FFaker::Lorem.word
   end
 
   factory :domain do

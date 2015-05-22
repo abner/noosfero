@@ -2,16 +2,16 @@ require_relative "../test_helper"
 
 class ActionTrackerExtTest < ActiveSupport::TestCase
   should 'increase person activities_count on new activity' do
-    person = fast_create(Person)
+    person = create(Person)
     assert_difference 'person.activities_count', 1 do
-      ActionTracker::Record.create! :verb => :leave_scrap, :user => person, :target => fast_create(Profile)
+      ActionTracker::Record.create! :verb => :leave_scrap, :user => person, :target => create(Profile)
       person.reload
     end
   end
 
   should 'decrease person activities_count on activity removal' do
-    person = fast_create(Person)
-    record = ActionTracker::Record.create! :verb => :leave_scrap, :user => person, :target => fast_create(Profile)
+    person = create(Person)
+    record = ActionTracker::Record.create! :verb => :leave_scrap, :user => person, :target => create(Profile)
     person.reload
     assert_difference 'person.activities_count', -1 do
       record.destroy
@@ -20,8 +20,8 @@ class ActionTrackerExtTest < ActiveSupport::TestCase
   end
 
   should 'not decrease person activities_count on activity removal after the recent delay' do
-    person = fast_create(Person)
-    record = ActionTracker::Record.create! :verb => :leave_scrap, :user => person, :target => fast_create(Profile)
+    person = create(Person)
+    record = ActionTracker::Record.create! :verb => :leave_scrap, :user => person, :target => create(Profile)
     record.created_at = record.created_at - ActionTracker::Record::RECENT_DELAY.days - 1.day
     record.save!
     person.reload
@@ -32,8 +32,8 @@ class ActionTrackerExtTest < ActiveSupport::TestCase
   end
 
   should 'increase organization activities_count on new activity' do
-    person = fast_create(Person)
-    organization = fast_create(Organization)
+    person = create(Person)
+    organization = create(Organization)
     assert_difference 'organization.activities_count', 1 do
       ActionTracker::Record.create! :verb => :leave_scrap, :user => person, :target => organization
       organization.reload
@@ -41,8 +41,8 @@ class ActionTrackerExtTest < ActiveSupport::TestCase
   end
 
   should 'decrease organization activities_count on activity removal' do
-    person = fast_create(Person)
-    organization = fast_create(Organization)
+    person = create(Person)
+    organization = create(Organization)
     record = ActionTracker::Record.create! :verb => :leave_scrap, :user => person, :target => organization
     organization.reload
     assert_difference 'organization.activities_count', -1 do
@@ -52,8 +52,8 @@ class ActionTrackerExtTest < ActiveSupport::TestCase
   end
 
   should 'not decrease organization activities_count on activity removal after the recent delay' do
-    person = fast_create(Person)
-    organization = fast_create(Organization)
+    person = create(Person)
+    organization = create(Organization)
     record = create(ActionTracker::Record, :verb => :leave_scrap, :user => person, :target => organization, :created_at => (ActionTracker::Record::RECENT_DELAY + 1).days.ago)
     organization.reload
     assert_no_difference 'organization.activities_count' do
