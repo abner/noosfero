@@ -10,7 +10,7 @@ class AccountHelperTest < ActiveSupport::TestCase
   end
 
   should 'suggest valid usernames' do
-    ze = create_user('ze').person
+    ze = create(:person)
     stubs(:environment).returns(ze.environment)
     suggestions = suggestion_based_on_username('ze')
     suggestions.each do |suggestion|
