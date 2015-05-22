@@ -3,8 +3,8 @@ require_relative "../test_helper"
 class AbuseReportTest < ActiveSupport::TestCase
 
   def setup
-    @reported = fast_create(Profile)
-    @reporter = fast_create(Person)
+    @reported = create(Profile)
+    @reporter = create(Person)
     @abuse_complaint = AbuseComplaint.create!(:reported => @reported)
   end
 
