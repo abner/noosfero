@@ -3,7 +3,7 @@ require_relative "../test_helper"
 class AbuseComplaintTest < ActiveSupport::TestCase
 
   should 'be related with a reported' do
-    reported = fast_create(Profile)
+    reported = create(Profile)
     abuse_complaint = AbuseComplaint.new
 
     assert !abuse_complaint.valid?
@@ -15,10 +15,10 @@ class AbuseComplaintTest < ActiveSupport::TestCase
   end
 
   should 'become active if number of reports passes environment\'s lower bound' do
-    reported = fast_create(Profile)
-    p1 = fast_create(Person)
-    p2 = fast_create(Person)
-    p3 = fast_create(Person)
+    reported = create(Profile)
+    p1 = create(Person)
+    p2 = create(Person)
+    p3 = create(Person)
     abuse_complaint = AbuseComplaint.create!(:reported => reported)
 
     assert_equal Task::Status::HIDDEN, abuse_complaint.status
@@ -46,7 +46,7 @@ class AbuseComplaintTest < ActiveSupport::TestCase
   end
 
   should 'be destroyed with reported' do
-    reported = fast_create(Profile)
+    reported = create(Profile)
     reported_id = reported.id
     abuse_complaint = AbuseComplaint.create!(:reported => reported)
 
