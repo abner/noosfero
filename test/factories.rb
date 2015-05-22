@@ -111,6 +111,7 @@ FactoryGirl.define do
   end
 
   factory :category do
+    environment
     name FFaker::Lorem.word
   end
 

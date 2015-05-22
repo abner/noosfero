@@ -5,7 +5,7 @@ class ActsAsFilesystemTest < ActiveSupport::TestCase
   # FIXME shouldn't we test with a non-real model, instead of Article?
 
   should 'provide a hierarchy list' do
-    profile = create_user('testinguser').person
+    profile = create(:person)
 
     a1 = profile.articles.create(:name => 'a1')
     a2 = profile.articles.create(:name => 'a2', :parent => a1)
@@ -43,7 +43,7 @@ class ActsAsFilesystemTest < ActiveSupport::TestCase
   end
 
   should 'list the full tree' do
-    profile = create_user('testinguser').person
+    profile = create(:person)
 
     a1 = profile.articles.build(:name => 'a1'); a1.save!
 
@@ -60,7 +60,7 @@ class ActsAsFilesystemTest < ActiveSupport::TestCase
   end
 
   should 'list the full tree without the root' do
-    profile = create_user('testinguser').person
+    profile = create(:person)
 
     a1 = profile.articles.build(:name => 'a1'); a1.save!
 
@@ -77,7 +77,7 @@ class ActsAsFilesystemTest < ActiveSupport::TestCase
   end
 
   should 'be able to traverse with a block' do
-    profile = create_user('testinguser').person
+    profile = create(:person)
 
     a1 = profile.articles.build(:name => 'a1'); a1.save!
 
@@ -95,8 +95,8 @@ class ActsAsFilesystemTest < ActiveSupport::TestCase
   end
 
   should 'be able to list text articles that are children of a folder' do
-    profile = create_user('testinguser').person
-    folder = fast_create(Folder, :name => 'folder', :profile_id => profile.id)
+    profile = create(:person)
+    folder = create(Folder, :name => 'folder', :profile_id => profile.id)
     article1 = Article.create!(:name => 'article 1', :profile => profile, :parent => folder)
     article2 = Article.create!(:name => 'article 2', :profile => profile, :parent => folder)
     folder.reload
@@ -121,7 +121,7 @@ class ActsAsFilesystemTest < ActiveSupport::TestCase
   end
 
   should 'cache children count' do
-    profile = create_user('testinguser').person
+    profile = create(:person)
     a1 = profile.articles.create!(:name => 'a1')
     a11 = profile.articles.create!(:name => 'a11', :parent => a1)
     a12 = profile.articles.create!(:name => 'a12', :parent => a1)
