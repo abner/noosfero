@@ -1094,16 +1094,20 @@ Person.delete_all
   should 'create the notification to organization and all organization members' do
     Profile.delete_all
     ActionTracker::Record.delete_all
-
+#FIXME fix this test
+#puts ActionTracker::Record.count
     community = create(Community)
     member_1 = create(Person)
     community.add_member(member_1)
 
-    article = create TinyMceArticle, :name => 'Tracked Article 1', :profile_id => community.id
+    article = TinyMceArticle.create(:name => 'Tracked Article 1', :profile => community)
     first_activity = article.activity
+#puts first_activity.inspect
     assert_equal [first_activity], ActionTracker::Record.find_all_by_verb('create_article')
 
     process_delayed_job_queue
+#puts ActionTracker::Record.count
+#puts ActionTrackerNotification.count
     assert_equal 2, ActionTrackerNotification.find_all_by_action_tracker_id(first_activity.id).count
 
     member_2 = create(Person)
@@ -1475,7 +1479,7 @@ Person.delete_all
 
   should 'accept uploads if parent accept uploads' do
     folder = create(Folder, profile: profile)
-    child = create(UploadedFile, profile: profile, :parent_id => folder.id)
+    child = create(UploadedFile, profile: profile, parent_id: folder.id)
     assert folder.accept_uploads?
     assert child.accept_uploads?
   end
@@ -1618,12 +1622,11 @@ Person.delete_all
   end
 
   should 'delegate environment info to profile' do
-    profile = create(Profile)
-    Profile.any_instance.expects(:environment)
-    Profile.any_instance.expects(:environment_id)
+    environment = create(:environment)
+    profile = create(Profile, :environment => environment)
     article = create(Article, :profile_id => profile.id)
-    article.environment
-    article.environment_id
+    assert_equal environment, article.environment
+    assert_equal environment.id, article.environment_id
   end
 
   should 'remove all categorizations when destroyed' do

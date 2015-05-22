@@ -38,6 +38,8 @@ FactoryGirl.define do
     end
 
     factory :uploaded_file, class: UploadedFile do
+      filename FFaker::Lorem.word
+      size 32
     end
 
     factory :rss_feed, class: RssFeed do
@@ -132,6 +134,10 @@ FactoryGirl.define do
   end
 
   factory ActsAsTaggableOn::Tag do
+    name FFaker::Lorem.word
+  end
+
+  factory :domain do
     name FFaker::Lorem.word
   end
 
