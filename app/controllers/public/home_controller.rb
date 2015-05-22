@@ -11,7 +11,7 @@ class HomeController < PublicController
         @portal_news = portal_community.news(environment.portal_news_amount, true).offset(environment.highlighted_news_amount)
         @area_news = environment.portal_folders
       end
-    end
+    end    
   end
 
   def terms

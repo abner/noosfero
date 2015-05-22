@@ -227,9 +227,9 @@ module ApplicationHelper
     end
     the_title = html_options[:title] || label
     if html_options[:disabled]
-      content_tag('a', '&nbsp;'+content_tag('span', label), html_options.merge(:class => the_class, :title => the_title))
+      content_tag('a', '&nbsp;'.html_safe+content_tag('span', label), html_options.merge(:class => the_class, :title => the_title))
     else
-      link_to('&nbsp;'+content_tag('span', label), url, html_options.merge(:class => the_class, :title => the_title))
+      link_to('&nbsp;'.html_safe+content_tag('span', label), url, html_options.merge(:class => the_class, :title => the_title))
     end
   end
 
@@ -624,6 +624,14 @@ module ApplicationHelper
   def popover_menu(title,menu_title,links,html_options={})
     html_options[:class] = "" unless html_options[:class]
     html_options[:class] << " menu-submenu-trigger"
+
+    puts "Printing links..."
+    puts "Links:"
+    links.each do |link|
+      puts "Link: #{link}"
+    end
+    puts "to_json: #{links.to_json}"
+    puts "Escaped: #{CGI::escapeHTML(links.to_json)}"
     html_options[:onclick] = "toggleSubmenu(this, '#{menu_title}', #{CGI::escapeHTML(links.to_json)}); return false"
 
     link_to(content_tag(:span, title), '#', html_options)

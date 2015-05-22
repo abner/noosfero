@@ -123,7 +123,10 @@ module BoxesHelper
   end
 
   def wrap_main_content(content)
-    (1..8).to_a.reverse.inject(content) { |acc,n| content_tag('div', acc, :id => 'main-content-wrapper-' + n.to_s) }
+    puts "wrap_main_content: #{content}"
+    (1..8).to_a.reverse.inject(content) { |acc,n| 
+      content_tag('div', acc, :id => 'main-content-wrapper-' + n.to_s) 
+    }
   end
 
   def extract_block_content(content)

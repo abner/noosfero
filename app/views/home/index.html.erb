@@ -49,7 +49,7 @@
     <% end %>
   <% end %>
 <% else %>
-  <%= environment.description %>
+  <%= environment.description.html_safe %>
 <% end %>
 
 <% if environment.enabled?('search_in_home') %>
