@@ -138,7 +138,7 @@ FactoryGirl.define do
   end
 
   factory :domain do
-    name FFaker::Lorem.word
+    name FFaker::Lorem.word + '.com'
   end
 
 end

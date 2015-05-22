@@ -68,7 +68,7 @@ class DomainTest < ActiveSupport::TestCase
 
   def test_find_by_name
     Domain.delete_all
-    fast_create(Domain, :name => 'example.net')
+    create(Domain, :name => 'example.net')
     d1 = Domain.find_by_name('example.net')
     d2 =  Domain.find_by_name('www.example.net')
     assert !d1.nil?
@@ -107,7 +107,7 @@ class DomainTest < ActiveSupport::TestCase
   def test_hosted_domain
     assert_equal false, Domain.hosting_profile_at('example.com')
 
-    profile = create_user('hosted_user').person
+    profile = create(:person)
     create(Domain, :name => 'example.com', :owner => profile)
     assert_equal true, Domain.hosting_profile_at('example.com')
   end
@@ -118,12 +118,12 @@ class DomainTest < ActiveSupport::TestCase
   end
 
   should 'not crash if key is not defined' do
-    domain = fast_create(Domain, :name => 'domain-without-key')
+    domain = create(Domain, :name => 'domain-without-key.com')
     assert_nil domain.google_maps_key
   end
 
   should 'return key if defined' do
-    domain = fast_create(Domain, :name => 'domain-with-key', :google_maps_key => 'DOMAIN_KEY')
+    domain = create(Domain, :name => 'domain-with-key.com', :google_maps_key => 'DOMAIN_KEY')
     assert_equal 'DOMAIN_KEY', domain.google_maps_key
   end
 
