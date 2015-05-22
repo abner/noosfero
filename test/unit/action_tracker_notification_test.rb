@@ -23,7 +23,7 @@ class ActionTrackerNotificationTest < ActiveSupport::TestCase
   end
 
   should "be associated to Person" do
-    person = fast_create(Person)
+    person = create(Person)
     a = ActionTrackerNotification.new
     assert_nothing_raised do
       a.profile = person
@@ -39,17 +39,17 @@ class ActionTrackerNotificationTest < ActiveSupport::TestCase
   end
 
   should "destroy the notifications if the activity is destroyed" do
-    action_tracker = fast_create(ActionTracker::Record)
+    action_tracker = create(ActionTracker::Record)
     count = ActionTrackerNotification.count
-    fast_create(ActionTrackerNotification, :action_tracker_id => action_tracker.id, :profile_id => 1)
-    fast_create(ActionTrackerNotification, :action_tracker_id => action_tracker.id, :profile_id => 2)
-    fast_create(ActionTrackerNotification, :action_tracker_id => action_tracker.id, :profile_id => 3)
+    create(ActionTrackerNotification, :action_tracker_id => action_tracker.id, :profile_id => 1)
+    create(ActionTrackerNotification, :action_tracker_id => action_tracker.id, :profile_id => 2)
+    create(ActionTrackerNotification, :action_tracker_id => action_tracker.id, :profile_id => 3)
     action_tracker.destroy
     assert_equal count, ActionTrackerNotification.count
   end
 
   should "the action_tracker_id be unique on scope of profile" do
-    atn = fast_create(ActionTrackerNotification, :action_tracker_id => 1, :profile_id => 1)
+    atn = create(ActionTrackerNotification, :action_tracker_id => 1, :profile_id => 1)
     assert atn.valid?
 
     atn = ActionTrackerNotification.new(:action_tracker_id => 1, :profile_id => 1)
@@ -62,8 +62,8 @@ class ActionTrackerNotificationTest < ActiveSupport::TestCase
   end
 
   should "the action_tracker_id be unique on scope of profile when created by ActionTracker::Record association" do
-    at = fast_create(ActionTracker::Record)
-    person = fast_create(Person)
+    at = create(ActionTracker::Record)
+    person = create(Person)
     assert_equal [], at.action_tracker_notifications
     at.action_tracker_notifications<< build(ActionTrackerNotification, :profile => person)
     at.reload
@@ -77,8 +77,8 @@ class ActionTrackerNotificationTest < ActiveSupport::TestCase
   end
 
   should "have comments through action_tracker" do
-    person = fast_create(Person)
-    friend = fast_create(Person)
+    person = create(Person)
+    friend = create(Person)
     person.add_friend(friend)
     process_delayed_job_queue
     activity = ActionTracker::Record.find_last_by_verb 'new_friendship'
@@ -89,7 +89,7 @@ class ActionTrackerNotificationTest < ActiveSupport::TestCase
   end
 
   should "have comments through article action_tracker" do
-    person = fast_create(Person)
+    person = create(Person)
     article = create(TextileArticle, :profile_id => person.id)
     process_delayed_job_queue
     notification = ActionTrackerNotification.last

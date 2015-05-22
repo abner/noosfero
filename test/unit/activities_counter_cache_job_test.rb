@@ -3,7 +3,7 @@ require_relative "../test_helper"
 class ActivitiesCounterCacheJobTest < ActiveSupport::TestCase
 
   should 'correctly update the person activities counter cache' do
-    person = create_user('person').person
+    person = create(:person)
     ActionTracker::Record.create!(:user => person, :verb => 'create_article')
     ActionTracker::Record.create!(:user => person, :verb => 'create_article')
     person.reload
@@ -18,7 +18,7 @@ class ActivitiesCounterCacheJobTest < ActiveSupport::TestCase
   end
 
   should 'correctly update the organization activities counter cache' do
-    person = create_user('person').person
+    person = create(:person)
     organization = Organization.create!(:name => 'Organization1', :identifier => 'organization1')
     ActionTracker::Record.create!(:user => person, :verb => 'create_article', :target => organization)
     ActionTracker::Record.create!(:user => person, :verb => 'create_article', :target => organization)

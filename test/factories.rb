@@ -133,6 +133,7 @@ FactoryGirl.define do
 
   factory :comment do
     title FFaker::Lorem.word
+    body FFaker::Lorem.sentence
   end
 
   factory ActsAsTaggableOn::Tag do
@@ -141,6 +142,10 @@ FactoryGirl.define do
 
   factory ActionTracker::Record do
     verb FFaker::Lorem.word
+  end
+
+  factory ActionTrackerNotification do
+    
   end
 
   factory :domain do
