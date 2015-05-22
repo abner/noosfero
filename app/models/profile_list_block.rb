@@ -43,13 +43,13 @@ class ProfileListBlock < Block
   def content(args={})
     profiles = self.profile_list
     title = self.view_title
-    nl = "\n"
+    nl = "\n".html_safe
     proc do |context|
       count=0
-      list = profiles.map {|item|
+      list = safe_join(profiles.map {|item|
                count+=1
                send(:profile_image_link, item, :minor )
-             }.join("\n  ")
+             }, "\n  ")
       if list.empty?
         list = content_tag 'div', _('None'), :class => 'common-profile-list-block-none'
       else

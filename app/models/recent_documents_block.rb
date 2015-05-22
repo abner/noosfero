@@ -18,8 +18,12 @@ class RecentDocumentsBlock < Block
     docs = self.docs
     title = self.title
     proc do
-      block_title(title) +
-        content_tag('ul', docs.map {|item| content_tag('li', link_to(h(item.title), item.url))}.join("\n"))
+      docsmap = safe_join(docs.map { |item| 
+            content_tag('li', 
+              link_to( h(item.title), item.url)
+            )
+          }, "\n")
+      block_title(title) + content_tag('ul', docsmap)
     end
   end
 

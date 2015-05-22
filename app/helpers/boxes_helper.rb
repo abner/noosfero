@@ -90,6 +90,7 @@ module BoxesHelper
 
   def display_block_content(block, person, main_content = nil)
     content = block.main? ? wrap_main_content(main_content) : block.content({:person => person})
+    #binding.pry
     result = extract_block_content(content)
     footer_content = extract_block_content(block.footer)
     unless footer_content.blank?
@@ -108,8 +109,7 @@ module BoxesHelper
     end
 
     result = filter_html(result, block)
-
-    content_tag('div',
+    c = content_tag('div',
       box_decorator.block_target(block.box, block) +
         content_tag('div',
          content_tag('div',
@@ -118,8 +118,8 @@ module BoxesHelper
              :class => 'block-inner-2'),
            :class => 'block-inner-1'),
        options),
-    :class => 'block-outer') +
-    box_decorator.block_handle(block)
+    :class => 'block-outer')
+    (c + box_decorator.block_handle(block))
   end
 
   def wrap_main_content(content)
@@ -132,17 +132,17 @@ module BoxesHelper
   def extract_block_content(content)
     case content
     when Hash
-      content_tag('iframe', '', :src => url_for(content))
+      content_tag('iframe', ''.html_safe, :src => url_for(content))
     when String
       if content.split("\n").size == 1 and content =~ /^https?:\/\//
-        content_tag('iframe', '', :src => content)
+        content_tag('iframe', ''.html_safe, :src => content)
       else
         content
       end
     when Proc
       self.instance_eval(&content)
     when NilClass
-      ''
+      ''.html_safe
     else
       raise "Unsupported content for block (#{content.class})"
     end

@@ -625,15 +625,8 @@ module ApplicationHelper
     html_options[:class] = "" unless html_options[:class]
     html_options[:class] << " menu-submenu-trigger"
 
-    puts "Printing links..."
-    puts "Links:"
-    links.each do |link|
-      puts "Link: #{link}"
-    end
-    puts "to_json: #{links.to_json}"
-    puts "Escaped: #{CGI::escapeHTML(links.to_json)}"
-    html_options[:onclick] = "toggleSubmenu(this, '#{menu_title}', #{CGI::escapeHTML(links.to_json)}); return false"
-
+    #html_options[:onclick] = "toggleSubmenu(this, '#{menu_title}', #{CGI::escapeHTML(links.to_json)}); return false"
+    html_options[:onclick] = "toggleSubmenu(this, '#{menu_title}', #{links.to_json}); return false"
     link_to(content_tag(:span, title), '#', html_options)
   end
 
@@ -1441,7 +1434,8 @@ module ApplicationHelper
       #     are old things that do not support it we are keeping this hot spot.
       html = @plugins.pipeline(:parse_content, html, source).first
     end
-    html && html.html_safe
+
+    html.html_safe && html
   end
 
   def convert_macro(html, source)
