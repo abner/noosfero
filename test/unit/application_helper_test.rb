@@ -124,25 +124,25 @@ class ApplicationHelperTest < ActionView::TestCase
   end
 
   should 'rolename for first organization member' do
-    person = create_user('usertest').person
-    community = fast_create(Community, :name => 'new community', :identifier => 'new-community', :environment_id => Environment.default.id)
+    person = create(:person)
+    community = create(Community, :name => 'new community', :identifier => 'new-community', :environment_id => Environment.default.id)
     community.add_member(person)
     assert_tag_in_string rolename_for(person, community), :tag => 'span', :content => 'Profile Administrator'
   end
 
   should 'rolename for a member' do
-    member1 = create_user('usertest1').person
-    member2 = create_user('usertest2').person
-    community = fast_create(Community, :name => 'new community', :identifier => 'new-community', :environment_id => Environment.default.id)
+    member1 = create(:person)
+    member2 = create(:person)
+    community = create(Community, :name => 'new community', :identifier => 'new-community', :environment_id => Environment.default.id)
     community.add_member(member1)
     community.add_member(member2)
     assert_tag_in_string rolename_for(member2, community), :tag => 'span', :content => 'Profile Member'
   end
 
   should 'rolenames for a member admin' do
-    member1 = create_user('usertest1').person
-    member2 = create_user('usertest2').person
-    community = fast_create(Community, :name => 'new community', :identifier => 'new-community', :environment_id => Environment.default.id)
+    member1 = create(:person)
+    member2 = create(:person)
+    community = create(Community, :name => 'new community', :identifier => 'new-community', :environment_id => Environment.default.id)
     community.add_member(member1)
     # member2 is both a admin and a member
     community.add_member(member2)
@@ -257,8 +257,8 @@ class ApplicationHelperTest < ActionView::TestCase
   should 'define the community default template as checked' do
     environment = Environment.default
     self.stubs(:environment).returns(environment)
-    community = fast_create(Community, :is_template => true, :environment_id => environment.id)
-    fast_create(Community, :is_template => true, :environment_id => environment.id)
+    community = create(Community, :is_template => true, :environment_id => environment.id)
+    create(Community, :is_template => true, :environment_id => environment.id)
     environment.community_default_template= community
     environment.save
 
@@ -269,8 +269,8 @@ class ApplicationHelperTest < ActionView::TestCase
   should 'define the person default template as checked' do
     environment = Environment.default
     self.stubs(:environment).returns(environment)
-    person = fast_create(Person, :is_template => true, :environment_id => environment.id)
-    fast_create(Person, :is_template => true, :environment_id => environment.id)
+    person = create(Person, :is_template => true, :environment_id => environment.id)
+    create(Person, :is_template => true, :environment_id => environment.id)
     environment.person_default_template= person
     environment.save
 
@@ -281,8 +281,8 @@ class ApplicationHelperTest < ActionView::TestCase
   should 'define the enterprise default template as checked' do
     environment = Environment.default
     self.stubs(:environment).returns(environment)
-    enterprise = fast_create(Enterprise, :is_template => true, :environment_id => environment.id)
-    fast_create(Enterprise, :is_template => true, :environment_id => environment.id)
+    enterprise = create(Enterprise, :is_template => true, :environment_id => environment.id)
+    create(Enterprise, :is_template => true, :environment_id => environment.id)
 
     environment.enterprise_default_template= enterprise
     environment.save
@@ -293,7 +293,7 @@ class ApplicationHelperTest < ActionView::TestCase
   end
 
   should 'return nil if disable_categories is enabled' do
-    env = fast_create(Environment, :name => 'env test')
+    env = create(Environment, :name => 'env test')
     stubs(:environment).returns(env)
     assert_not_nil env
     env.enable(:disable_categories)
@@ -327,7 +327,7 @@ class ApplicationHelperTest < ActionView::TestCase
   end
 
   should 'not draw sex icon when disabled in the environment' do
-    env = fast_create(Environment, :name => 'env test')
+    env = create(Environment, :name => 'env test')
     env.expects(:enabled?).with('disable_gender_icon').returns(true)
     stubs(:environment).returns(env)
     assert_equal '', profile_sex_icon(build(Person, :sex => 'male'))
@@ -374,7 +374,7 @@ class ApplicationHelperTest < ActionView::TestCase
   end
 
   should 'not display field on signup' do
-    env = fast_create(Environment, :name => 'env test')
+    env = create(Environment, :name => 'env test')
     stubs(:environment).returns(env)
 
     controller = mock
@@ -414,7 +414,7 @@ class ApplicationHelperTest < ActionView::TestCase
   end
 
   should 'display active fields' do
-    env = fast_create(Environment, :name => 'env test')
+    env = create(Environment, :name => 'env test')
     stubs(:environment).returns(env)
 
     controller = mock
@@ -430,7 +430,7 @@ class ApplicationHelperTest < ActionView::TestCase
   end
 
   should 'not display active fields' do
-    env = fast_create(Environment, :name => 'env test')
+    env = create(Environment, :name => 'env test')
     stubs(:environment).returns(env)
 
     controller = mock
@@ -444,7 +444,7 @@ class ApplicationHelperTest < ActionView::TestCase
   end
 
   should 'display required fields' do
-    env = fast_create(Environment, :name => 'env test')
+    env = create(Environment, :name => 'env test')
     stubs(:environment).returns(env)
 
     controller = mock
@@ -483,7 +483,7 @@ class ApplicationHelperTest < ActionView::TestCase
     stubs(:environment).returns(Environment.default)
     @controller = ApplicationController.new
 
-    c = fast_create(Community, :name => 'Comm name', :identifier => 'test_comm')
+    c = create(Community, :name => 'Comm name', :identifier => 'test_comm')
     stubs(:profile).returns(c)
     assert_match(/Comm name/, page_title)
   end
@@ -492,7 +492,7 @@ class ApplicationHelperTest < ActionView::TestCase
     stubs(:environment).returns(Environment.default)
     @controller = ApplicationController.new
 
-    c = fast_create(Community, :name => 'Community for tests', :nickname => 'Community nick', :identifier => 'test_comm')
+    c = create(Community, :name => 'Community for tests', :nickname => 'Community nick', :identifier => 'test_comm')
     stubs(:profile).returns(c)
     assert_match(/Community nick/, page_title)
   end
@@ -501,7 +501,7 @@ class ApplicationHelperTest < ActionView::TestCase
     stubs(:environment).returns(Environment.default)
     @controller = ApplicationController.new
 
-    c = fast_create(Community, :name => 'Community for tests', :nickname => 'Community nick', :identifier => 'test_comm')
+    c = create(Community, :name => 'Community for tests', :nickname => 'Community nick', :identifier => 'test_comm')
     stubs(:profile).returns(c)
     assert_equal c.short_name, page_title
   end
@@ -542,8 +542,8 @@ class ApplicationHelperTest < ActionView::TestCase
   end
 
   should 'use environment theme if the profile theme is nil' do
-    stubs(:environment).returns(fast_create(Environment, :theme => 'new-theme'))
-    stubs(:profile).returns(fast_create(Profile))
+    stubs(:environment).returns(create(Environment, :theme => 'new-theme'))
+    stubs(:profile).returns(create(Profile))
     assert_equal environment.theme, current_theme
   end
 
@@ -602,27 +602,27 @@ class ApplicationHelperTest < ActionView::TestCase
   end
 
   should 'use favicon from environment theme if does not have profile' do
-    stubs(:environment).returns(fast_create(Environment, :theme => 'new-theme'))
+    stubs(:environment).returns(create(Environment, :theme => 'new-theme'))
     stubs(:profile).returns(nil)
     assert_equal '/designs/themes/new-theme/favicon.ico', theme_favicon
   end
 
   should 'use favicon from environment theme if the profile theme is nil' do
-    stubs(:environment).returns(fast_create(Environment, :theme => 'new-theme'))
-    stubs(:profile).returns(fast_create(Profile))
+    stubs(:environment).returns(create(Environment, :theme => 'new-theme'))
+    stubs(:profile).returns(create(Profile))
     assert_equal '/designs/themes/new-theme/favicon.ico', theme_favicon
   end
 
   should 'use favicon from profile theme if the profile has theme' do
-    stubs(:environment).returns(fast_create(Environment, :theme => 'new-theme'))
-    stubs(:profile).returns(fast_create(Profile, :theme => 'profile-theme'))
+    stubs(:environment).returns(create(Environment, :theme => 'new-theme'))
+    stubs(:profile).returns(create(Profile, :theme => 'profile-theme'))
     File.expects(:exists?).with(Rails.root.join('public', '/designs/themes/profile-theme', 'favicon.ico')).returns(true)
     assert_equal '/designs/themes/profile-theme/favicon.ico', theme_favicon
   end
 
   should 'use favicon from profile articles if the profile theme does not have' do
-    stubs(:environment).returns(fast_create(Environment, :theme => 'new-theme'))
-    stubs(:profile).returns(fast_create(Profile, :theme => 'profile-theme'))
+    stubs(:environment).returns(create(Environment, :theme => 'new-theme'))
+    stubs(:profile).returns(create(Profile, :theme => 'profile-theme'))
     file = create(UploadedFile, :uploaded_data => fixture_file_upload('/files/favicon.ico', 'image/x-ico'), :profile => profile)
     File.expects(:exists?).with(Rails.root.join('public', theme_path, 'favicon.ico')).returns(false)
 
@@ -630,8 +630,8 @@ class ApplicationHelperTest < ActionView::TestCase
   end
 
   should 'use favicon from environment if the profile theme and profile articles do not have' do
-    stubs(:environment).returns(fast_create(Environment, :theme => 'new-theme'))
-    stubs(:profile).returns(fast_create(Profile, :theme => 'profile-theme'))
+    stubs(:environment).returns(create(Environment, :theme => 'new-theme'))
+    stubs(:profile).returns(create(Profile, :theme => 'profile-theme'))
     File.expects(:exists?).with(Rails.root.join('public', theme_path, 'favicon.ico')).returns(false)
     assert_equal '/designs/themes/new-theme/favicon.ico', theme_favicon
   end
@@ -681,7 +681,7 @@ class ApplicationHelperTest < ActionView::TestCase
   end
 
   should 'show task information with the requestor' do
-    person = create_user('usertest').person
+    person = create(:person)
     task = create(Task, :requestor => person)
     assert_match person.name, task_information(task)
   end
@@ -749,25 +749,25 @@ class ApplicationHelperTest < ActionView::TestCase
   end
 
   should 'reference to article' do
-    c = fast_create(Community)
-    a = fast_create(TinyMceArticle, :profile_id => c.id)
+    c = create(Community)
+    a = create(TinyMceArticle, :profile_id => c.id)
     assert_equal(
       "<a href=\"/#{c.identifier}/#{a.slug}\">x</a>",
       reference_to_article('x', a) )
   end
 
   should 'reference to article, with anchor' do
-    c = fast_create(Community)
-    a = fast_create(TinyMceArticle, :profile_id => c.id)
+    c = create(Community)
+    a = create(TinyMceArticle, :profile_id => c.id)
     assert_equal(
       "<a href=\"/#{c.identifier}/#{a.slug}#place\">x</a>",
       reference_to_article('x', a, 'place') )
   end
 
   should 'reference to article, in a blog' do
-    c = fast_create(Community)
-    b = fast_create(Blog, :profile_id => c.id)
-    a = fast_create(TinyMceArticle, :profile_id => c.id, :parent_id => b.id)
+    c = create(Community)
+    b = create(Blog, :profile_id => c.id)
+    a = create(TinyMceArticle, :profile_id => c.id, :parent_id => b.id)
     a.save! # needed to link to the parent blog
     assert_equal(
       "<a href=\"/#{c.identifier}/#{b.slug}/#{a.slug}\">x</a>",
@@ -775,10 +775,10 @@ class ApplicationHelperTest < ActionView::TestCase
   end
 
   should 'reference to article, in a profile with domain' do
-    c = fast_create(Community)
+    c = create(Community)
     c.domains << build(Domain, :name=>'domain.xyz')
-    b = fast_create(Blog, :profile_id => c.id)
-    a = fast_create(TinyMceArticle, :profile_id => c.id, :parent_id => b.id)
+    b = create(Blog, :profile_id => c.id)
+    a = create(TinyMceArticle, :profile_id => c.id, :parent_id => b.id)
     a.save!
     assert_equal(
       "<a href=\"http://domain.xyz/#{b.slug}/#{a.slug}\">x</a>",
@@ -786,7 +786,7 @@ class ApplicationHelperTest < ActionView::TestCase
   end
 
   should 'content_id_to_str return the content id as string' do
-    article = fast_create(Article, :name => 'my article')
+    article = create(Article, :name => 'my article')
     response = content_id_to_str(article)
     assert_equal String, response.class
     assert !response.empty?
@@ -797,23 +797,25 @@ class ApplicationHelperTest < ActionView::TestCase
   end
 
   should 'select gallery as default folder for image upload' do
-    profile = create_user('testuser').person
-    folder  = fast_create(Folder,  :profile_id => profile.id)
-    gallery = fast_create(Gallery, :profile_id => profile.id)
-    blog    = fast_create(Blog,    :profile_id => profile.id)
+    profile = create(:person)
+    folder  = create(Folder,  :profile_id => profile.id)
+    gallery = create(Gallery, :profile_id => profile.id)
+    blog    = create(Blog,    :profile_id => profile.id)
     assert_equal gallery, default_folder_for_image_upload(profile)
   end
 
   should 'select generic folder as default folder for image upload when no gallery' do
-    profile = create_user('testuser').person
-    folder  = fast_create(Folder,  :profile_id => profile.id)
-    blog    = fast_create(Blog,    :profile_id => profile.id)
+    profile = create(:person)
+    Article.delete_all
+    folder  = create(Folder,  :profile_id => profile.id)
+    blog    = create(Blog,    :profile_id => profile.id)
     assert_equal folder, default_folder_for_image_upload(profile)
   end
 
   should 'return nil as default folder for image upload when no gallery or generic folder' do
-    profile = create_user('testuser').person
-    blog    = fast_create(Blog,    :profile_id => profile.id)
+    profile = create(:person)
+    Article.delete_all
+    blog    = create(Blog,    :profile_id => profile.id)
     assert_nil default_folder_for_image_upload(profile)
   end
 
@@ -864,8 +866,8 @@ class ApplicationHelperTest < ActionView::TestCase
   end
 
   should 'not convert macro if source is nil' do
-    profile = create_user('testuser').person
-    article = fast_create(Article,  :profile_id => profile.id)
+    profile = create(:person)
+    article = create(Article,  :profile_id => profile.id)
     class Plugin1 < Noosfero::Plugin; end
 
     environment = Environment.default
@@ -877,8 +879,8 @@ class ApplicationHelperTest < ActionView::TestCase
   end
 
   should 'not convert macro if there is no macro plugin active' do
-    profile = create_user('testuser').person
-    article = fast_create(Article,  :profile_id => profile.id)
+    profile = create(:person)
+    article = create(Article,  :profile_id => profile.id)
     class Plugin1 < Noosfero::Plugin; end
 
     environment = Environment.default
@@ -891,9 +893,9 @@ class ApplicationHelperTest < ActionView::TestCase
 
   should 'not display enterprises if not logged' do
     @controller = ApplicationController.new
-    profile = create_user('testuser').person
+    profile = create(:person)
     profile.environment.enable('display_my_enterprises_on_user_menu')
-    enterprise = fast_create(Enterprise)
+    enterprise = create(Enterprise)
     enterprise.add_admin(profile)
 
     stubs(:user).returns(nil)
@@ -903,9 +905,9 @@ class ApplicationHelperTest < ActionView::TestCase
 
   should 'display enterprises if logged and enabled on environment' do
     @controller = ApplicationController.new
-    profile = create_user('testuser').person
+    profile = create(:person)
     profile.environment.enable('display_my_enterprises_on_user_menu')
-    enterprise = fast_create(Enterprise)
+    enterprise = create(Enterprise)
     enterprise.add_admin(profile)
 
     stubs(:user).returns(profile)
@@ -915,9 +917,9 @@ class ApplicationHelperTest < ActionView::TestCase
 
   should 'not display enterprises if logged and disabled on environment' do
     @controller = ApplicationController.new
-    profile = create_user('testuser').person
+    profile = create(:person)
     profile.environment.disable('display_my_enterprises_on_user_menu')
-    enterprise = fast_create(Enterprise)
+    enterprise = create(Enterprise)
     enterprise.add_admin(profile)
 
     stubs(:user).returns(profile)
@@ -927,9 +929,9 @@ class ApplicationHelperTest < ActionView::TestCase
 
   should 'not display communities if not logged' do
     @controller = ApplicationController.new
-    profile = create_user('testuser').person
+    profile = create(:person)
     profile.environment.enable('display_my_communities_on_user_menu')
-    community = fast_create(Community)
+    community = create(Community)
     community.add_admin(profile)
 
     stubs(:user).returns(nil)
@@ -939,9 +941,9 @@ class ApplicationHelperTest < ActionView::TestCase
 
   should 'display communities if logged and enabled on environment' do
     @controller = ApplicationController.new
-    profile = create_user('testuser').person
+    profile = create(:person)
     profile.environment.enable('display_my_communities_on_user_menu')
-    community = fast_create(Community)
+    community = create(Community)
     community.add_admin(profile)
 
     stubs(:user).returns(profile)
@@ -951,9 +953,9 @@ class ApplicationHelperTest < ActionView::TestCase
 
   should 'not display communities if logged and disabled on environment' do
     @controller = ApplicationController.new
-    profile = create_user('testuser').person
+    profile = create(:person)
     profile.environment.disable('display_my_communities_on_user_menu')
-    community = fast_create(Community)
+    community = create(Community)
     community.add_admin(profile)
 
     stubs(:user).returns(profile)
