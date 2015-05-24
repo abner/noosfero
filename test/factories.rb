@@ -132,6 +132,8 @@ FactoryGirl.define do
     end
     factory :add_friend, class: AddFriend do
     end
+    factory :add_member, class: AddMember do
+    end
   end
 
   factory :comment do

@@ -3,8 +3,8 @@ require_relative "../test_helper"
 class AddMemberTest < ActiveSupport::TestCase
 
   def setup
-    @person = fast_create(Person)
-    @community = fast_create(Community)
+    @person = create(Person)
+    @community = create(Community)
   end
   attr_reader :person, :community
 
@@ -16,7 +16,7 @@ class AddMemberTest < ActiveSupport::TestCase
   should 'actually add memberships when confirmed' do
     community.update_attribute(:closed, true)
     TaskMailer.stubs(:deliver_target_notification)
-    task = fast_create(AddMember, :requestor_id => person.id, :target_id => community.id, :target_type => 'Community')
+    task = create(AddMember, :requestor_id => person.id, :target_id => community.id, :target_type => 'Community')
     task.finish
 
     assert_equal [person], community.members
