@@ -7,7 +7,7 @@ class EnterpriseTest < ActiveSupport::TestCase
   def setup
     super
     Environment.default.enable('products_for_enterprises')
-    @product_category = fast_create(ProductCategory, :name => 'Products')
+    @product_category = create(ProductCategory, :name => 'Products')
   end
 
   def test_identifier_validation
@@ -53,8 +53,8 @@ class EnterpriseTest < ActiveSupport::TestCase
   end
 
   should 'have fans' do
-    p = fast_create(Person)
-    e = fast_create(Enterprise)
+    p = create(Person)
+    e = create(Enterprise)
 
     p.favorite_enterprises << e
 
@@ -62,7 +62,7 @@ class EnterpriseTest < ActiveSupport::TestCase
   end
 
   should 'remove products when removing enterprise' do
-    e = fast_create(Enterprise, :name => "My enterprise", :identifier => 'myenterprise')
+    e = create(Enterprise, :name => "My enterprise", :identifier => 'myenterprise')
     create(Product, :enterprise => e, :name => 'One product', :product_category => @product_category)
     create(Product, :enterprise => e, :name => 'Another product', :product_category => @product_category)
 
@@ -89,21 +89,21 @@ class EnterpriseTest < ActiveSupport::TestCase
   end
 
   should 'allow to add new members if has no members' do
-    enterprise = fast_create(Enterprise)
+    enterprise = create(Enterprise)
 
-    person = fast_create(Person)
+    person = create(Person)
     enterprise.add_member(person)
 
     assert person.is_member_of?(enterprise)
   end
 
   should 'not allow to add new members' do
-    enterprise = fast_create(Enterprise)
-    member = fast_create(Person)
+    enterprise = create(Enterprise)
+    member = create(Person)
     enterprise.add_member(member)
     enterprise.reload
 
-    person = fast_create(Person)
+    person = create(Person)
     enterprise.stubs(:notification_emails).returns(['sample@example.org'])
     enterprise.add_member(person)
 
@@ -111,9 +111,9 @@ class EnterpriseTest < ActiveSupport::TestCase
   end
 
   should 'allow to remove members' do
-    c = fast_create(Enterprise, :name => 'my other test profile', :identifier => 'myothertestprofile')
+    c = create(Enterprise, :name => 'my other test profile', :identifier => 'myothertestprofile')
     c.expects(:closed?).returns(false)
-    p = create_user('myothertestuser').person
+    p = create(:person)
 
     c.add_member(p)
     assert_includes c.members, p
@@ -123,27 +123,27 @@ class EnterpriseTest < ActiveSupport::TestCase
   end
 
   should 'have foudation_year' do
-    ent = fast_create(Enterprise, :name => 'test enteprise', :identifier => 'test_ent')
+    ent = create(Enterprise, :name => 'test enteprise', :identifier => 'test_ent')
 
     assert_respond_to ent, 'foundation_year'
     assert_respond_to ent, 'foundation_year='
   end
 
   should 'have cnpj' do
-    ent = fast_create(Enterprise)
+    ent = create(Enterprise)
 
     assert_respond_to ent, 'cnpj'
     assert_respond_to ent, 'cnpj='
   end
 
   should 'block' do
-    ent = fast_create(Enterprise, :name => 'test enteprise', :identifier => 'test_ent')
+    ent = create(Enterprise, :name => 'test enteprise', :identifier => 'test_ent')
     ent.block
     assert Enterprise.find(ent.id).blocked?
   end
 
   should 'unblock' do
-    ent = fast_create(Enterprise, :name => 'test enteprise', :identifier => 'test_ent')
+    ent = create(Enterprise, :name => 'test enteprise', :identifier => 'test_ent')
     ent.data[:blocked] = true
     ent.save
     ent.unblock
@@ -151,8 +151,8 @@ class EnterpriseTest < ActiveSupport::TestCase
   end
 
   should 'enable and make user admin' do
-    ent = fast_create(Enterprise, :name => 'test enteprise', :identifier => 'test_ent', :enabled => false)
-    p = create_user('test_user').person
+    ent = create(Enterprise, :name => 'test enteprise', :identifier => 'test_ent', :enabled => false)
+    p = create(:person)
 
     assert ent.enable(p)
     ent.reload
@@ -161,7 +161,7 @@ class EnterpriseTest < ActiveSupport::TestCase
   end
 
   should 'replace template if environment allows' do
-    template = fast_create(Enterprise, :name => 'template enteprise', :identifier => 'template_enterprise', :enabled => false, :is_template => true)
+    template = create(Enterprise, :name => 'template enteprise', :identifier => 'template_enterprise', :enabled => false, :is_template => true)
     template.boxes.destroy_all
     template.boxes << Box.new
     template.boxes[0].blocks << Block.new
@@ -172,9 +172,9 @@ class EnterpriseTest < ActiveSupport::TestCase
     e.enterprise_default_template = template
     e.save!
 
-    ent = fast_create(Enterprise, :name => 'test enteprise', :identifier => 'test_ent', :enabled => false)
+    ent = create(Enterprise, :name => 'test enteprise', :identifier => 'test_ent', :enabled => false)
 
-    p = create_user('test_user').person
+    p = create(:person)
     ent.enable(p)
     ent.reload
     assert_equal 1, ent.boxes.size
@@ -182,7 +182,7 @@ class EnterpriseTest < ActiveSupport::TestCase
   end
 
   should 'not replace template if environment doesnt allow' do
-    inactive_template = fast_create(Enterprise, :name => 'inactive enteprise template', :identifier => 'inactive_enterprise_template', :is_template => true)
+    inactive_template = create(Enterprise, :name => 'inactive enteprise template', :identifier => 'inactive_enterprise_template', :is_template => true)
     inactive_template.boxes.destroy_all
     inactive_template.boxes << Box.new
     inactive_template.save!
@@ -197,7 +197,7 @@ class EnterpriseTest < ActiveSupport::TestCase
 
     ent = create(Enterprise, :name => 'test enteprise', :identifier => 'test_ent', :enabled => false)
 
-    p = create_user('test_user').person
+    p = create(:person)
     ent.enable(p)
     ent.reload
     assert_equal 1, ent.boxes.size
@@ -217,14 +217,14 @@ class EnterpriseTest < ActiveSupport::TestCase
 
   should 'not create activation task when enabled = true' do
     assert_no_difference 'EnterpriseActivation.count' do
-      fast_create(Enterprise, :name => 'test enteprise', :identifier => 'test_ent', :enabled => true)
+      create(Enterprise, :name => 'test enteprise', :identifier => 'test_ent', :enabled => true)
     end
   end
 
   should 'be able to enable even if there are mandatory fields blank' do
     # enterprise is created, waiting for being enabled
-    environment = fast_create(Environment, :name => 'my test environment')
-    enterprise = fast_create(Enterprise, :name => 'test enterprise', :identifier => 'test_ent', :enabled => false, :environment_id => environment.id)
+    environment = create(Environment, :name => 'my test environment')
+    enterprise = create(Enterprise, :name => 'test enterprise', :identifier => 'test_ent', :enabled => false, :environment_id => environment.id)
 
     # administrator decides now that the 'city' field is mandatory
     environment.custom_enterprise_fields = { 'city' => { 'active' => 'true', 'required' => 'true' } }
@@ -238,8 +238,8 @@ class EnterpriseTest < ActiveSupport::TestCase
   end
 
   should 'list product categories' do
-    subcategory = fast_create(ProductCategory, :name => 'Products subcategory', :parent_id => @product_category.id)
-    ent = fast_create(Enterprise, :name => 'test ent', :identifier => 'test_ent')
+    subcategory = create(ProductCategory, :name => 'Products subcategory', :parent_id => @product_category.id)
+    ent = create(Enterprise, :name => 'test ent', :identifier => 'test_ent')
     p = create(Product, :name => 'test prod', :product_category => subcategory, :enterprise => ent)
 
     assert_equivalent [subcategory], ent.product_categories
@@ -248,25 +248,25 @@ class EnterpriseTest < ActiveSupport::TestCase
   should 'not create a products block for enterprise if environment do not let' do
     env = Environment.default
     env.disable('products_for_enterprises')
-    ent = fast_create(Enterprise, :name => 'test ent', :identifier => 'test_ent')
+    ent = create(Enterprise, :name => 'test ent', :identifier => 'test_ent')
     assert_not_includes ent.blocks.map(&:class), ProductsBlock
   end
 
   should 'have a enterprise template' do
-    template = fast_create(Enterprise, :is_template => true)
-    p = fast_create(Enterprise, :name => 'test_com', :identifier => 'test_com', :template_id => template.id)
+    template = create(Enterprise, :is_template => true)
+    p = create(Enterprise, :name => 'test_com', :identifier => 'test_com', :template_id => template.id)
     assert_equal template, p.template
   end
 
   should 'have a default enterprise template' do
     env = create(Environment, :name => 'test env')
-    p = fast_create(Enterprise, :name => 'test_com', :identifier => 'test_com', :environment_id => env.id)
+    p = create(Enterprise, :name => 'test_com', :identifier => 'test_com', :environment_id => env.id)
     assert_kind_of Enterprise, p.template
   end
 
   should 'have inactive_template even when there is a template set' do
-    another_template = fast_create(Enterprise, :is_template => true)
-    inactive_template = fast_create(Enterprise, :name => 'inactive enteprise template', :identifier => 'inactive_enterprise_template', :is_template => true)
+    another_template = create(Enterprise, :is_template => true)
+    inactive_template = create(Enterprise, :name => 'inactive enteprise template', :identifier => 'inactive_enterprise_template', :is_template => true)
 
     e = Environment.default
     e.enable('enterprises_are_disabled_when_created')
@@ -278,7 +278,7 @@ class EnterpriseTest < ActiveSupport::TestCase
   end
 
   should 'contact us enabled by default' do
-    e = fast_create(Enterprise, :name => 'test_com', :identifier => 'test_com', :environment_id => Environment.default.id)
+    e = create(Enterprise, :name => 'test_com', :identifier => 'test_com', :environment_id => Environment.default.id)
     assert e.enable_contact_us
   end
 
@@ -374,7 +374,7 @@ class EnterpriseTest < ActiveSupport::TestCase
   end
 
   should 'have inactive_template when creating enterprise and feature is enabled' do
-    inactive_template = fast_create(Enterprise, :name => 'inactive enteprise template', :identifier => 'inactive_enterprise_template', :is_template => true)
+    inactive_template = create(Enterprise, :name => 'inactive enteprise template', :identifier => 'inactive_enterprise_template', :is_template => true)
     inactive_template.boxes.destroy_all
     inactive_template.boxes << Box.new
     inactive_template.save!
@@ -389,7 +389,7 @@ class EnterpriseTest < ActiveSupport::TestCase
   end
 
   should 'have active_template when creating enterprise and feature is disabled' do
-    inactive_template = fast_create(Enterprise, :name => 'inactive enteprise template', :identifier => 'inactive_enterprise_template', :is_template => true)
+    inactive_template = create(Enterprise, :name => 'inactive enteprise template', :identifier => 'inactive_enterprise_template', :is_template => true)
     inactive_template.boxes.destroy_all
     inactive_template.boxes << Box.new
     inactive_template.save!
@@ -405,7 +405,7 @@ class EnterpriseTest < ActiveSupport::TestCase
 
   should 'collect the highlighted products with image' do
     env = Environment.default
-    e1 = fast_create(Enterprise)
+    e1 = create(Enterprise)
     p1 = create(Product, :name => 'test_prod1', :product_category_id => @product_category.id, :enterprise => e1)
     products = []
     3.times {|n|
@@ -422,8 +422,8 @@ class EnterpriseTest < ActiveSupport::TestCase
   end
 
   should 'have many inputs through products' do
-    enterprise = fast_create(Enterprise)
-    product = fast_create(Product, :profile_id => enterprise.id, :product_category_id => @product_category.id)
+    enterprise = create(Enterprise)
+    product = create(Product, :profile_id => enterprise.id, :product_category_id => @product_category.id)
     product.inputs << build(Input, :product_category => @product_category)
     product.inputs << build(Input, :product_category => @product_category)
 
@@ -431,11 +431,11 @@ class EnterpriseTest < ActiveSupport::TestCase
   end
 
   should "the followed_by? be true only to members" do
-    e = fast_create(Enterprise)
+    e = create(Enterprise)
     e.stubs(:closed?).returns(false)
-    p1 = fast_create(Person)
-    p2 = fast_create(Person)
-    p3 = fast_create(Person)
+    p1 = create(Person)
+    p2 = create(Person)
+    p3 = create(Person)
 
     assert !p1.is_member_of?(e)
     e.add_member(p1)
@@ -451,18 +451,18 @@ class EnterpriseTest < ActiveSupport::TestCase
   end
 
   should 'receive scrap notification' do
-    enterprise = fast_create(Enterprise)
+    enterprise = create(Enterprise)
     assert_equal false, enterprise.receives_scrap_notification?
   end
 
   should 'have production cost' do
-    e = fast_create(Enterprise)
+    e = create(Enterprise)
     assert_respond_to e, :production_costs
   end
 
   should 'return scraps as activities' do
-    person = fast_create(Person)
-    enterprise = fast_create(Enterprise)
+    person = create(Person)
+    enterprise = create(Enterprise)
 
 
     activity = ActionTracker::Record.last
@@ -472,8 +472,8 @@ class EnterpriseTest < ActiveSupport::TestCase
   end
 
   should 'return tracked_actions of community as activities' do
-    person = fast_create(Person)
-    enterprise = fast_create(Enterprise)
+    person = create(Person)
+    enterprise = create(Enterprise)
 
     UserStampSweeper.any_instance.expects(:current_user).returns(person).at_least_once
     article = create(TinyMceArticle, :profile => enterprise, :name => 'An article about free software')
@@ -482,9 +482,9 @@ class EnterpriseTest < ActiveSupport::TestCase
   end
 
   should 'not return tracked_actions of other community as activities' do
-    person = fast_create(Person)
-    enterprise = fast_create(Enterprise)
-    enterprise2 = fast_create(Enterprise)
+    person = create(Person)
+    enterprise = create(Enterprise)
+    enterprise2 = create(Enterprise)
 
     UserStampSweeper.any_instance.expects(:current_user).returns(person).at_least_once
     article = create(TinyMceArticle, :profile => enterprise2, :name => 'Another article about free software')
@@ -500,26 +500,26 @@ class EnterpriseTest < ActiveSupport::TestCase
   end
 
   should 'check if a community admin user is really a community admin' do
-    c = fast_create(Enterprise, :name => 'my test profile', :identifier => 'mytestprofile')
-    admin = create_user('adminuser').person
+    c = create(Enterprise, :name => 'my test profile', :identifier => 'mytestprofile')
+    admin = create(:person)
     c.add_admin(admin)
    
     assert c.is_admin?(admin)
   end
 
   should 'a member user not be a community admin' do
-    c = fast_create(Enterprise, :name => 'my test profile', :identifier => 'mytestprofile')
-    admin = create_user('adminuser').person
+    c = create(Enterprise, :name => 'my test profile', :identifier => 'mytestprofile')
+    admin = create(:person)
     c.add_admin(admin)
 
-    member = create_user('memberuser').person
+    member = create(:person)
     c.add_member(member)
     assert !c.is_admin?(member)
   end
 
   should 'a moderator user not be a community admin' do
-    c = fast_create(Enterprise, :name => 'my test profile', :identifier => 'mytestprofile')
-    moderator = create_user('moderatoruser').person
+    c = create(Enterprise, :name => 'my test profile', :identifier => 'mytestprofile')
+    moderator = create(:person)
     c.add_moderator(moderator)
     assert !c.is_admin?(moderator)
   end

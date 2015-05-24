@@ -3,8 +3,8 @@ require_relative "../test_helper"
 class TextileArticleTest < ActiveSupport::TestCase
   
   def setup
-    @profile = create_user('testing').person
-    ActionTracker::Record.stubs(:current_user_from_model).returns(fast_create(Person))
+    @profile = create(:person)
+    ActionTracker::Record.stubs(:current_user_from_model).returns(create(Person))
   end
   attr_reader :profile
 
@@ -29,28 +29,28 @@ class TextileArticleTest < ActiveSupport::TestCase
   end
 
   should 'notifiable be true' do
-    a = fast_create(TextileArticle)
+    a = create(TextileArticle)
     assert a.notifiable?
   end
 
   should 'notify activity on create' do
     ActionTracker::Record.delete_all
-    create TextileArticle, :name => 'test', :profile_id => fast_create(Profile).id, :published => true
+    create TextileArticle, :name => 'test', :profile_id => create(Profile).id, :published => true
     assert_equal 1, ActionTracker::Record.count
   end
 
   should 'not group trackers activity of article\'s creation' do
-    profile = fast_create(Profile)
+    profile = create(Profile)
     assert_difference 'ActionTracker::Record.count', 3 do
       create TextileArticle, :name => 'bar', :profile_id => profile.id, :published => true
       create TextileArticle, :name => 'another bar', :profile_id => profile.id, :published => true
-      create TextileArticle, :name => 'another bar', :profile_id => fast_create(Profile).id, :published => true
+      create TextileArticle, :name => 'another bar', :profile_id => create(Profile).id, :published => true
     end
   end
 
   should 'not update activity on update of an article' do
     ActionTracker::Record.delete_all
-    profile = fast_create(Profile)
+    profile = create(Profile)
     article = create(TextileArticle, :profile_id => profile.id)
     time = article.activity.updated_at
     Time.stubs(:now).returns(time + 1.day)
@@ -63,8 +63,8 @@ class TextileArticleTest < ActiveSupport::TestCase
 
   should 'not create trackers activity when updating articles' do
     ActionTracker::Record.delete_all
-    a1 = create TextileArticle, :name => 'bar', :profile_id => fast_create(Profile).id, :published => true
-    a2 = create TextileArticle, :name => 'another bar', :profile_id => fast_create(Profile).id, :published => true
+    a1 = create TextileArticle, :name => 'bar', :profile_id => create(Profile).id, :published => true
+    a2 = create TextileArticle, :name => 'another bar', :profile_id => create(Profile).id, :published => true
     assert_no_difference 'ActionTracker::Record.count' do
       a1.name = 'foo';a1.save!
       a2.name = 'another foo';a2.save!
@@ -73,7 +73,7 @@ class TextileArticleTest < ActiveSupport::TestCase
 
   should 'remove activity after destroying article' do
     ActionTracker::Record.delete_all
-    a = create TextileArticle, :name => 'bar', :profile_id => fast_create(Profile).id, :published => true
+    a = create TextileArticle, :name => 'bar', :profile_id => create(Profile).id, :published => true
     assert_difference 'ActionTracker::Record.count', -1 do
       a.destroy
     end
@@ -81,8 +81,8 @@ class TextileArticleTest < ActiveSupport::TestCase
 
   should 'remove activity after article is destroyed' do
     ActionTracker::Record.delete_all
-    a1 = create TextileArticle, :name => 'bar', :profile_id => fast_create(Profile).id, :published => true
-    a2 = create TextileArticle, :name => 'another bar', :profile_id => fast_create(Profile).id, :published => true
+    a1 = create TextileArticle, :name => 'bar', :profile_id => create(Profile).id, :published => true
+    a2 = create TextileArticle, :name => 'another bar', :profile_id => create(Profile).id, :published => true
     assert_equal 2, ActionTracker::Record.count
     assert_difference 'ActionTracker::Record.count', -2 do
       a1.destroy
@@ -92,7 +92,7 @@ class TextileArticleTest < ActiveSupport::TestCase
 
   should "the tracker action target be defined as the article on articles'creation in communities" do
     ActionTracker::Record.delete_all
-    community = fast_create(Community)
+    community = create(Community)
     p1 = Person.first
     community.add_member(p1)
     assert p1.is_member_of?(community)
@@ -109,7 +109,7 @@ class TextileArticleTest < ActiveSupport::TestCase
 
   should 'not notify activity if the article is not advertise' do
     ActionTracker::Record.delete_all
-    a = create TextileArticle, :name => 'bar', :profile_id => fast_create(Profile).id, :published => true, :advertise => false
+    a = create TextileArticle, :name => 'bar', :profile_id => create(Profile).id, :published => true, :advertise => false
     assert_equal true, a.published?
     assert_equal true, a.notifiable?
     assert_equal false, a.image?

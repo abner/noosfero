@@ -32,20 +32,20 @@ class ContactTest < ActiveSupport::TestCase
   end
 
   should 'deliver message' do
-    ent = fast_create(Enterprise, :name => 'my enterprise', :identifier => 'myent')
+    ent = create(Enterprise, :name => 'my enterprise', :identifier => 'myent')
     c = Contact.new(:name => 'john', :email => 'john@invalid.com', :subject => 'hi', :message => 'hi, all', :dest => ent)
     assert c.deliver
   end
 
   should 'not deliver message if contact is invalid' do
-    ent = fast_create(Enterprise, :name => 'my enterprise', :identifier => 'myent')
+    ent = create(Enterprise, :name => 'my enterprise', :identifier => 'myent')
     c = Contact.new(:name => 'john', :subject => 'hi', :message => 'hi, all', :dest => ent)
     assert !c.valid?
     assert !c.deliver
   end
 
   should 'use sender name and environment noreply_email on from' do
-    ent = fast_create(Enterprise, :name => 'my enterprise', :identifier => 'myent')
+    ent = create(Enterprise, :name => 'my enterprise', :identifier => 'myent')
     env = ent.environment
     env.noreply_email = 'noreply@sample.org'
     env.save!
@@ -55,14 +55,14 @@ class ContactTest < ActiveSupport::TestCase
   end
 
   should 'add dest name on subject' do
-    ent = fast_create(Enterprise, :name => 'my enterprise', :identifier => 'myent')
+    ent = create(Enterprise, :name => 'my enterprise', :identifier => 'myent')
     c = Contact.new(:name => 'john', :email => 'john@invalid.com', :subject => 'hi', :message => 'hi, all', :dest => ent)
     email = c.deliver
     assert_equal "[#{ent.short_name(30)}] #{c.subject}", email['subject'].to_s
   end
 
   should 'add sender email on reply_to' do
-    ent = fast_create(Enterprise, :name => 'my enterprise', :identifier => 'myent')
+    ent = create(Enterprise, :name => 'my enterprise', :identifier => 'myent')
     c = Contact.new(:name => 'john', :email => 'john@invalid.com', :subject => 'hi', :message => 'hi, all', :dest => ent)
     email = c.deliver
     assert_equal c.email, email.reply_to.first.to_s

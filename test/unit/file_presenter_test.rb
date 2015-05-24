@@ -3,7 +3,7 @@ require_relative "../test_helper"
 class FilePresenterTest < ActiveSupport::TestCase
 
   should 'notify about deprecated method UploadedFile.icon_name' do
-    profile = fast_create(Profile)
+    profile = create(Profile)
     file = UploadedFile.create!(
              :profile => profile,
              :uploaded_data => fixture_file_upload('/files/rails.png', 'image/png')
@@ -18,7 +18,7 @@ class FilePresenterTest < ActiveSupport::TestCase
   end
 
   should 'notify about deprecated method UploadedFile#to_html' do
-    profile = fast_create(Profile)
+    profile = create(Profile)
     file = UploadedFile.create!(
              :profile => profile,
              :uploaded_data => fixture_file_upload('/files/rails.png', 'image/png')

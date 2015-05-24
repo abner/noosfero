@@ -3,8 +3,8 @@ require_relative "../test_helper"
 class FriendshipTest < ActiveSupport::TestCase
 
   should 'connect a person to another' do
-    p1 = create_user('person_test').person
-    p2 = create_user('person_test_2').person
+    p1 = create(:person)
+    p2 = create(:person)
 
     f = Friendship.new
     assert_raise ActiveRecord::AssociationTypeMismatch do
@@ -23,7 +23,7 @@ class FriendshipTest < ActiveSupport::TestCase
   end
 
   should 'create tracked action' do
-    a, b, c = create_user('a').person, create_user('b').person, create_user('c').person
+    a, b, c = create(:person)
     f = Friendship.new
     f.person = a
     f.friend = b
@@ -41,7 +41,7 @@ class FriendshipTest < ActiveSupport::TestCase
   end
 
   should 'create tracked action for both people' do
-    a, b = create_user('a').person, create_user('b').person
+    a, b = create(:person)
     f = Friendship.new
     f.person = a
     f.friend = b
@@ -59,8 +59,8 @@ class FriendshipTest < ActiveSupport::TestCase
   end
 
   should 'remove friendships when a friend removal occurs' do
-    p1 = create_user('testuser1').person
-    p2 = create_user('testuser2').person
+    p1 = create(:person)
+    p2 = create(:person)
     p1.add_friend(p2, 'friends')
     p2.add_friend(p1, 'friends')
 

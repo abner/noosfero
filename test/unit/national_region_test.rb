@@ -5,7 +5,7 @@ class NationalRegionTest < ActiveSupport::TestCase
   should 'search_city especific city' do
     city_name = "Santos"
 
-    new_region = fast_create(NationalRegion, :name =>  city_name,
+    new_region = create(NationalRegion, :name =>  city_name,
                                 :national_region_code => '355030',
                                 :national_region_type_id => NationalRegionType::CITY)
 
@@ -20,7 +20,7 @@ class NationalRegionTest < ActiveSupport::TestCase
     new_regions = []
 
     for i in 0..city_names.length
-      new_regions << fast_create(NationalRegion, :name =>  city_names[i],
+      new_regions << create(NationalRegion, :name =>  city_names[i],
         :national_region_code => '355030',
         :national_region_type_id => NationalRegionType::CITY)
     end
@@ -38,7 +38,7 @@ class NationalRegionTest < ActiveSupport::TestCase
   should 'search_city especific state' do
     state_name = "Santa Catarina"
 
-    new_region = fast_create(NationalRegion, :name =>  state_name,
+    new_region = create(NationalRegion, :name =>  state_name,
                                 :national_region_code => '22',
                                 :national_region_type_id => NationalRegionType::STATE)
 
@@ -53,7 +53,7 @@ class NationalRegionTest < ActiveSupport::TestCase
     new_regions = []
 
     for i in 0..state_names.length
-      new_regions << fast_create(NationalRegion, :name =>  state_names[i],
+      new_regions << create(NationalRegion, :name =>  state_names[i],
         :national_region_code => '35',
         :national_region_type_id => NationalRegionType::STATE)
     end

@@ -82,7 +82,7 @@ class TaskMailerTest < ActiveSupport::TestCase
   end
 
   should 'be able to send a "target notification" message' do
-    requestor = fast_create(Person)
+    requestor = create(Person)
     requestor.expects(:notification_emails).returns(['requestor@example.com'])
     task = Task.new(:target => requestor)
     task.expects(:target_notification_description).returns('the task')

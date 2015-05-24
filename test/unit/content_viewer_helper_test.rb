@@ -8,19 +8,19 @@ class ContentViewerHelperTest < ActionView::TestCase
   include ApplicationHelper
 
   def setup
-    @profile = create_user('blog_helper_test').person
+    @profile = create(:person)
   end
   attr :profile
 
   should 'display published-at for blog posts' do
-    blog = fast_create(Blog, :name => 'Blog test', :profile_id => profile.id)
+    blog = create(Blog, :name => 'Blog test', :profile_id => profile.id)
     post = create(TextileArticle, :name => 'post test', :profile => profile, :parent => blog)
     result = article_title(post)
     assert_tag_in_string result, :tag => 'span', :content => show_date(post.published_at)
   end
   
   should 'display published-at for forum posts' do
-    forum = fast_create(Forum, :name => 'Forum test', :profile_id => profile.id)
+    forum = create(Forum, :name => 'Forum test', :profile_id => profile.id)
     post = TextileArticle.create!(:name => 'post test', :profile => profile, :parent => forum)
     result = article_title(post)
     assert_tag_in_string result, :tag => 'span', :content => show_date(post.published_at)
@@ -33,42 +33,42 @@ class ContentViewerHelperTest < ActionView::TestCase
   end
 
   should 'create link on title of blog posts' do
-    blog = fast_create(Blog, :name => 'Blog test', :profile_id => profile.id)
-    post = fast_create(TextileArticle, :name => 'post test', :profile_id => profile.id, :parent_id => blog.id)
+    blog = create(Blog, :name => 'Blog test', :profile_id => profile.id)
+    post = create(TextileArticle, :name => 'post test', :profile_id => profile.id, :parent_id => blog.id)
     assert post.belongs_to_blog?
     result = article_title(post)
     assert_tag_in_string result, :tag => 'h1', :child => {:tag => 'a', :content => 'post test', :attributes => { :href => /my-article-\d+/ }}
   end
 
   should 'not create link on title if pass no_link option' do
-    blog = fast_create(Blog, :name => 'Blog test', :profile_id => profile.id)
-    post = fast_create(TextileArticle, :name => 'post test', :profile_id => profile.id, :parent_id => blog.id)
+    blog = create(Blog, :name => 'Blog test', :profile_id => profile.id)
+    post = create(TextileArticle, :name => 'post test', :profile_id => profile.id, :parent_id => blog.id)
     result = article_title(post, :no_link => :true)
     assert_no_match /a href='#{url_for(post.url)}'>#{post.name}</, result
   end
 
   should 'not create link on title if non-blog post' do
-    article = fast_create(TextileArticle, :name => 'art test', :profile_id => profile.id)
+    article = create(TextileArticle, :name => 'art test', :profile_id => profile.id)
     result = article_title(article)
     assert_no_match /a href='#{url_for(article.url)}'>#{article.name}</, result
   end
 
   should 'not create link to comments if called with no_comments' do
-    blog = fast_create(Blog, :name => 'Blog test', :profile_id => profile.id)
-    article = fast_create(TextileArticle, :name => 'art test', :profile_id => profile.id, :parent_id => blog.id)
+    blog = create(Blog, :name => 'Blog test', :profile_id => profile.id)
+    article = create(TextileArticle, :name => 'art test', :profile_id => profile.id, :parent_id => blog.id)
     result = article_title(article, :no_comments => true)
     assert_no_match(/a href='.*comments_list.*>No comments yet</, result)
   end
 
   should 'not create link to comments if the article doesn\'t allow comments' do
-    blog = fast_create(Blog, :name => 'Blog test', :profile_id => profile.id)
-    article = fast_create(TextileArticle, :name => 'art test', :profile_id => profile.id, :parent_id => blog.id, :accept_comments => false)
+    blog = create(Blog, :name => 'Blog test', :profile_id => profile.id)
+    article = create(TextileArticle, :name => 'art test', :profile_id => profile.id, :parent_id => blog.id, :accept_comments => false)
     result = article_title(article)
     assert_no_match(/a href='.*comments_list.*>No comments yet</, result)
   end
 
   should 'count total of comments from post' do
-    article = fast_create(TextileArticle, :profile_id => profile.id)
+    article = create(TextileArticle, :profile_id => profile.id)
     create(Comment, :article => article, :author => profile, :title => 'test', :body => 'test')
     article.reload
     result = link_to_comments(article)

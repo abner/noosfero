@@ -5,7 +5,7 @@ class SetProfileRegionFromCityStateTest < ActiveSupport::TestCase
   should 'set city and state from names' do
     c, _ = create_city_in_state('Pindamonhangaba', 'Sao Paulo', 'SP')
 
-    p = fast_create(Person, :user_id => fast_create(User).id)
+    p = create(Person, :user_id => create(User).id)
     p.state_with_region = 'SP'
     p.city_with_region = 'Pindamonhangaba'
     p.save!
@@ -15,7 +15,7 @@ class SetProfileRegionFromCityStateTest < ActiveSupport::TestCase
   should 'set region to null if city not found' do
     create_city_in_state(nil, 'Sao Paulo', 'SP')
 
-    p = fast_create(Person, :user_id => fast_create(User).id)
+    p = create(Person, :user_id => create(User).id)
     p.state_with_region = 'SP'
     p.city_with_region = 'Pindamonhangaba'
     p.save!
@@ -25,7 +25,7 @@ class SetProfileRegionFromCityStateTest < ActiveSupport::TestCase
   should 'set region to null if state not found' do
     create_city_in_state('Pindamonhangaba', 'Sao Paulo', 'SP')
 
-    p = fast_create(Person, :user_id => fast_create(User).id)
+    p = create(Person, :user_id => create(User).id)
     p.state_with_region = 'RJ'
     p.city_with_region = 'Pindamonhangaba'
     p.save!

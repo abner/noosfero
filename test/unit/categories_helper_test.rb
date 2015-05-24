@@ -20,14 +20,14 @@ class CategoriesHelperTest < ActiveSupport::TestCase
   end
 
   should 'return category color if its defined' do
-    category1 = fast_create(Category, :name => 'education', :display_color => 'fbfbfb')
+    category1 = create(Category, :name => 'education', :display_color => 'fbfbfb')
     assert_equal 'background-color: #fbfbfb;', category_color_style(category1)
   end
 
   should 'not return category parent color if category color is not defined' do
-    e = fast_create(Environment)
-    category1 = fast_create(Category, :name => 'education', :display_color => 'fbfbfb', :environment_id => e.id)
-    category2 = fast_create(Category, :name => 'education', :display_color => nil, :parent_id => category1.id, :environment_id => e.id)
+    e = create(Environment)
+    category1 = create(Category, :name => 'education', :display_color => 'fbfbfb', :environment_id => e.id)
+    category2 = create(Category, :name => 'education', :display_color => nil, :parent_id => category1.id, :environment_id => e.id)
     assert_equal '', category_color_style(category2)
   end
 

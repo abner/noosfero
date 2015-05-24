@@ -55,12 +55,12 @@ class CommunitiesBlockTest < ActiveSupport::TestCase
   end
 
   should 'list non-public communities' do
-    user = create_user('testuser').person
+    user = create(:person)
 
-    public_community = fast_create(Community, :environment_id => Environment.default.id)
+    public_community = create(Community, :environment_id => Environment.default.id)
     public_community.add_member(user)
 
-    private_community = fast_create(Community, :environment_id => Environment.default.id, :public_profile => false)
+    private_community = create(Community, :environment_id => Environment.default.id, :public_profile => false)
     private_community.add_member(user)
 
     block = CommunitiesBlock.new

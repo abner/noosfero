@@ -9,15 +9,15 @@ class PersonNotifierTest < ActiveSupport::TestCase
     ActionMailer::Base.perform_deliveries = true
     ActionMailer::Base.deliveries = []
     Person.delete_all
-    @admin = create_user('adminuser').person
-    @member = create_user('member').person
+    @admin = create(:person)
+    @member = create(:person)
     @admin.notification_time = 24
     @member.notification_time = 24
     @admin.save!
     @member.save!
-    @community = fast_create(Community)
+    @community = create(Community)
     @community.add_member(@admin)
-    @article = fast_create(TextileArticle, :name => 'Article test', :profile_id => @community.id, :notify_comments => false)
+    @article = create(TextileArticle, :name => 'Article test', :profile_id => @community.id, :notify_comments => false)
     Delayed::Job.delete_all
     notify
     ActionMailer::Base.deliveries = []
@@ -166,7 +166,7 @@ class PersonNotifierTest < ActiveSupport::TestCase
       action.stubs(:verb).returns(verb)
       action.stubs(:user).returns(@member)
       action.stubs(:created_at).returns(DateTime.now)
-      action.stubs(:target).returns(fast_create(Forum))
+      action.stubs(:target).returns(create(Forum))
       action.stubs(:comments_count).returns(0)
       action.stubs(:comments).returns([])
       action.stubs(:params).returns({'name' => 'home', 'url' => '/', 'lead' => ''})

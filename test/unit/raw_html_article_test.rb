@@ -3,7 +3,7 @@ require_relative "../test_helper"
 class RawHTMLArticleTest < ActiveSupport::TestCase
 
   def setup
-    @profile = create_user('testing').person
+    @profile = create(:person)
   end
 
   should 'not filter HTML' do

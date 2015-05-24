@@ -7,11 +7,11 @@ class BoxTest < ActiveSupport::TestCase
   end
 
   should 'retrieve environment based on owner' do
-    profile = fast_create(Profile)
-    box = fast_create(Box, :owner_id => profile.id, :owner_type => 'Profile')
+    profile = create(Profile)
+    box = create(Box, :owner_id => profile.id, :owner_type => 'Profile')
     assert_equal profile.environment, box.environment
 
-    box = fast_create(Box, :owner_id => Environment.default.id, :owner_type => 'Environment')
+    box = create(Box, :owner_id => Environment.default.id, :owner_type => 'Environment')
     assert_equal Environment.default, box.environment
   end
 
@@ -133,9 +133,9 @@ class BoxTest < ActiveSupport::TestCase
   end
 
   should 'list only boxes with a postion greater than zero' do
-    profile = fast_create(Profile)
-    box = fast_create(Box, :owner_id => profile.id, :owner_type => 'Profile', :position => 0)
-    box2 = fast_create(Box, :owner_id => profile.id, :owner_type => 'Profile', :position => 1)
+    profile = create(Profile)
+    box = create(Box, :owner_id => profile.id, :owner_type => 'Profile', :position => 0)
+    box2 = create(Box, :owner_id => profile.id, :owner_type => 'Profile', :position => 1)
     assert_equal [box2], profile.boxes.with_position
   end
 

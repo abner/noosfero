@@ -16,15 +16,15 @@ class CertifierTest < ActiveSupport::TestCase
     certifier = Certifier.new(:name => 'Certifier without environment')
     assert !certifier.valid?
 
-    certifier.environment = fast_create(Environment)
+    certifier.environment = create(Environment)
     assert certifier.valid?
   end
 
   should 'belongs to environment' do
-    env_one = fast_create(Environment)
+    env_one = create(Environment)
     certifier_from_env_one = env_one.certifiers.create(:name => 'Certifier from environment one')
 
-    env_two = fast_create(Environment)
+    env_two = create(Environment)
     certifier_from_env_two = env_two.certifiers.create(:name => 'Certifier from environment two')
 
     assert_includes env_one.certifiers, certifier_from_env_one
@@ -32,7 +32,7 @@ class CertifierTest < ActiveSupport::TestCase
   end
 
   should 'name is mandatory' do
-    env_one = fast_create(Environment)
+    env_one = create(Environment)
     certifier = env_one.certifiers.new
     assert !certifier.valid?
 
@@ -41,21 +41,21 @@ class CertifierTest < ActiveSupport::TestCase
   end
 
   should 'sort by name' do
-    last = fast_create(Certifier, :name => "Zumm")
-    first = fast_create(Certifier, :name => "Atum")
+    last = create(Certifier, :name => "Zumm")
+    first = create(Certifier, :name => "Atum")
     assert_equal [first, last], Certifier.all.sort
   end
 
   should 'sorting is not case sensitive' do
-    first = fast_create(Certifier, :name => "Aaaa")
-    second = fast_create(Certifier, :name => "abbb")
-    last = fast_create(Certifier, :name => "Accc")
+    first = create(Certifier, :name => "Aaaa")
+    second = create(Certifier, :name => "abbb")
+    last = create(Certifier, :name => "Accc")
     assert_equal [first, second, last], Certifier.all.sort
   end
 
   should 'discard non-ascii char when sorting' do
-    first = fast_create(Certifier, :name => "Áaaa")
-    last = fast_create(Certifier, :name => "Aáab")
+    first = create(Certifier, :name => "Áaaa")
+    last = create(Certifier, :name => "Aáab")
     assert_equal [first, last], Certifier.all.sort
   end
 
@@ -63,7 +63,7 @@ class CertifierTest < ActiveSupport::TestCase
     pq = mock
     Certifier.any_instance.stubs(:product_qualifiers).returns([pq])
     pq.expects(:update_attributes!).with(:certifier => nil)
-    cert = fast_create(Certifier)
+    cert = create(Certifier)
     cert.destroy
   end
 

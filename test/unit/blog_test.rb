@@ -31,20 +31,20 @@ class BlogTest < ActiveSupport::TestCase
   end
 
   should 'create rss feed automatically' do
-    p = create_user('testuser').person
+    p = create(:person)
     b = create(Blog, :profile_id => p.id, :name => 'blog_feed_test')
     assert_kind_of RssFeed, b.feed
   end
 
   should 'save feed options' do
-    p = create_user('testuser').person
+    p = create(:person)
     p.articles << build(Blog, :profile => p, :name => 'blog_feed_test')
     p.blog.feed = { :limit => 7 }
     assert_equal 7, p.blog.feed.limit
   end
 
   should 'save feed options after create blog' do
-    p = create_user('testuser').person
+    p = create(:person)
     p.articles << build(Blog, :profile => p, :name => 'blog_feed_test', :feed => { :limit => 7 })
     assert_equal 7, p.blog.feed.limit
   end
@@ -55,7 +55,7 @@ class BlogTest < ActiveSupport::TestCase
   end
 
   should 'update posts per page setting' do
-    p = create_user('testuser').person
+    p = create(:person)
     p.articles << build(Blog, :profile => p, :name => 'Blog test')
     blog = p.blog
     blog.posts_per_page = 7
@@ -64,37 +64,37 @@ class BlogTest < ActiveSupport::TestCase
   end
 
   should 'has posts' do
-    p = create_user('testuser').person
-    blog = fast_create(Blog, :profile_id => p.id, :name => 'Blog test')
-    post = fast_create(TextileArticle, :name => 'First post', :profile_id => p.id, :parent_id => blog.id)
+    p = create(:person)
+    blog = create(Blog, :profile_id => p.id, :name => 'Blog test')
+    post = create(TextileArticle, :name => 'First post', :profile_id => p.id, :parent_id => blog.id)
     blog.children << post
     assert_includes blog.posts, post
   end
 
   should 'not includes rss feed in posts' do
-    p = create_user('testuser').person
+    p = create(:person)
     blog = create(Blog, :profile_id => p.id, :name => 'Blog test')
     assert_includes blog.children, blog.feed
     assert_not_includes blog.posts, blog.feed
   end
 
   should 'list posts ordered by published at' do
-    p = create_user('testuser').person
-    blog = fast_create(Blog, :profile_id => p.id, :name => 'Blog test')
+    p = create(:person)
+    blog = create(Blog, :profile_id => p.id, :name => 'Blog test')
     newer = create(TextileArticle, :name => 'Post 2', :parent => blog, :profile => p)
     older = create(TextileArticle, :name => 'Post 1', :parent => blog, :profile => p, :published_at => Time.now - 1.month)
     assert_equal [newer, older], blog.posts
   end
 
   should 'has one external feed' do
-    p = create_user('testuser').person
-    blog = fast_create(Blog, :profile_id => p.id, :name => 'Blog test')
+    p = create(:person)
+    blog = create(Blog, :profile_id => p.id, :name => 'Blog test')
     efeed = blog.create_external_feed(:address => 'http://invalid.url')
     assert_equal efeed, blog.external_feed
   end
 
   should 'build external feed after save' do
-    p = create_user('testuser').person
+    p = create(:person)
     blog = build(Blog, :profile => p, :name => 'Blog test')
     blog.external_feed_builder = { :address => 'feed address' }
     blog.save!
@@ -102,7 +102,7 @@ class BlogTest < ActiveSupport::TestCase
   end
 
   should 'update external feed' do
-    p = create_user('testuser').person
+    p = create(:person)
     blog = build(Blog, :profile => p, :name => 'Blog test')
     blog.save
     e = build(ExternalFeed, :address => 'feed address')
@@ -115,14 +115,14 @@ class BlogTest < ActiveSupport::TestCase
   end
 
   should 'invalid blog if has invalid external_feed' do
-    p = create_user('testuser').person
+    p = create(:person)
     blog = build(Blog, :profile => p, :name => 'Blog test', :external_feed_builder => {:enabled => true})
     blog.save
     assert ! blog.valid?
   end
 
   should 'remove external feed when removing blog' do
-    p = create_user('testuser').person
+    p = create(:person)
     blog = create(Blog, :name => 'Blog test', :profile => p, :external_feed_builder => {:enabled => true, :address => "http://bli.org/feed"})
     assert blog.external_feed
     assert_difference 'ExternalFeed.count', -1 do
@@ -131,15 +131,15 @@ class BlogTest < ActiveSupport::TestCase
   end
 
   should 'profile has more then one blog' do
-    p = create_user('testuser').person
-    fast_create(Blog, :name => 'Blog test', :profile_id => p.id)
+    p = create(:person)
+    create(Blog, :name => 'Blog test', :profile_id => p.id)
     assert_nothing_raised ActiveRecord::RecordInvalid do
       create(Blog, :name => 'Another Blog', :profile => p)
     end
   end
 
   should 'not update slug from name for existing blog' do
-    p = create_user('testuser').person
+    p = create(:person)
     blog = create(Blog, :profile => p)
     new_name = 'Changed name'
     assert_not_equal new_name.to_slug, blog.slug
@@ -153,7 +153,7 @@ class BlogTest < ActiveSupport::TestCase
   end
 
   should 'update visualization_format setting' do
-    p = create_user('testuser').person
+    p = create(:person)
     p.articles << build(Blog, :profile => p, :name => 'Blog test')
     blog = p.blog
     blog.visualization_format = 'short'
@@ -187,7 +187,7 @@ class BlogTest < ActiveSupport::TestCase
   end
 
   should 'update display posts in current language setting' do
-    p = create_user('testuser').person
+    p = create(:person)
     p.articles << build(Blog, :profile => p, :name => 'Blog test')
     blog = p.blog
     blog.display_posts_in_current_language = false
@@ -199,30 +199,30 @@ class BlogTest < ActiveSupport::TestCase
   #FIXME This should be used until there is a migration to fix all blogs that
   # already have folders inside them
   should 'not list folders in posts' do
-    p = create_user('testuser').person
+    p = create(:person)
     blog =  Blog.create!(:profile => p, :name => 'Blog test')
-    folder = fast_create(Folder, :parent_id => blog.id)
-    article = fast_create(TextileArticle, :parent_id => blog.id)
+    folder = create(Folder, :parent_id => blog.id)
+    article = create(TextileArticle, :parent_id => blog.id)
 
     assert_not_includes blog.posts, folder
     assert_includes blog.posts, article
   end
 
   should 'not accept uploads' do
-    folder = fast_create(Blog)
+    folder = create(Blog)
     assert !folder.accept_uploads?
   end
 
   should 'know when blog has or when has no posts' do
-    p = create_user('testuser').person
+    p = create(:person)
     blog =  Blog.create!(:profile => p, :name => 'Blog test')
     assert blog.empty?
-    fast_create(TextileArticle, :parent_id => blog.id)
+    create(TextileArticle, :parent_id => blog.id)
     assert ! blog.empty?
   end
 
   should 'set cover image' do
-    profile = fast_create(Profile)
+    profile = create(Profile)
     blog = create(Blog, :profile_id => profile.id, :name=>'testblog', :image_builder => { :uploaded_data => fixture_file_upload('/files/rails.png', 'image/png')})
     blog.save!
     blog.reload
@@ -230,7 +230,7 @@ class BlogTest < ActiveSupport::TestCase
   end
 
   should 'remove cover image' do
-    profile = fast_create(Profile)
+    profile = create(Profile)
     blog = create(Blog, :profile_id => profile.id, :name=>'testblog', :image_builder => { :uploaded_data => fixture_file_upload('/files/rails.png', 'image/png')})
     blog.save!
     blog.reload
@@ -242,7 +242,7 @@ class BlogTest < ActiveSupport::TestCase
   end
 
   should 'update cover image' do
-    profile = fast_create(Profile)
+    profile = create(Profile)
     blog = create(Blog, :profile_id => profile.id, :name=>'testblog', :image_builder => { :uploaded_data => fixture_file_upload('/files/rails.png', 'image/png')})
     blog.save!
     blog.reload

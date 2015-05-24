@@ -17,31 +17,31 @@ class RegionTest < ActiveSupport::TestCase
   end
 
   should 'has validator' do
-    env = fast_create(Environment)
-    region = fast_create(Region, :environment_id => env.id, :name => 'My Region')
+    env = create(Environment)
+    region = create(Region, :environment_id => env.id, :name => 'My Region')
     region.validators.create!(:name => 'Validator entity', :identifier => 'validator-entity')
     assert region.has_validator?
   end
 
   should 'has no validator' do
-    env = fast_create(Environment)
-    region = fast_create(Region, :environment_id => env.id, :name => 'My Region')
+    env = create(Environment)
+    region = create(Region, :environment_id => env.id, :name => 'My Region')
     assert !region.has_validator?
   end
 
   should 'list regions with validators' do
-    bahia = fast_create(Region, :name => 'Bahia')
-    bahia.validators << fast_create(Enterprise, :name => 'Forum Baiano de Economia Solidaria', :identifier => 'ecosol-ba')
+    bahia = create(Region, :name => 'Bahia')
+    bahia.validators << create(Enterprise, :name => 'Forum Baiano de Economia Solidaria', :identifier => 'ecosol-ba')
 
-    sergipe = fast_create(Region, :name => 'Sergipe')
+    sergipe = create(Region, :name => 'Sergipe')
     # Sergipe has no validators
 
     assert_equivalent [bahia], Region.with_validators
   end
 
   should 'list each region with validatores only once' do
-    bahia = fast_create(Region, :name => 'Bahia')
-    2.times { |i| bahia.validators << fast_create(Enterprise, :name => "validator #{i}", :identifier => "validator-#{i}")}
+    bahia = create(Region, :name => 'Bahia')
+    2.times { |i| bahia.validators << create(Enterprise, :name => "validator #{i}", :identifier => "validator-#{i}")}
     assert_equal [bahia], Region.with_validators
   end
 

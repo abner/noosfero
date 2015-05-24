@@ -4,7 +4,7 @@ class RecentDocumentsBlockTest < ActiveSupport::TestCase
 
   def setup
     @articles = []
-    @profile = create_user('testinguser').person
+    @profile = create(:person)
     @profile.articles.destroy_all
     ['first', 'second', 'third', 'fourth', 'fifth'].each do |name|
       article = @profile.articles.create!(:name => name)

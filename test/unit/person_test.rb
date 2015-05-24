@@ -9,14 +9,14 @@ class PersonTest < ActiveSupport::TestCase
     assert !p.valid?
     p.user =  create_user('john', :email => 'john@doe.org', :password => 'dhoe', :password_confirmation => 'dhoe')
     assert !p.valid?
-    p = create_user('johnz', :email => 'johnz@doe.org', :password => 'dhoe', :password_confirmation => 'dhoe').person
+    p = create(:person)
     assert p.valid?
   end
 
   def test_can_associate_to_a_profile
     pr = build(Profile, :identifier => 'mytestprofile', :name => 'My test profile')
     pr.save!
-    pe = create_user('person', :email => 'person@test.net', :password => 'dhoe', :password_confirmation => 'dhoe').person
+    pe = create(:person)
     pe.save!
     member_role = create(Role, :name => 'somerandomrole')
     pr.affiliate(pe, member_role)
@@ -27,7 +27,7 @@ class PersonTest < ActiveSupport::TestCase
   def test_can_belong_to_an_enterprise
     e = build(Enterprise, :identifier => 'enterprise', :name => 'enterprise')
     e.save!
-    p = create_user('person', :email => 'person@test.net', :password => 'dhoe', :password_confirmation => 'dhoe').person
+    p = create(:person)
     p.save!
     member_role = create(Role, :name => 'somerandomrole')
     e.affiliate(p, member_role)
@@ -37,8 +37,8 @@ class PersonTest < ActiveSupport::TestCase
   end
 
   should 'belong to communities' do
-    c = fast_create(Community)
-    p = create_user('mytestuser').person
+    c = create(Community)
+    p = create(:person)
 
     c.add_member(p)
 
@@ -78,8 +78,8 @@ class PersonTest < ActiveSupport::TestCase
   end
 
   should 'change the roles of the user' do
-    p = create_user('jonh', :email => 'john@doe.org', :password => 'dhoe', :password_confirmation => 'dhoe').person
-    e = fast_create(Enterprise)
+    p = create(:person)
+    e = create(Enterprise)
     r1 = create(Role, :name => 'associate')
     assert e.affiliate(p, r1)
     r2 = create(Role, :name => 'partner')
@@ -90,9 +90,9 @@ class PersonTest < ActiveSupport::TestCase
   end
 
   should 'report that the user has the permission' do
-    p = create_user('john', :email => 'john@doe.org', :password => 'dhoe', :password_confirmation => 'dhoe').person
+    p = create(:person)
     r = create(Role, :name => 'associate', :permissions => ['edit_profile'])
-    e = fast_create(Enterprise)
+    e = create(Enterprise)
     assert e.affiliate(p, r)
     p = Person.find(p.id)
     assert e.reload
@@ -101,7 +101,7 @@ class PersonTest < ActiveSupport::TestCase
   end
 
   should 'get an email address from the associated user instance' do
-    p = create_user('jonh', :email => 'john@doe.org', :password => 'dhoe', :password_confirmation => 'dhoe').person
+    p = create(:person)
     assert_equal 'john@doe.org', p.email
   end
 
@@ -130,7 +130,7 @@ class PersonTest < ActiveSupport::TestCase
   should 'not be able to change e-mail to an e-mail of other user' do
     create_user('firstuser', :email => 'user@domain.com')
 
-    other = create_user('seconduser', :email => 'other@domain.com').person
+    other = create(:person)
     other.email = 'user@domain.com'
     other.valid?
     assert other.errors[:email.to_s].present?
@@ -140,7 +140,7 @@ class PersonTest < ActiveSupport::TestCase
   should 'be able to use an e-mail already used in other environment' do
     first = create_user('user', :email => 'user@example.com')
 
-    other_env = fast_create(Environment)
+    other_env = create(Environment)
     other = create_user('user', :email => 'other@example.com', :environment => other_env).person
     other.email = 'user@example.com'
     other.valid?
@@ -149,8 +149,8 @@ class PersonTest < ActiveSupport::TestCase
 
   should 'be an admin if have permission of environment administration' do
     role = create(Role, :name => 'just_another_admin_role')
-    env = fast_create(Environment)
-    person = create_user('just_another_person').person
+    env = create(Environment)
+    person = create(:person)
     env.affiliate(person, role)
     assert ! person.is_admin?(env)
     role.update_attributes(:permissions => ['view_environment_admin_panel'])
@@ -159,15 +159,15 @@ class PersonTest < ActiveSupport::TestCase
   end
 
   should 'separate admins of different environments' do
-    env1 = fast_create(Environment)
-    env2 = fast_create(Environment)
+    env1 = create(Environment)
+    env2 = create(Environment)
 
     # role is an admin role
     role = create(Role, :name => 'just_another_admin_role')
     role.update_attributes(:permissions => ['view_environment_admin_panel'])
 
     # user is admin of env1, but not of env2
-    person = create_user('just_another_person').person
+    person = create(:person)
     env1.affiliate(person, role)
 
     person = Person.find(person.id)
@@ -202,15 +202,15 @@ class PersonTest < ActiveSupport::TestCase
   end
 
   should 'have friends' do
-    p1 = create_user('testuser1').person
-    p2 = create_user('testuser2').person
+    p1 = create(:person)
+    p2 = create(:person)
 
     p1.add_friend(p2)
 
     p1.friends.reload
     assert_equal [p2], p1.friends
 
-    p3 = create_user('testuser3').person
+    p3 = create(:person)
     p1.add_friend(p3)
 
     assert_equivalent [p2,p3], p1.friends(true) # force reload
@@ -234,10 +234,10 @@ class PersonTest < ActiveSupport::TestCase
   end
 
   should 'list friend groups' do
-    p1 = create_user('testuser1').person
-    p2 = create_user('testuser2').person
-    p3 = create_user('testuser3').person
-    p4 = create_user('testuser4').person
+    p1 = create(:person)
+    p2 = create(:person)
+    p3 = create(:person)
+    p4 = create(:person)
 
     p1.add_friend(p2, 'group1')
     p1.add_friend(p3, 'group2')
@@ -247,8 +247,8 @@ class PersonTest < ActiveSupport::TestCase
   end
 
   should 'not suggest duplicated friend groups' do
-    p1 = create_user('testuser1').person
-    p2 = create_user('testuser2').person
+    p1 = create(:person)
+    p2 = create(:person)
 
     p1.add_friend(p2, 'friends')
 
@@ -256,8 +256,8 @@ class PersonTest < ActiveSupport::TestCase
   end
 
   should 'remove friend' do
-    p1 = create_user('testuser1').person
-    p2 = create_user('testuser2').person
+    p1 = create(:person)
+    p2 = create(:person)
     p1.add_friend(p2, 'friends')
 
     assert_difference 'Friendship.count', -1 do
@@ -267,8 +267,8 @@ class PersonTest < ActiveSupport::TestCase
   end
 
   should 'destroy friendships when person is destroyed' do
-    p1 = create_user('testuser1').person
-    p2 = create_user('testuser2').person
+    p1 = create(:person)
+    p2 = create(:person)
     p1.add_friend(p2, 'friends')
     p2.add_friend(p1, 'friends')
 
@@ -279,22 +279,22 @@ class PersonTest < ActiveSupport::TestCase
   end
 
   should 'destroy use when person is destroyed' do
-    person = create_user('testuser').person
+    person = create(:person)
     assert_difference 'User.count', -1 do
       person.destroy
     end
   end
 
   should 'return info name instead of name when info is setted' do
-    p = create_user('ze_maria').person
+    p = create(:person)
     assert_equal 'ze_maria', p.name
     p.name = 'José'
     assert_equal 'José', p.name
   end
 
   should 'have favorite enterprises' do
-    p = create_user('test_person').person
-    e = fast_create(Enterprise)
+    p = create(:person)
+    e = create(Enterprise)
 
     p.favorite_enterprises << e
 
@@ -302,7 +302,7 @@ class PersonTest < ActiveSupport::TestCase
   end
 
   should 'save info contact_information field' do
-    person = create_user('new_person').person
+    person = create(:person)
     person.contact_information = 'my contact'
     person.save!
     assert_equal 'my contact', person.contact_information
@@ -322,8 +322,8 @@ class PersonTest < ActiveSupport::TestCase
   end
 
   should 'already request friendship' do
-    p1 = create_user('testuser1').person
-    p2 = create_user('testuser2').person
+    p1 = create(:person)
+    p2 = create(:person)
     create(AddFriend, person: p1, friend: p2).finish
     assert !p1.already_request_friendship?(p2)
     create(AddFriend, person: p1, friend: p2)
@@ -331,7 +331,7 @@ class PersonTest < ActiveSupport::TestCase
   end
 
   should 'have e-mail addresses' do
-    env = fast_create(Environment)
+    env = create(Environment)
     env.domains <<  build(Domain, :name => 'somedomain.com')
     person = build(Person, :environment => env, :identifier => 'testuser')
     person.expects(:environment).returns(env)
@@ -340,7 +340,7 @@ class PersonTest < ActiveSupport::TestCase
   end
 
   should 'not show www in e-mail addresses when force_www=true' do
-    env = fast_create(Environment)
+    env = create(Environment)
     env.domains <<  build(Domain, :name => 'somedomain.com')
     env.update_attribute(:force_www, true)
     person = build(Person, :environment => env, :identifier => 'testuser')
@@ -350,18 +350,18 @@ class PersonTest < ActiveSupport::TestCase
   end
 
   should 'show profile info to friend' do
-    person = create_user('test_user').person
+    person = create(:person)
     person.public_profile = false
     person.save!
-    friend = create_user('test_friend').person
+    friend = create(:person)
     person.add_friend(friend)
     person.friends.reload
     assert person.display_info_to?(friend)
   end
 
   should 'have a person template' do
-    template = fast_create(Person, :is_template => true)
-    p = create_user('test_user').person
+    template = create(Person, :is_template => true)
+    p = create(:person)
     p.template_id = template.id
     p.save!
     assert_equal template, p.template
@@ -374,7 +374,7 @@ class PersonTest < ActiveSupport::TestCase
   end
 
   should 'destroy all task that it requested when destroyed' do
-    p = create_user('test_profile').person
+    p = create(:person)
 
     assert_no_difference 'Task.count' do
       create(Task, :requestor => p)
@@ -383,22 +383,22 @@ class PersonTest < ActiveSupport::TestCase
   end
 
   should 'person has pending tasks' do
-    p1 = create_user('user_with_tasks').person
+    p1 = create(:person)
     p1.tasks << Task.new
-    p2 = create_user('user_without_tasks').person
+    p2 = create(:person)
     assert_includes Person.with_pending_tasks, p1
     assert_not_includes Person.with_pending_tasks, p2
   end
 
   should 'person has group with pending tasks' do
-    p1 = create_user('user_with_tasks').person
-    c1 = fast_create(Community)
+    p1 = create(:person)
+    c1 = create(Community)
     c1.tasks << Task.new
     assert !c1.tasks.pending.empty?
     c1.add_admin(p1)
 
-    c2 = fast_create(Community)
-    p2 = create_user('user_without_tasks').person
+    c2 = create(Community)
+    p2 = create(:person)
     c2.add_admin(p2)
 
     assert_includes Person.with_pending_tasks, p1
@@ -406,10 +406,10 @@ class PersonTest < ActiveSupport::TestCase
   end
 
   should 'not allow simple member to view group pending tasks' do
-    community = fast_create(Community)
-    admin = fast_create(Person)
+    community = create(Community)
+    admin = create(Person)
     community.add_member(admin)
-    member = fast_create(Person)
+    member = create(Person)
     community.reload
     community.add_member(member)
     community.tasks << Task.new
@@ -418,18 +418,18 @@ class PersonTest < ActiveSupport::TestCase
   end
 
   should 'person has organization pending tasks' do
-    c = fast_create(Community)
+    c = create(Community)
     c.tasks << Task.new
-    p = create_user('user_with_tasks').person
+    p = create(:person)
     c.add_admin(p)
 
     assert p.has_organization_pending_tasks?
   end
 
   should 'select organization pending tasks' do
-    c = fast_create(Community)
+    c = create(Community)
     c.tasks << Task.new
-    p = create_user('user_with_tasks').person
+    p = create(:person)
     c.add_admin(p)
 
     assert_equal p.pending_tasks_for_organization(c), c.tasks
@@ -528,22 +528,22 @@ class PersonTest < ActiveSupport::TestCase
   end
 
   should 'identify when person is a friend' do
-    p1 = create_user('testuser1').person
-    p2 = create_user('testuser2').person
+    p1 = create(:person)
+    p2 = create(:person)
     p1.add_friend(p2)
     p1.friends.reload
     assert p1.is_a_friend?(p2)
   end
 
   should 'identify when person isnt a friend' do
-    p1 = create_user('testuser1').person
-    p2 = create_user('testuser2').person
+    p1 = create(:person)
+    p2 = create(:person)
     assert !p1.is_a_friend?(p2)
   end
 
   should 'refuse join community' do
-    p = create_user('test_user').person
-    c = fast_create(Community)
+    p = create(:person)
+    c = create(Community)
 
     assert p.ask_to_join?(c)
     p.refuse_join(c)
@@ -551,66 +551,66 @@ class PersonTest < ActiveSupport::TestCase
   end
 
   should 'not ask to join for a member' do
-    p = create_user('test_user').person
-    c = fast_create(Community)
+    p = create(:person)
+    c = create(Community)
     c.add_member(p)
 
     assert !p.ask_to_join?(c)
   end
 
   should 'not ask to join if already asked' do
-    p = create_user('test_user').person
-    c = fast_create(Community)
+    p = create(:person)
+    c = create(Community)
     create(AddMember, :person => p, :organization => c)
 
     assert !p.ask_to_join?(c)
   end
 
   should 'ask to join if community is not public' do
-    person = fast_create(Person)
-    community = fast_create(Community, :public_profile => false)
+    person = create(Person)
+    community = create(Community, :public_profile => false)
 
     assert person.ask_to_join?(community)
   end
 
   should 'not ask to join if community is not visible' do
-    person = fast_create(Person)
-    community = fast_create(Community, :visible => false)
+    person = create(Person)
+    community = create(Community, :visible => false)
 
     assert !person.ask_to_join?(community)
   end
 
   should 'save organization_website with http' do
-    p = create_user('person_test').person
+    p = create(:person)
     p.organization_website = 'website.without.http'
     p.save
     assert_equal 'http://website.without.http', p.organization_website
   end
 
   should 'not add protocol for empty organization website' do
-    p = create_user('person_test').person
+    p = create(:person)
     p.organization_website = ''
     p.save
     assert_equal '', p.organization_website
   end
 
   should 'save organization_website as typed if has http' do
-    p = create_user('person_test').person
+    p = create(:person)
     p.organization_website = 'http://website.with.http'
     p.save
     assert_equal 'http://website.with.http', p.organization_website
   end
 
   should 'not add a friend if already is a friend' do
-    p1 = create_user('testuser1').person
-    p2 = create_user('testuser2').person
+    p1 = create(:person)
+    p2 = create(:person)
     assert p1.add_friend(p2)
     assert Profile['testuser1'].is_a_friend?(p2)
     assert !Profile['testuser1'].add_friend(p2)
   end
 
   should 'not raise exception when validates person without e-mail' do
-    person = create_user('testuser1').person
+    person = create(:person)
     person.user.email = nil
 
     assert_nothing_raised ActiveRecord::RecordInvalid do
@@ -619,7 +619,7 @@ class PersonTest < ActiveSupport::TestCase
   end
 
   should 'not be renamed' do
-    p = create_user('test_user').person
+    p = create(:person)
     assert p.valid?
     assert_raise ArgumentError do
       p.identifier = 'other_person_name'
@@ -627,29 +627,29 @@ class PersonTest < ActiveSupport::TestCase
   end
 
   should "return none on label if the person hasn't friends" do
-    p = fast_create(Person)
+    p = create(Person)
     assert_equal 0, p.friends.count
     assert_equal "none", p.more_popular_label
   end
 
   should "return one friend on label if the profile has one member" do
-    p1 = fast_create(Person)
-    p2 = fast_create(Person)
+    p1 = create(Person)
+    p2 = create(Person)
     p1.add_friend(p2)
     assert_equal 1, p1.friends.count
     assert_equal "one friend", p1.more_popular_label
   end
 
   should "return the number of friends on label if the person has more than one friend" do
-    p1 = fast_create(Person)
-    p2 = fast_create(Person)
-    p3 = fast_create(Person)
+    p1 = create(Person)
+    p2 = create(Person)
+    p3 = create(Person)
     p1.add_friend(p2)
     p1.add_friend(p3)
     assert_equal 2, p1.friends.count
     assert_equal "2 friends", p1.more_popular_label
 
-    p4 = fast_create(Person)
+    p4 = create(Person)
     p1.add_friend(p4)
     assert_equal 3, p1.friends.count
     assert_equal "3 friends", p1.more_popular_label
@@ -659,9 +659,9 @@ class PersonTest < ActiveSupport::TestCase
     extend CacheCounterHelper
 
     Person.delete_all
-    p1 = fast_create(Person)
-    p2 = fast_create(Person)
-    p3 = fast_create(Person)
+    p1 = create(Person)
+    p2 = create(Person)
+    p3 = create(Person)
 
     update_cache_counter(:friends_count, p1, 1)
     update_cache_counter(:friends_count, p2, 2)
@@ -671,7 +671,7 @@ class PersonTest < ActiveSupport::TestCase
   end
 
   should 'list people that have no friends in more popular list' do
-    person = fast_create(Person)
+    person = create(Person)
     assert_includes Person.more_popular, person
   end
 
@@ -683,54 +683,54 @@ class PersonTest < ActiveSupport::TestCase
   end
 
   should "see get all sent scraps" do
-    p1 = fast_create(Person)
+    p1 = create(Person)
     assert_equal [], p1.scraps_sent
-    fast_create(Scrap, :sender_id => p1.id)
-    fast_create(Scrap, :sender_id => p1.id)
+    create(Scrap, :sender_id => p1.id)
+    create(Scrap, :sender_id => p1.id)
     assert_equal 2, p1.scraps_sent.count
-    p2 = fast_create(Person)
-    fast_create(Scrap, :sender_id => p2.id)
+    p2 = create(Person)
+    create(Scrap, :sender_id => p2.id)
     assert_equal 2, p1.scraps_sent.count
-    fast_create(Scrap, :sender_id => p1.id)
+    create(Scrap, :sender_id => p1.id)
     assert_equal 3, p1.scraps_sent.count
-    fast_create(Scrap, :receiver_id => p1.id)
+    create(Scrap, :receiver_id => p1.id)
     assert_equal 3, p1.scraps_sent.count
   end
 
   should "see get all received scraps" do
-    p1 = fast_create(Person)
+    p1 = create(Person)
     assert_equal [], p1.scraps_received
-    fast_create(Scrap, :receiver_id => p1.id)
-    fast_create(Scrap, :receiver_id => p1.id)
+    create(Scrap, :receiver_id => p1.id)
+    create(Scrap, :receiver_id => p1.id)
     assert_equal 2, p1.scraps_received.count
-    p2 = fast_create(Person)
-    fast_create(Scrap, :receiver_id => p2.id)
+    p2 = create(Person)
+    create(Scrap, :receiver_id => p2.id)
     assert_equal 2, p1.scraps_received.count
-    fast_create(Scrap, :receiver_id => p1.id)
+    create(Scrap, :receiver_id => p1.id)
     assert_equal 3, p1.scraps_received.count
-    fast_create(Scrap, :sender_id => p1.id)
+    create(Scrap, :sender_id => p1.id)
     assert_equal 3, p1.scraps_received.count
   end
 
   should "see get all received scraps that are not replies" do
-    p1 = fast_create(Person)
-    s1 = fast_create(Scrap, :receiver_id => p1.id)
-    s2 = fast_create(Scrap, :receiver_id => p1.id)
-    s3 = fast_create(Scrap, :receiver_id => p1.id, :scrap_id => s1.id)
+    p1 = create(Person)
+    s1 = create(Scrap, :receiver_id => p1.id)
+    s2 = create(Scrap, :receiver_id => p1.id)
+    s3 = create(Scrap, :receiver_id => p1.id, :scrap_id => s1.id)
     assert_equal 3, p1.scraps_received.count
     assert_equal [s1,s2], p1.scraps_received.not_replies
-    p2 = fast_create(Person)
-    s4 = fast_create(Scrap, :receiver_id => p2.id)
-    s5 = fast_create(Scrap, :receiver_id => p2.id, :scrap_id => s4.id)
+    p2 = create(Person)
+    s4 = create(Scrap, :receiver_id => p2.id)
+    s5 = create(Scrap, :receiver_id => p2.id, :scrap_id => s4.id)
     assert_equal 2, p2.scraps_received.count
     assert_equal [s4], p2.scraps_received.not_replies
   end
 
   should "the followed_by method be protected and true to the person friends and herself by default" do
-    p1 = fast_create(Person)
-    p2 = fast_create(Person)
-    p3 = fast_create(Person)
-    p4 = fast_create(Person)
+    p1 = create(Person)
+    p2 = create(Person)
+    p3 = create(Person)
+    p4 = create(Person)
 
     p1.add_friend(p2)
     assert p1.is_a_friend?(p2)
@@ -744,10 +744,10 @@ class PersonTest < ActiveSupport::TestCase
   end
 
   should "the person follows her friends and herself by default" do
-    p1 = fast_create(Person)
-    p2 = fast_create(Person)
-    p3 = fast_create(Person)
-    p4 = fast_create(Person)
+    p1 = create(Person)
+    p2 = create(Person)
+    p3 = create(Person)
+    p4 = create(Person)
 
     p2.add_friend(p1)
     assert p2.is_a_friend?(p1)
@@ -761,10 +761,10 @@ class PersonTest < ActiveSupport::TestCase
   end
 
   should "a person member of a community follows the community" do
-    c = fast_create(Community)
-    p1 = fast_create(Person)
-    p2 = fast_create(Person)
-    p3 = fast_create(Person)
+    c = create(Community)
+    p1 = create(Person)
+    p2 = create(Person)
+    p3 = create(Person)
 
     assert !p1.is_member_of?(c)
     c.add_member(p1)
@@ -780,11 +780,11 @@ class PersonTest < ActiveSupport::TestCase
   end
 
   should "the person member of a enterprise follows the enterprise" do
-    e = fast_create(Enterprise)
+    e = create(Enterprise)
     e.stubs(:closed?).returns(false)
-    p1 = fast_create(Person)
-    p2 = fast_create(Person)
-    p3 = fast_create(Person)
+    p1 = create(Person)
+    p2 = create(Person)
+    p3 = create(Person)
 
     assert !p1.is_member_of?(e)
     e.add_member(p1)
@@ -800,35 +800,35 @@ class PersonTest < ActiveSupport::TestCase
   end
 
   should "the person see all of your scraps" do
-    person = fast_create(Person)
-    s1 = fast_create(Scrap, :sender_id => person.id)
+    person = create(Person)
+    s1 = create(Scrap, :sender_id => person.id)
     assert_equal [s1], person.scraps
-    s2 = fast_create(Scrap, :sender_id => person.id)
+    s2 = create(Scrap, :sender_id => person.id)
     assert_equal [s1,s2], person.scraps
-    s3 = fast_create(Scrap, :receiver_id => person.id)
+    s3 = create(Scrap, :receiver_id => person.id)
     assert_equal [s1,s2,s3], person.scraps
   end
 
   should "the person browse for a scrap with a Scrap object" do
-    person = fast_create(Person)
-    s1 = fast_create(Scrap, :sender_id => person.id)
-    s2 = fast_create(Scrap, :sender_id => person.id)
-    s3 = fast_create(Scrap, :receiver_id => person.id)
+    person = create(Person)
+    s1 = create(Scrap, :sender_id => person.id)
+    s2 = create(Scrap, :sender_id => person.id)
+    s3 = create(Scrap, :receiver_id => person.id)
     assert_equal s2, person.scraps(s2)
   end
 
   should "the person browse for a scrap with an integer and string id" do
-    person = fast_create(Person)
-    s1 = fast_create(Scrap, :sender_id => person.id)
-    s2 = fast_create(Scrap, :sender_id => person.id)
-    s3 = fast_create(Scrap, :receiver_id => person.id)
+    person = create(Person)
+    s1 = create(Scrap, :sender_id => person.id)
+    s2 = create(Scrap, :sender_id => person.id)
+    s3 = create(Scrap, :receiver_id => person.id)
     assert_equal s2, person.scraps(s2.id)
     assert_equal s2, person.scraps(s2.id.to_s)
   end
 
   should "destroy scrap if sender was removed" do
-    person = fast_create(Person)
-    scrap = fast_create(Scrap, :sender_id => person.id)
+    person = create(Person)
+    scrap = create(Scrap, :sender_id => person.id)
     assert_not_nil Scrap.find_by_id(scrap.id)
     person.destroy
     assert_nil Scrap.find_by_id(scrap.id)
@@ -836,10 +836,10 @@ class PersonTest < ActiveSupport::TestCase
 
   should "the tracked action be notified to person friends and herself" do
     Person.destroy_all
-    p1 = fast_create(Person)
-    p2 = fast_create(Person)
-    p3 = fast_create(Person)
-    p4 = fast_create(Person)
+    p1 = create(Person)
+    p2 = create(Person)
+    p3 = create(Person)
+    p4 = create(Person)
 
     p1.add_friend(p2)
     assert p1.is_a_friend?(p2)
@@ -847,7 +847,7 @@ class PersonTest < ActiveSupport::TestCase
     p1.add_friend(p4)
     assert p1.is_a_friend?(p4)
 
-    action_tracker = fast_create(ActionTracker::Record, :user_id => p1.id)
+    action_tracker = create(ActionTracker::Record, :user_id => p1.id)
     ActionTrackerNotification.delete_all
     Delayed::Job.destroy_all
     assert_difference 'ActionTrackerNotification.count', 3 do
@@ -861,9 +861,9 @@ class PersonTest < ActiveSupport::TestCase
 
   should "the tracked action be notified to friends with delayed job" do
     p1 = Person.first
-    p2 = fast_create(Person)
-    p3 = fast_create(Person)
-    p4 = fast_create(Person)
+    p2 = create(Person)
+    p3 = create(Person)
+    p4 = create(Person)
 
     p1.add_friend(p2)
     assert p1.is_a_friend?(p2)
@@ -871,7 +871,7 @@ class PersonTest < ActiveSupport::TestCase
     p1.add_friend(p4)
     assert p1.is_a_friend?(p4)
 
-    action_tracker = fast_create(ActionTracker::Record)
+    action_tracker = create(ActionTracker::Record)
 
     assert_difference 'Delayed::Job.count', 1 do
       Person.notify_activity(action_tracker)
@@ -879,10 +879,10 @@ class PersonTest < ActiveSupport::TestCase
   end
 
   should "the tracked action notify friends with one delayed job process" do
-    p1 = fast_create(Person)
-    p2 = fast_create(Person)
-    p3 = fast_create(Person)
-    p4 = fast_create(Person)
+    p1 = create(Person)
+    p2 = create(Person)
+    p3 = create(Person)
+    p4 = create(Person)
 
     p1.add_friend(p2)
     assert p1.is_a_friend?(p2)
@@ -890,7 +890,7 @@ class PersonTest < ActiveSupport::TestCase
     p1.add_friend(p4)
     assert p1.is_a_friend?(p4)
 
-    action_tracker = fast_create(ActionTracker::Record, :user_id => p1.id)
+    action_tracker = create(ActionTracker::Record, :user_id => p1.id)
 
     Delayed::Job.delete_all
     assert_difference 'Delayed::Job.count', 1 do
@@ -903,11 +903,11 @@ class PersonTest < ActiveSupport::TestCase
 
   should "the community tracked action be notified to the author and to community members" do
     Person.destroy_all
-    community = fast_create(Community)
-    p1 = fast_create(Person)
-    p2 = fast_create(Person)
-    p3 = fast_create(Person)
-    p4 = fast_create(Person)
+    community = create(Community)
+    p1 = create(Person)
+    p2 = create(Person)
+    p3 = create(Person)
+    p4 = create(Person)
 
     community.add_member(p1)
     assert p1.is_member_of?(community)
@@ -916,7 +916,7 @@ class PersonTest < ActiveSupport::TestCase
     assert !p2.is_member_of?(community)
     process_delayed_job_queue
 
-    action_tracker = fast_create(ActionTracker::Record, :verb => 'create_article')
+    action_tracker = create(ActionTracker::Record, :verb => 'create_article')
     action_tracker.target = community
     action_tracker.user = p4
     action_tracker.save!
@@ -932,10 +932,10 @@ class PersonTest < ActiveSupport::TestCase
 
   should "the community tracked action be notified to members with delayed job" do
     p1 = Person.first
-    community = fast_create(Community)
-    p2 = fast_create(Person)
-    p3 = fast_create(Person)
-    p4 = fast_create(Person)
+    community = create(Community)
+    p2 = create(Person)
+    p3 = create(Person)
+    p4 = create(Person)
 
     community.add_member(p1)
     assert p1.is_member_of?(community)
@@ -945,7 +945,7 @@ class PersonTest < ActiveSupport::TestCase
     assert p4.is_member_of?(community)
     assert !p2.is_member_of?(community)
 
-    action_tracker = fast_create(ActionTracker::Record)
+    action_tracker = create(ActionTracker::Record)
     article = mock()
     action_tracker.stubs(:target).returns(article)
     article.stubs(:is_a?).with(Article).returns(true)
@@ -965,14 +965,14 @@ class PersonTest < ActiveSupport::TestCase
   should "remove activities if the person is destroyed" do
     ActionTracker::Record.destroy_all
     ActionTrackerNotification.destroy_all
-    person = fast_create(Person)
-    a1 = fast_create(ActionTracker::Record, :user_id => person.id )
-    a2 = fast_create(ActionTracker::Record, :user_id => person.id )
-    a3 = fast_create(ActionTracker::Record)
+    person = create(Person)
+    a1 = create(ActionTracker::Record, :user_id => person.id )
+    a2 = create(ActionTracker::Record, :user_id => person.id )
+    a3 = create(ActionTracker::Record)
     assert_equal 3, ActionTracker::Record.count
-    fast_create(ActionTrackerNotification, :action_tracker_id => a1.id, :profile_id => person.id)
-    fast_create(ActionTrackerNotification, :action_tracker_id => a3.id)
-    fast_create(ActionTrackerNotification, :action_tracker_id => a2.id, :profile_id => person.id)
+    create(ActionTrackerNotification, :action_tracker_id => a1.id, :profile_id => person.id)
+    create(ActionTrackerNotification, :action_tracker_id => a3.id)
+    create(ActionTrackerNotification, :action_tracker_id => a2.id, :profile_id => person.id)
     assert_equal 3, ActionTrackerNotification.count
     person.destroy
     assert_equal 1, ActionTracker::Record.count
@@ -980,31 +980,31 @@ class PersonTest < ActiveSupport::TestCase
   end
 
   should "control scrap if is sender or receiver" do
-    p1, p2 = fast_create(Person), fast_create(Person)
-    s = fast_create(Scrap, :sender_id => p1.id, :receiver_id => p2.id)
+    p1, p2 = create(Person), create(Person)
+    s = create(Scrap, :sender_id => p1.id, :receiver_id => p2.id)
     assert p1.can_control_scrap?(s)
     assert p2.can_control_scrap?(s)
   end
 
   should "not control scrap if is not sender or receiver" do
-    p1, p2 = fast_create(Person), fast_create(Person)
-    s = fast_create(Scrap, :sender_id => p1.id, :receiver_id => p1.id)
+    p1, p2 = create(Person), create(Person)
+    s = create(Scrap, :sender_id => p1.id, :receiver_id => p1.id)
     assert p1.can_control_scrap?(s)
     assert !p2.can_control_scrap?(s)
   end
 
   should "control activity or not" do
-    p1, p2 = fast_create(Person), fast_create(Person)
-    a = fast_create(ActionTracker::Record, :user_id => p2.id)
-    n = fast_create(ActionTrackerNotification, :profile_id => p2.id, :action_tracker_id => a.id)
+    p1, p2 = create(Person), create(Person)
+    a = create(ActionTracker::Record, :user_id => p2.id)
+    n = create(ActionTrackerNotification, :profile_id => p2.id, :action_tracker_id => a.id)
     assert !p1.reload.can_control_activity?(a)
     assert p2.reload.can_control_activity?(a)
   end
 
   should 'track only one action when a person joins a community' do
     ActionTracker::Record.delete_all
-    p = create_user('test_user').person
-    c = fast_create(Community, :name => "Foo")
+    p = create(:person)
+    c = create(Community, :name => "Foo")
     c.add_member(p)
     assert_equal ["Foo"], ActionTracker::Record.last(:conditions => {:verb => 'join_community'}).get_resource_name
     c.reload.add_moderator(p.reload)
@@ -1013,26 +1013,26 @@ class PersonTest < ActiveSupport::TestCase
 
   should 'the tracker target be Community when a person joins a community' do
     ActionTracker::Record.delete_all
-    p = create_user('test_user').person
-    c = fast_create(Community, :name => "Foo")
+    p = create(:person)
+    c = create(Community, :name => "Foo")
     c.add_member(p)
     assert_kind_of Community, ActionTracker::Record.last(:conditions => {:verb => 'join_community'}).target
   end
 
   should 'the community be notified specifically when a person joins a community' do
     ActionTracker::Record.delete_all
-    p = create_user('test_user').person
-    c = fast_create(Community, :name => "Foo")
+    p = create(:person)
+    c = create(Community, :name => "Foo")
     c.add_member(p)
     assert_not_nil ActionTracker::Record.last(:conditions => {:verb => 'add_member_in_community'})
   end
 
   should 'the community specific notification created when a member joins community could not be propagated to members' do
     ActionTracker::Record.delete_all
-    p1 = create_user('p1').person
-    p2 = create_user('p2').person
-    p3 = create_user('p3').person
-    c = fast_create(Community, :name => "Foo")
+    p1 = create(:person)
+    p2 = create(:person)
+    p3 = create(:person)
+    c = create(Community, :name => "Foo")
     c.add_member(p1)
     process_delayed_job_queue
     c.add_member(p3)
@@ -1050,8 +1050,8 @@ class PersonTest < ActiveSupport::TestCase
   end
 
   should 'not track when a person leaves a community' do
-    p = create_user('test_user').person
-    c = fast_create(Community, :name => "Foo")
+    p = create(:person)
+    c = create(Community, :name => "Foo")
     c.add_member(p)
     c.add_moderator(p)
     ActionTracker::Record.delete_all
@@ -1061,10 +1061,10 @@ class PersonTest < ActiveSupport::TestCase
 
   should 'get all friends online' do
     now = DateTime.now
-    person_1 = create_user('person_1').person
-    person_2 = create_user('person_2', :chat_status_at => now, :chat_status => 'chat').person
+    person_1 = create(:person)
+    person_2 = create(:person)
     person_3 = create_user('person_3', :chat_status_at => now).person
-    person_4 = create_user('person_4', :chat_status_at => now, :chat_status => 'dnd').person
+    person_4 = create(:person)
     person_1.add_friend(person_2)
     person_1.add_friend(person_3)
     person_1.add_friend(person_4)
@@ -1073,22 +1073,22 @@ class PersonTest < ActiveSupport::TestCase
   end
 
   should 'compose bare jabber id by login plus default hostname' do
-    person = create_user('online_user').person
+    person = create(:person)
     assert_equal "online_user@#{person.environment.default_hostname}", person.jid
   end
 
   should "compose full jabber id by identifier plus default hostname and short_name as resource" do
-    person = create_user('online_user').person
+    person = create(:person)
     assert_equal "online_user@#{person.environment.default_hostname}/#{person.short_name}", person.full_jid
   end
 
   should 'dont get online friends which not updates chat_status in last 15 minutes' do
     now = DateTime.now
     one_hour_ago = DateTime.now - 1.hour
-    person = create_user('person_1').person
-    friend_1 = create_user('person_2', :chat_status_at => now, :chat_status => 'chat').person
-    friend_2 = create_user('person_3', :chat_status_at => one_hour_ago, :chat_status => 'chat').person
-    friend_3 = create_user('person_4', :chat_status_at => one_hour_ago, :chat_status => 'dnd').person
+    person = create(:person)
+    friend_1 = create(:person)
+    friend_2 = create(:person)
+    friend_3 = create(:person)
     person.add_friend(friend_1)
     person.add_friend(friend_2)
     person.add_friend(friend_3)
@@ -1103,21 +1103,21 @@ class PersonTest < ActiveSupport::TestCase
   end
 
   should 'receive scrap notification' do
-    person = fast_create(Person)
+    person = create(Person)
     assert person.receives_scrap_notification?
   end
 
   should 'check if person is the only admin' do
-    person = fast_create(Person)
-    organization = fast_create(Organization)
+    person = create(Person)
+    organization = create(Organization)
     organization.add_admin(person)
 
     assert person.is_last_admin?(organization)
   end
 
   should 'check if person is the last admin leaving the community' do
-    person = fast_create(Person)
-    organization = fast_create(Organization)
+    person = create(Person)
+    organization = create(Organization)
     organization.add_admin(person)
 
     assert person.is_last_admin_leaving?(organization, [])
@@ -1125,26 +1125,26 @@ class PersonTest < ActiveSupport::TestCase
   end
 
   should 'return unique members of a community' do
-    person = fast_create(Person)
-    community = fast_create(Community)
+    person = create(Person)
+    community = create(Community)
     community.add_member(person)
 
     assert_equal [person], Person.members_of(community)
   end
 
   should 'return unique non-members of a community' do
-    member = fast_create(Person)
-    person = fast_create(Person)
-    community = fast_create(Community)
+    member = create(Person)
+    person = create(Person)
+    community = create(Community)
     community.add_member(member)
 
     assert_equal (Person.all - Person.members_of(community)).sort, Person.not_members_of(community).sort
   end
 
   should 'return unique non-friends of a person' do
-    friend = fast_create(Person)
-    not_friend = fast_create(Person)
-    person = fast_create(Person)
+    friend = create(Person)
+    not_friend = create(Person)
+    person = create(Person)
     person.add_friend(friend)
     friend.add_friend(person)
 
@@ -1153,11 +1153,11 @@ class PersonTest < ActiveSupport::TestCase
   end
 
   should 'be able to pass array to members_of' do
-    person1 = fast_create(Person)
-    community = fast_create(Community)
+    person1 = create(Person)
+    community = create(Community)
     community.add_member(person1)
-    person2 = fast_create(Person)
-    enterprise = fast_create(Enterprise)
+    person2 = create(Person)
+    enterprise = create(Enterprise)
     enterprise.add_member(person2)
 
     assert_includes Person.members_of([community, enterprise]), person1
@@ -1165,13 +1165,13 @@ class PersonTest < ActiveSupport::TestCase
   end
 
   should 'be able to pass array to not_members_of' do
-    person1 = fast_create(Person)
-    community = fast_create(Community)
+    person1 = create(Person)
+    community = create(Community)
     community.add_member(person1)
-    person2 = fast_create(Person)
-    enterprise = fast_create(Enterprise)
+    person2 = create(Person)
+    enterprise = create(Enterprise)
     enterprise.add_member(person2)
-    person3 = fast_create(Person)
+    person3 = create(Person)
 
     assert_not_includes Person.not_members_of([community, enterprise]), person1
     assert_not_includes Person.not_members_of([community, enterprise]), person2
@@ -1180,9 +1180,9 @@ class PersonTest < ActiveSupport::TestCase
 
   should 'find more active people' do
     Person.destroy_all
-    p1 = fast_create(Person)
-    p2 = fast_create(Person)
-    p3 = fast_create(Person)
+    p1 = create(Person)
+    p2 = create(Person)
+    p3 = create(Person)
 
     ActionTracker::Record.destroy_all
     ActionTracker::Record.create!(:user => p1, :verb => 'leave_scrap')
@@ -1196,14 +1196,14 @@ class PersonTest < ActiveSupport::TestCase
   end
 
   should 'list profiles that have no actions in more active list' do
-    profile = fast_create(Person)
+    profile = create(Person)
     assert_includes Person.more_active, profile
   end
 
   should 'associate report with the correct complaint' do
-    p1 = create_user('user1').person
-    p2 = create_user('user2').person
-    profile = fast_create(Profile)
+    p1 = create(:person)
+    p2 = create(:person)
+    profile = create(Profile)
 
     abuse_report1 = build(AbuseReport, :reason => 'some reason')
     assert_difference 'AbuseComplaint.count', 1 do
@@ -1224,8 +1224,8 @@ class PersonTest < ActiveSupport::TestCase
   end
 
   should 'check if person already reported profile' do
-    person = create_user('some-user').person
-    profile = fast_create(Profile)
+    person = create(:person)
+    profile = create(Profile)
     assert !person.already_reported?(profile)
 
     person.register_report(build(AbuseReport, :reason => 'some reason'), profile)
@@ -1234,7 +1234,7 @@ class PersonTest < ActiveSupport::TestCase
   end
 
   should 'disable person' do
-    person = create_user('some-user').person
+    person = create(:person)
     password = person.user.password
     assert person.visible
 
@@ -1246,8 +1246,8 @@ class PersonTest < ActiveSupport::TestCase
 
   should 'return tracked_actions and scraps as activities' do
     ActionTracker::Record.destroy_all
-    person = create_user.person
-    another_person = create_user.person
+    person = create(:person)
+    another_person = create(:person)
 
     UserStampSweeper.any_instance.stubs(:current_user).returns(another_person)
     scrap = create(Scrap, defaults_for_scrap(:sender => another_person, :receiver => person, :content => 'A scrap'))
@@ -1259,8 +1259,8 @@ class PersonTest < ActiveSupport::TestCase
 
   should 'not return tracked_actions and scraps from others as activities' do
     ActionTracker::Record.destroy_all
-    person = fast_create(Person)
-    another_person = fast_create(Person)
+    person = create(Person)
+    another_person = create(Person)
 
     person_scrap = create(Scrap, defaults_for_scrap(:sender => person, :receiver => person, :content => 'A scrap from person'))
     another_person_scrap = create(Scrap, defaults_for_scrap(:sender => another_person, :receiver => another_person, :content => 'A scrap from another person'))
@@ -1277,16 +1277,16 @@ class PersonTest < ActiveSupport::TestCase
   end
 
   should 'grant every permission over profile for its admin' do
-    admin = create_user('some-user').person
-    profile = fast_create(Profile)
+    admin = create(:person)
+    profile = create(Profile)
     profile.add_admin(admin)
 
     assert admin.has_permission?('anything', profile), 'Admin does not have every permission!'
   end
 
   should 'grant every permission over profile for environment admin' do
-    admin = create_user('some-user').person
-    profile = fast_create(Profile)
+    admin = create(:person)
+    profile = create(Profile)
     environment = profile.environment
     environment.add_admin(admin)
 
@@ -1294,7 +1294,7 @@ class PersonTest < ActiveSupport::TestCase
   end
 
   should 'allow plugins to extend person\'s permission access' do
-    person = create_user('some-user').person
+    person = create(:person)
     class Plugin1 < Noosfero::Plugin
       def has_permission?(person, permission, target)
         true
@@ -1317,32 +1317,32 @@ class PersonTest < ActiveSupport::TestCase
   end
 
   should 'active fields are private if fields privacy is nil' do
-    p = fast_create(Person)
+    p = create(Person)
     p.expects(:fields_privacy).returns(nil)
     assert_equal [], p.public_fields
   end
 
   should 'return public fields' do
-    p = fast_create(Person)
+    p = create(Person)
     p.stubs(:fields_privacy).returns({ 'sex' => 'public', 'birth_date' => 'private' })
     assert_equal ['sex'], p.public_fields
   end
 
   should 'define abuser?' do
-    abuser = create_user('abuser').person
+    abuser = create(:person)
     create(AbuseComplaint, :reported => abuser).finish
-    person = create_user('person').person
+    person = create(:person)
 
     assert abuser.abuser?
     assert !person.abuser?
   end
 
   should 'be able to retrieve abusers and non abusers' do
-    abuser1 = create_user('abuser1').person
+    abuser1 = create(:person)
     create(AbuseComplaint, :reported => abuser1).finish
-    abuser2 = create_user('abuser2').person
+    abuser2 = create(:person)
     create(AbuseComplaint, :reported => abuser2).finish
-    person = create_user('person').person
+    person = create(:person)
 
     abusers = Person.abusers
 
@@ -1360,9 +1360,9 @@ class PersonTest < ActiveSupport::TestCase
   end
 
   should 'not return canceled complaints as abusers' do
-    abuser = create_user('abuser1').person
+    abuser = create(:person)
     create(AbuseComplaint, :reported => abuser).finish
-    not_abuser = create_user('abuser2').person
+    not_abuser = create(:person)
     create(AbuseComplaint, :reported => not_abuser).cancel
 
     abusers = Person.abusers
@@ -1422,9 +1422,9 @@ class PersonTest < ActiveSupport::TestCase
   end
 
   should 'be able to retrieve memberships by role person has' do
-    user = create_user('john').person
-    c1 = fast_create(Community, :name => 'a-community')
-    c2 = fast_create(Community, :name => 'other-community')
+    user = create(:person)
+    c1 = create(Community, :name => 'a-community')
+    c2 = create(Community, :name => 'other-community')
     member_role = Role.create(:name => 'somerandomrole')
     user.affiliate(c2, member_role)
 
@@ -1433,21 +1433,21 @@ class PersonTest < ActiveSupport::TestCase
   end
 
   should 'not list leave_scrap_to_self in activities' do
-    person = fast_create(Person)
+    person = create(Person)
     at = ActionTracker::Record.create!(:user => person, :verb => 'leave_scrap_to_self')
     person.reload
     assert_equal person.activities, []
   end
 
   should 'not list add_member_in_community in activities' do
-    person = fast_create(Person)
+    person = create(Person)
     at = ActionTracker::Record.create!(:user => person, :verb => 'add_member_in_community')
     person.reload
     assert_equal person.activities, []
   end
 
   should 'not list reply_scrap_on_self in activities' do
-    person = fast_create(Person)
+    person = create(Person)
     at = ActionTracker::Record.create!(:user => person, :verb => 'reply_scrap_on_self')
     person.reload
     assert_equal person.activities, []
@@ -1459,7 +1459,7 @@ class PersonTest < ActiveSupport::TestCase
   end
 
   should 'reschedule next notification after update' do
-    p = fast_create(Person, :user_id => fast_create(User).id)
+    p = create(Person, :user_id => create(User).id)
     PersonNotifier.any_instance.expects(:reschedule_next_notification_mail).once
     assert p.update_attribute(:name, 'Person name changed')
   end
@@ -1481,12 +1481,12 @@ class PersonTest < ActiveSupport::TestCase
     Environment.default.enable_plugin(Plugin1)
     Environment.default.enable_plugin(Plugin2)
 
-    original_person = fast_create(Person)
-    person1 = fast_create(Person, :identifier => 'person1')
-    person2 = fast_create(Person, :identifier => 'person2')
-    original_cmm = fast_create(Community)
-    plugin1_cmm = fast_create(Community)
-    plugin2_cmm = fast_create(Community)
+    original_person = create(Person)
+    person1 = create(Person, :identifier => 'person1')
+    person2 = create(Person, :identifier => 'person2')
+    original_cmm = create(Community)
+    plugin1_cmm = create(Community)
+    plugin2_cmm = create(Community)
     original_cmm.add_member(original_person)
     plugin1_cmm.add_member(person1)
     plugin2_cmm.add_member(person2)
@@ -1498,8 +1498,8 @@ class PersonTest < ActiveSupport::TestCase
   end
 
   should 'increase friends_count on new friendship' do
-    person = create_user('person').person
-    friend = create_user('friend').person
+    person = create(:person)
+    friend = create(:person)
     assert_difference 'person.friends_count', 1 do
       assert_difference 'friend.friends_count', 1 do
         person.add_friend(friend)
@@ -1510,8 +1510,8 @@ class PersonTest < ActiveSupport::TestCase
   end
 
   should 'decrease friends_count on friendship removal' do
-    person = create_user('person').person
-    friend = create_user('friend').person
+    person = create(:person)
+    friend = create(:person)
     person.add_friend(friend)
     friend.reload
     person.reload
@@ -1525,24 +1525,24 @@ class PersonTest < ActiveSupport::TestCase
   end
 
   should 'have a list of suggested people to be friend' do
-    person = create_user('person').person
-    suggested_friend = fast_create(Person)
+    person = create(:person)
+    suggested_friend = create(Person)
 
     ProfileSuggestion.create(:person => person, :suggestion => suggested_friend)
     assert_equal [suggested_friend], person.suggested_people
   end
 
   should 'have a list of suggested communities to be member' do
-    person = create_user('person').person
-    suggested_community = fast_create(Community)
+    person = create(:person)
+    suggested_community = create(Community)
 
     ProfileSuggestion.create(:person => person, :suggestion => suggested_community)
     assert_equal [suggested_community], person.suggested_communities
   end
 
   should 'remove profile suggestion when person is destroyed' do
-    person = create_user('person').person
-    suggested_community = fast_create(Community)
+    person = create(:person)
+    suggested_community = create(Community)
 
     suggestion = ProfileSuggestion.create(:person => person, :suggestion => suggested_community)
 
@@ -1553,8 +1553,8 @@ class PersonTest < ActiveSupport::TestCase
   end
 
   should 'remove profile suggestion when suggested profile is destroyed' do
-    person = create_user('person').person
-    suggested_community = fast_create(Community)
+    person = create(:person)
+    suggested_community = create(Community)
 
     suggestion = ProfileSuggestion.create(:person => person, :suggestion => suggested_community)
 
@@ -1565,9 +1565,9 @@ class PersonTest < ActiveSupport::TestCase
   end
 
   should 'not suggest disabled suggestion of people' do
-    person = create_user('person').person
-    suggested_person = fast_create(Person)
-    disabled_suggested_person = fast_create(Person)
+    person = create(:person)
+    suggested_person = create(Person)
+    disabled_suggested_person = create(Person)
 
     enabled_suggestion = ProfileSuggestion.create(:person => person, :suggestion => suggested_person)
     disabled_suggestion = ProfileSuggestion.create(:person => person, :suggestion => disabled_suggested_person, :enabled => false)
@@ -1576,9 +1576,9 @@ class PersonTest < ActiveSupport::TestCase
   end
 
   should 'not suggest disabled suggestion of communities' do
-    person = create_user('person').person
-    suggested_community = fast_create(Community)
-    disabled_suggested_community = fast_create(Community)
+    person = create(:person)
+    suggested_community = create(Community)
+    disabled_suggested_community = create(Community)
 
     enabled_suggestion = ProfileSuggestion.create(:person => person, :suggestion => suggested_community)
     disabled_suggestion = ProfileSuggestion.create(:person => person, :suggestion => disabled_suggested_community, :enabled => false)
@@ -1587,8 +1587,8 @@ class PersonTest < ActiveSupport::TestCase
   end
 
   should 'disable friend suggestion' do
-    person = create_user('person').person
-    suggested_person = fast_create(Person)
+    person = create(:person)
+    suggested_person = create(Person)
 
     suggestion = ProfileSuggestion.create(:person => person, :suggestion => suggested_person)
 
@@ -1598,8 +1598,8 @@ class PersonTest < ActiveSupport::TestCase
   end
 
   should 'disable community suggestion' do
-    person = create_user('person').person
-    suggested_community = fast_create(Community)
+    person = create(:person)
+    suggested_community = create(Community)
 
     suggestion = ProfileSuggestion.create(:person => person, :suggestion => suggested_community)
 
@@ -1621,14 +1621,14 @@ class PersonTest < ActiveSupport::TestCase
   end
 
   should 'allow homepage change if user is an environment admin' do
-    person = create_user('person').person
+    person = create(:person)
     person.environment.expects(:enabled?).with('cant_change_homepage').returns(true)
     person.expects(:is_admin?).returns(true)
     assert person.can_change_homepage?
   end
 
   should 'allow homepage change if environment feature permit it' do
-    person = create_user('person').person
+    person = create(:person)
     person.environment.expects(:enabled?).with('cant_change_homepage').returns(false)
     assert person.can_change_homepage?
   end

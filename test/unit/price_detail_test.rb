@@ -43,15 +43,15 @@ class PriceDetailTest < ActiveSupport::TestCase
   end
 
   should 'have production cost' do
-    product = fast_create(Product)
-    cost = fast_create(ProductionCost, :owner_id => Environment.default.id, :owner_type => 'Environment')
+    product = create(Product)
+    cost = create(ProductionCost, :owner_id => Environment.default.id, :owner_type => 'Environment')
     detail = product.price_details.create(:production_cost_id => cost.id, :price => 10)
 
     assert_equal cost, PriceDetail.find(detail.id).production_cost
   end
 
   should 'production cost not be mandatory' do
-    product = fast_create(Product)
+    product = create(Product)
     price = PriceDetail.new
     price.product = product
     price.valid?
@@ -59,8 +59,8 @@ class PriceDetailTest < ActiveSupport::TestCase
   end
 
   should 'the production cost be unique on scope of product' do
-    product = fast_create(Product)
-    cost = fast_create(ProductionCost, :owner_id => Environment.default.id, :owner_type => 'environment')
+    product = create(Product)
+    cost = create(ProductionCost, :owner_id => Environment.default.id, :owner_type => 'environment')
 
     detail1 = product.price_details.create(:production_cost_id => cost.id, :price => 10)
     detail2 = product.price_details.build(:production_cost_id => cost.id, :price => 10)
@@ -70,9 +70,9 @@ class PriceDetailTest < ActiveSupport::TestCase
   end
 
   should 'format values to float with 2 decimals' do
-    enterprise = fast_create(Enterprise)
-    product = fast_create(Product, :profile_id => enterprise.id)
-    cost = fast_create(ProductionCost, :owner_id => Environment.default.id, :owner_type => 'environment')
+    enterprise = create(Enterprise)
+    product = create(Product, :profile_id => enterprise.id)
+    cost = create(ProductionCost, :owner_id => Environment.default.id, :owner_type => 'environment')
 
     price_detail = product.price_details.create(:production_cost_id => cost.id, :price => 10)
 
@@ -80,8 +80,8 @@ class PriceDetailTest < ActiveSupport::TestCase
   end
 
   should 'have the production cost name as name' do
-    product = fast_create(Product)
-    cost = fast_create(ProductionCost, :name => 'Energy',:owner_id => Environment.default.id, :owner_type => 'environment')
+    product = create(Product)
+    cost = create(ProductionCost, :name => 'Energy',:owner_id => Environment.default.id, :owner_type => 'environment')
 
     detail = product.price_details.create(:production_cost_id => cost.id, :price => 10)
 

@@ -8,8 +8,8 @@ class ScrapNotifierTest < ActiveSupport::TestCase
     ActionMailer::Base.delivery_method = :test
     ActionMailer::Base.perform_deliveries = true
     ActionMailer::Base.deliveries = []
-    @sender = create_user('user_scrap_sender_test').person
-    @receiver = create_user('user_scrap_receiver_test').person
+    @sender = create(:person)
+    @receiver = create(:person)
   end
 
   should 'deliver mail after leave scrap' do
@@ -56,9 +56,9 @@ class ScrapNotifierTest < ActiveSupport::TestCase
   end
 
   should 'not deliver mail if is a reply on a community' do
-    community = fast_create(Community)
-    person = create_user.person
-    scrap = fast_create(Scrap, :receiver_id => community.id, :sender_id => @sender.id)
+    community = create(Community)
+    person = create(:person)
+    scrap = create(Scrap, :receiver_id => community.id, :sender_id => @sender.id)
     assert_no_difference 'ActionMailer::Base.deliveries.size' do
       Scrap.create!(:sender_id => person.id, :receiver_id => @sender.id, :scrap_id => scrap.id, :content => 'Hi myself!')
     end

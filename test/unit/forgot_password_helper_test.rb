@@ -99,20 +99,20 @@ class ForgotPasswordHelperTest < ActionView::TestCase
   end
 
   should 'fetch requestors based on fields available' do
-    p1 = create_user('person1').person
-    p2 = create_user('person2').person
+    p1 = create(:person)
+    p2 = create(:person)
 
     requestors = fetch_requestors('person1')
     assert_includes requestors, p1
     assert_not_includes requestors, p2
 
-    p3 = create_user('person3').person
+    p3 = create(:person)
     p3.address = 'some address'
     p3.save!
-    p4 = create_user('person4').person
+    p4 = create(:person)
     p4.address = 'some address'
     p4.save!
-    p5 = create_user('person5').person
+    p5 = create(:person)
     p5.address = 'another address'
     p5.save!
 
@@ -123,8 +123,8 @@ class ForgotPasswordHelperTest < ActionView::TestCase
   end
 
   should 'not fetch people from other environments' do
-    p1 = create_user('person', :environment => fast_create(Environment)).person
-    p2 = create_user('person').person
+    p1 = create_user('person', :environment => create(Environment)).person
+    p2 = create(:person)
 
     requestors = fetch_requestors('person')
     assert_not_includes requestors, p1

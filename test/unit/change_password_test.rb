@@ -48,7 +48,7 @@ class ChangePasswordTest < ActiveSupport::TestCase
 
   should 'search for user in the correct environment' do
     e1 = Environment.default
-    e2 = fast_create(Environment)
+    e2 = create(Environment)
 
     p1 = create_user('sample-user', :password => 'test', :password_confirmation => 'test', :email => 'sample-user@test.com', :environment => e1).person
     p2 = create_user('sample-user', :password => 'test', :password_confirmation => 'test', :email => 'sample-user@test.com', :environment => e2).person

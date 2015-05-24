@@ -9,13 +9,13 @@ class TextArticleTest < ActiveSupport::TestCase
   end
 
   should 'found TextileArticle by TextArticle class' do
-    person = create_user('testuser').person
-    article = fast_create(TextileArticle, :name => 'textile article test', :profile_id => person.id)
+    person = create(:person)
+    article = create(TextileArticle, :name => 'textile article test', :profile_id => person.id)
     assert_includes TextArticle.find(:all), article
   end
 
   should 'remove HTML from name' do
-    person = create_user('testuser').person
+    person = create(:person)
     article = TextArticle.new(:profile => person)
     article.name = "<h1 Malformed >> html >>></a>< tag"
     article.valid?
@@ -32,14 +32,14 @@ class TextArticleTest < ActiveSupport::TestCase
   end
 
   should 'return blog icon name if the article is a blog post' do
-    blog = fast_create(Blog)
+    blog = create(Blog)
     article = TextArticle.new
     article.parent = blog
     assert_equal Blog.icon_name, TextArticle.icon_name(article)
   end
 
   should 'change image path to relative' do
-    person = create_user('testuser').person
+    person = create(:person)
     article = TextArticle.new(:profile => person, :name => 'test')
     env = Environment.default
     article.body = "<img src=\"http://#{env.default_hostname}/test.png\" />"
@@ -48,7 +48,7 @@ class TextArticleTest < ActiveSupport::TestCase
   end
 
   should 'change link to relative path' do
-    person = create_user('testuser').person
+    person = create(:person)
     article = TextArticle.new(:profile => person, :name => 'test')
     env = Environment.default
     article.body = "<a href=\"http://#{env.default_hostname}/test\">test</a>"
@@ -57,7 +57,7 @@ class TextArticleTest < ActiveSupport::TestCase
   end
 
   should 'change image path to relative for domain with https' do
-    person = create_user('testuser').person
+    person = create(:person)
     article = TextArticle.new(:profile => person, :name => 'test')
     env = Environment.default
     article.body = "<img src=\"https://#{env.default_hostname}/test.png\">"
@@ -66,7 +66,7 @@ class TextArticleTest < ActiveSupport::TestCase
   end
 
   should 'change image path to relative for domain with port' do
-    person = create_user('testuser').person
+    person = create(:person)
     article = TextArticle.new(:profile => person, :name => 'test')
     env = Environment.default
     article.body = "<img src=\"http://#{env.default_hostname}:3000/test.png\">"
@@ -75,7 +75,7 @@ class TextArticleTest < ActiveSupport::TestCase
   end
 
   should 'change image path to relative for domain with www' do
-    person = create_user('testuser').person
+    person = create(:person)
     article = TextArticle.new(:profile => person, :name => 'test')
     env = Environment.default
     env.force_www = true
@@ -86,9 +86,9 @@ class TextArticleTest < ActiveSupport::TestCase
   end
 
   should 'not be translatable if there is no language available on environment' do
-    environment = fast_create(Environment)
+    environment = create(Environment)
     environment.languages = nil
-    profile = fast_create(Person, :environment_id => environment.id)
+    profile = create(Person, :environment_id => environment.id)
 
     text = TextArticle.new(:profile => profile)
 
@@ -96,10 +96,10 @@ class TextArticleTest < ActiveSupport::TestCase
   end
 
   should 'be translatable if there is languages on environment' do
-    environment = fast_create(Environment)
+    environment = create(Environment)
     environment.languages = nil
-    profile = fast_create(Person, :environment_id => environment.id)
-    text = fast_create(TextArticle, :profile_id => profile.id)
+    profile = create(Person, :environment_id => environment.id)
+    text = create(TextArticle, :profile_id => profile.id)
 
     assert !text.translatable?
 

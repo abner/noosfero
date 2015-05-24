@@ -17,7 +17,7 @@ class ArticleBlockTest < ActiveSupport::TestCase
   end
 
   should 'refer to an article' do
-    profile = create_user('testuser').person
+    profile = create(:person)
     article = profile.articles.build(:name => 'test article')
     article.save!
 
@@ -31,7 +31,7 @@ class ArticleBlockTest < ActiveSupport::TestCase
   end
 
   should 'not crash when referenced article is removed' do
-    person = create_user('testuser').person
+    person = create(:person)
     a = person.articles.create!(:name => 'test')
     block = ArticleBlock.create.tap do |b|
       b.article = a
@@ -55,7 +55,7 @@ class ArticleBlockTest < ActiveSupport::TestCase
   end
 
   should "take available articles with a person as the box owner" do
-    person = create_user('testuser').person
+    person = create(:person)
     person.articles.delete_all
     assert_equal [], person.articles
     a = person.articles.create!(:name => 'test')
@@ -73,8 +73,8 @@ class ArticleBlockTest < ActiveSupport::TestCase
     env = Environment.create!(:name => 'test env')
     env.profiles.each { |profile| profile.articles.destroy_all }
     assert_equal [], env.articles
-    community = fast_create(Community)
-    a = fast_create(TextArticle, :profile_id => community.id, :name => 'test')
+    community = create(Community)
+    a = create(TextArticle, :profile_id => community.id, :name => 'test')
     env.portal_community=community
     env.save
     block = create(ArticleBlock, :article => a)
@@ -106,7 +106,7 @@ class ArticleBlockTest < ActiveSupport::TestCase
   end
 
   should 'display image if article is an image' do
-    profile = create_user('testuser').person
+    profile = create(:person)
     block = ArticleBlock.new
     image = create(UploadedFile, :profile => profile, :uploaded_data => fixture_file_upload('/files/rails.png', 'image/png'))
 
@@ -122,9 +122,9 @@ class ArticleBlockTest < ActiveSupport::TestCase
   end
 
   should 'not display gallery pages navigation in content' do
-    profile = create_user('testuser').person
+    profile = create(:person)
     block = ArticleBlock.new
-    gallery = fast_create(Gallery, :profile_id => profile.id)
+    gallery = create(Gallery, :profile_id => profile.id)
     image = create(UploadedFile, :profile => profile, :uploaded_data => fixture_file_upload('/files/rails.png', 'image/png'), :parent => gallery)
     block.article = image
     block.save!
@@ -133,7 +133,7 @@ class ArticleBlockTest < ActiveSupport::TestCase
   end
 
   should 'display link to archive if article is an archive' do
-    profile = create_user('testuser').person
+    profile = create(:person)
     block = ArticleBlock.new
     file = create(UploadedFile, :profile => profile, :uploaded_data => fixture_file_upload('/files/test.txt', 'text/plain'))
 

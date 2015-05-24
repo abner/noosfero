@@ -30,7 +30,7 @@ class ContactSenderTest < ActiveSupport::TestCase
   end
 
   should 'deliver mail to admins of enterprise' do
-    admin = create_user('admin_test').person
+    admin = create(:person)
     ent = Environment.default.enterprises.create!(:name => 'my enterprise', :identifier => 'myent')
     ent.contact_email = 'contact@invalid.com'
     ent.add_admin(admin)
@@ -55,15 +55,15 @@ class ContactSenderTest < ActiveSupport::TestCase
   end
 
   should 'only deliver mail to email of person' do
-    person = create_user('contacted_user').person
+    person = create(:person)
     c = build(Contact, :dest => person)
     response = Contact::Sender.notification(c).deliver
     assert_equal [person.email], response.to
   end
 
   should 'identify the sender in the message headers' do
-    recipient = create_user('contacted_user').person
-    sender = create_user('sender_user').person
+    recipient = create(:person)
+    sender = create(:person)
     c = build(Contact, :dest => recipient, :sender => sender)
     sent_message = Contact::Sender.notification(c).deliver
     assert_equal 'sender_user', sent_message['X-Noosfero-Sender'].to_s

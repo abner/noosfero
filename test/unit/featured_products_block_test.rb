@@ -3,16 +3,16 @@ require_relative "../test_helper"
 class FeaturedProductsBlockTest < ActiveSupport::TestCase
 
   def setup
-    @profile = fast_create(Profile)
+    @profile = create(Profile)
     @environment = Environment.default
     @environment.boxes << Box.new
   end
   attr_reader :profile
 
   should 'refer to products' do
-    profile = fast_create(Enterprise)
+    profile = create(Enterprise)
     products = []
-    category = fast_create(ProductCategory)
+    category = create(ProductCategory)
     3.times {|n| products.push(create(Product, :name => "product #{n}", :profile_id => profile.id, :product_category_id => category.id)) }
     featured_products_block = create(FeaturedProductsBlock, :product_ids => products.map(&:id))
     assert_equal products, featured_products_block.products
@@ -64,7 +64,7 @@ class FeaturedProductsBlockTest < ActiveSupport::TestCase
     block = build(FeaturedProductsBlock, )
     block.product_ids = []
     enterprise = create(Enterprise, :name => "My enterprise", :identifier => 'myenterprise', :environment => @environment)
-    category = fast_create(ProductCategory)
+    category = create(ProductCategory)
     3.times {|n|
       create(Product, :name => "product #{n}", :profile_id => enterprise.id,
         :highlighted => true, :product_category_id => category.id,
@@ -80,7 +80,7 @@ class FeaturedProductsBlockTest < ActiveSupport::TestCase
     block = build(FeaturedProductsBlock, )
     block.product_ids = []
     enterprise = create(Enterprise, :name => "My enterprise", :identifier => 'myenterprise', :environment => @environment)
-    category = fast_create(ProductCategory)
+    category = create(ProductCategory)
     3.times {|n|
       create(Product, :name => "product #{n}", :profile_id => enterprise.id, :highlighted => true, :product_category_id => category.id)
     }
@@ -93,7 +93,7 @@ class FeaturedProductsBlockTest < ActiveSupport::TestCase
     block = build(FeaturedProductsBlock, )
     block.product_ids = []
     enterprise = create(Enterprise, :name => "My enterprise", :identifier => 'myenterprise', :environment => @environment)
-    category = fast_create(ProductCategory)
+    category = create(ProductCategory)
     3.times {|n|
       create(Product, :name => "product #{n}", :profile_id => enterprise.id, :product_category_id => category.id, :image_builder => {
         :uploaded_data => fixture_file_upload('/files/rails.png', 'image/png')
@@ -115,7 +115,7 @@ class FeaturedProductsBlockTest < ActiveSupport::TestCase
     block = build(FeaturedProductsBlock, )
     block.product_ids = []
     enterprise = create(Enterprise, :name => "My enterprise", :identifier => 'myenterprise', :environment => @environment)
-    category = fast_create(ProductCategory)
+    category = create(ProductCategory)
     products = []
     3.times {|n|
       products.push(create(Product, :name => "product #{n}", :profile_id => enterprise.id,

@@ -3,7 +3,7 @@ require_relative "../test_helper"
 class CreateCommunityTest < ActiveSupport::TestCase
 
   def setup
-    @person = create_user('testing').person
+    @person = create(:person)
   end
   attr_reader :person
 

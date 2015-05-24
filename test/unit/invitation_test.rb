@@ -4,7 +4,7 @@ class InvitationTest < ActiveSupport::TestCase
 
   should 'expand message' do
     invitation = Invitation.new(
-      :person => create_user('sadam', {}, :name => 'Sadam').person,
+      :person => create(:person),
       :friend_name => 'Fernandinho',
       :message => 'Hi <friend>, <user> is inviting you to <environment>!'
     )
@@ -33,8 +33,8 @@ class InvitationTest < ActiveSupport::TestCase
   end
 
   should 'not know how to invite members to non-community' do
-    person = fast_create(Person)
-    enterprise = fast_create(Enterprise)
+    person = create(Person)
+    enterprise = create(Enterprise)
 
     assert_raise NotImplementedError do
       Invitation.invite(person, ['sadam@garotos.podres'], 'hello friend', enterprise)
@@ -42,7 +42,7 @@ class InvitationTest < ActiveSupport::TestCase
   end
 
   should 'create right task when invite friends' do
-    person = fast_create(Person)
+    person = create(Person)
     person.user = User.new(:email => 'current_user@email.invalid')
 
     assert_difference 'InviteFriend.count' do
@@ -51,9 +51,9 @@ class InvitationTest < ActiveSupport::TestCase
   end
 
   should 'create right task when invite members to community' do
-    person = fast_create(Person)
+    person = create(Person)
     person.user = User.new(:email => 'current_user@email.invalid')
-    community = fast_create(Community)
+    community = create(Community)
 
     assert_difference 'InviteMember.count' do
       Invitation.invite(person, ['sadam@garotos.podres'], 'hello friend <url>', community)
@@ -61,11 +61,11 @@ class InvitationTest < ActiveSupport::TestCase
   end
 
   should 'not create task if the invited member is already a member of the community' do
-    person = fast_create(Person)
+    person = create(Person)
     person.user = User.new(:email => 'current_user@email.invalid')
-    community = fast_create(Community)
-    user_to_invite = fast_create(User, :email => 'person_to_invite@email.invalid')
-    person_to_invite = fast_create(Person, :user_id => user_to_invite.id)
+    community = create(Community)
+    user_to_invite = create(User, :email => 'person_to_invite@email.invalid')
+    person_to_invite = create(Person, :user_id => user_to_invite.id)
     community.add_member(person_to_invite)
 
     assert_no_difference 'InviteMember.count' do
@@ -74,9 +74,9 @@ class InvitationTest < ActiveSupport::TestCase
   end
 
   should 'not crash if the invited friend is already your friend in the environment' do
-    person = create_user('person').person
-    invited_friend = create_user('invited_friend').person
-    community       = fast_create(Community)
+    person = create(:person)
+    invited_friend = create(:person)
+    community       = create(Community)
 
     invited_friend.add_friend(person)
 
@@ -86,8 +86,8 @@ class InvitationTest < ActiveSupport::TestCase
   end
 
   should 'do nothing if the invited friend is already your friend' do
-    person = create_user('person').person
-    invited_friend = create_user('invited_friend').person
+    person = create(:person)
+    invited_friend = create(:person)
 
     invited_friend.add_friend(person)
 
@@ -97,11 +97,11 @@ class InvitationTest < ActiveSupport::TestCase
   end
 
   should 'and yet be able to invite friends to community' do
-    person = create_user('person').person
-    invited_friend = create_user('invited_friend').person
+    person = create(:person)
+    invited_friend = create(:person)
 
     invited_friend.add_friend(person)
-    community = fast_create(Community)
+    community = create(Community)
 
     assert_difference 'InviteMember.count' do
       Invitation.invite( person, [invited_friend.user.email], "", community )
@@ -109,8 +109,8 @@ class InvitationTest < ActiveSupport::TestCase
   end
 
   should 'add url on message if user removed it' do
-    person = create_user('testuser1').person
-    friend = create_user('testuser2').person
+    person = create(:person)
+    friend = create(:person)
     invitation = Invitation.create!(
       :person => person,
       :friend => friend,
@@ -120,8 +120,8 @@ class InvitationTest < ActiveSupport::TestCase
   end
 
   should 'do nothing with message if user added url' do
-    person = create_user('testuser1').person
-    friend = create_user('testuser2').person
+    person = create(:person)
+    friend = create(:person)
     invitation = Invitation.create!(
       :person => person,
       :friend => friend,
@@ -135,9 +135,9 @@ class InvitationTest < ActiveSupport::TestCase
   end
 
   should 'invite friends through profile id' do
-    person = create_user('testuser1').person
-    friend = create_user('testuser2').person
-    community = fast_create(Community)
+    person = create(:person)
+    friend = create(:person)
+    community = create(Community)
 
     assert_difference 'InviteMember.count' do
       Invitation.invite(person, [friend.id.to_s], 'hello friend <url>', community)

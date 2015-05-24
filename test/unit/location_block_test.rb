@@ -6,7 +6,7 @@ class LocationBlockTest < ActiveSupport::TestCase
   include BoxesHelper
 
   def setup
-    @profile = create_user('lele').person
+    @profile = create(:person)
     @block = LocationBlock.new
     @profile.boxes.first.blocks << @block
     @block.save!

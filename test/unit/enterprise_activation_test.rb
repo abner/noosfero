@@ -60,7 +60,7 @@ class EnterpriseActivationTest < ActiveSupport::TestCase
   end
 
   should 'have target notification description' do
-    ent = fast_create(Enterprise, :enabled => false)
+    ent = create(Enterprise, :enabled => false)
     task = EnterpriseActivation.create!(:enterprise => ent, :requestor => profiles(:ze))
 
    assert_match(/#{task.requestor.name} wants to activate enterprise #{ent.name}/, task.target_notification_description)

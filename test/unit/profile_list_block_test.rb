@@ -21,7 +21,7 @@ class ProfileListBlockTest < ActiveSupport::TestCase
   end
 
   should 'list people' do
-    env = fast_create(Environment)
+    env = create(Environment)
 
     person1 = create_user('testperson1', :environment => env).person
     person2 = create_user('testperson2', :environment => env).person
@@ -42,10 +42,10 @@ class ProfileListBlockTest < ActiveSupport::TestCase
   end
 
   should 'list private profiles' do
-    env = fast_create(Environment)
+    env = create(Environment)
     env.boxes << Box.new
-    profile1 = fast_create(Profile, :environment_id => env.id)
-    profile2 = fast_create(Profile, :environment_id => env.id, :public_profile => false) # private profile
+    profile1 = create(Profile, :environment_id => env.id)
+    profile2 = create(Profile, :environment_id => env.id, :public_profile => false) # private profile
     block = ProfileListBlock.new
     env.boxes.first.blocks << block
     block.save!
@@ -56,10 +56,10 @@ class ProfileListBlockTest < ActiveSupport::TestCase
   end
 
   should 'not list invisible profiles' do
-    env = fast_create(Environment)
+    env = create(Environment)
     env.boxes << Box.new
-    profile1 = fast_create(Profile, :environment_id => env.id)
-    profile2 = fast_create(Profile, :environment_id => env.id, :visible => false) # not visible profile
+    profile1 = create(Profile, :environment_id => env.id)
+    profile2 = create(Profile, :environment_id => env.id, :visible => false) # not visible profile
     block = ProfileListBlock.new
     env.boxes.first.blocks << block
     block.save!
@@ -70,7 +70,7 @@ class ProfileListBlockTest < ActiveSupport::TestCase
   end
 
   should 'provide view_title' do
-    env = fast_create(Environment)
+    env = create(Environment)
     env.boxes << Box.new
     block = ProfileListBlock.new(:title => 'Title from block')
     env.boxes.first.blocks << block
@@ -79,7 +79,7 @@ class ProfileListBlockTest < ActiveSupport::TestCase
   end
   
   should 'provide view title with variables' do
-    env = fast_create(Environment)
+    env = create(Environment)
     env.boxes << Box.new
     block = ProfileListBlock.new(:title => '{#} members')
     env.boxes.first.blocks << block
@@ -88,49 +88,49 @@ class ProfileListBlockTest < ActiveSupport::TestCase
   end
 
   should 'count number of public and private profiles' do
-    env = fast_create(Environment)
+    env = create(Environment)
     env.boxes << Box.new
     block = ProfileListBlock.new
     env.boxes.first.blocks << block
     block.save!
 
-    priv_p = fast_create(Person, :environment_id => env.id, :public_profile => false)
-    pub_p = fast_create(Person, :environment_id => env.id, :public_profile => true)
+    priv_p = create(Person, :environment_id => env.id, :public_profile => false)
+    pub_p = create(Person, :environment_id => env.id, :public_profile => true)
 
-    priv_c = fast_create(Community, :public_profile => false, :environment_id => env.id)
-    pub_c = fast_create(Community, :public_profile => true , :environment_id => env.id)
+    priv_c = create(Community, :public_profile => false, :environment_id => env.id)
+    pub_c = create(Community, :public_profile => true , :environment_id => env.id)
 
-    priv_e = fast_create(Enterprise, :public_profile => false , :environment_id => env.id)
-    pub_e = fast_create(Enterprise, :public_profile => true , :environment_id => env.id)
+    priv_e = create(Enterprise, :public_profile => false , :environment_id => env.id)
+    pub_e = create(Enterprise, :public_profile => true , :environment_id => env.id)
 
     assert_equal 6, block.profile_count
   end
 
   should 'only count number of visible profiles' do
-    env = fast_create(Environment)
+    env = create(Environment)
     env.boxes << Box.new
     block = ProfileListBlock.new
     env.boxes.first.blocks << block
     block.save!
 
-    priv_p = fast_create(Person, :environment_id => env.id, :visible => false)
-    pub_p = fast_create(Person, :environment_id => env.id, :visible => true)
+    priv_p = create(Person, :environment_id => env.id, :visible => false)
+    pub_p = create(Person, :environment_id => env.id, :visible => true)
 
-    priv_c = fast_create(Community, :visible => false, :environment_id => env.id)
-    pub_c = fast_create(Community, :visible => true , :environment_id => env.id)
+    priv_c = create(Community, :visible => false, :environment_id => env.id)
+    pub_c = create(Community, :visible => true , :environment_id => env.id)
 
-    priv_e = fast_create(Enterprise, :visible => false , :environment_id => env.id)
-    pub_e = fast_create(Enterprise, :visible => true , :environment_id => env.id)
+    priv_e = create(Enterprise, :visible => false , :environment_id => env.id)
+    pub_e = create(Enterprise, :visible => true , :environment_id => env.id)
 
     assert_equal 3, block.profile_count
   end
 
   should 'respect limit when listing profiles' do
-    env = fast_create(Environment)
-    p1 = fast_create(Person, :environment_id => env.id)
-    p2 = fast_create(Person, :environment_id => env.id)
-    p3 = fast_create(Person, :environment_id => env.id)
-    p4 = fast_create(Person, :environment_id => env.id)
+    env = create(Environment)
+    p1 = create(Person, :environment_id => env.id)
+    p2 = create(Person, :environment_id => env.id)
+    p3 = create(Person, :environment_id => env.id)
+    p4 = create(Person, :environment_id => env.id)
 
     block = ProfileListBlock.new(:limit => 3)
     block.stubs(:owner).returns(env)
@@ -139,9 +139,9 @@ class ProfileListBlockTest < ActiveSupport::TestCase
   end
 
   should 'list random profiles' do
-    env = fast_create(Environment)
+    env = create(Environment)
     6.times.each do
-      fast_create(Person, :environment_id => env.id)
+      create(Person, :environment_id => env.id)
     end
 
     block = ProfileListBlock.new
@@ -151,13 +151,13 @@ class ProfileListBlockTest < ActiveSupport::TestCase
   end
 
   should 'prioritize profiles with image if this option is turned on' do
-    env = fast_create(Environment)
+    env = create(Environment)
     img1 = create(Image, :uploaded_data => fixture_file_upload('/files/rails.png', 'image/png'))
-    p1 = fast_create(Person, :environment_id => env.id, :image_id => img1.id)
+    p1 = create(Person, :environment_id => env.id, :image_id => img1.id)
     img2 = create(Image, :uploaded_data => fixture_file_upload('/files/rails.png', 'image/png'))
-    p2 = fast_create(Person, :environment_id => env.id, :image_id => img2.id)
+    p2 = create(Person, :environment_id => env.id, :image_id => img2.id)
 
-    p_without_image = fast_create(Person, :environment_id => env.id)
+    p_without_image = create(Person, :environment_id => env.id)
 
     block = ProfileListBlock.new(:limit => 2)
     block.stubs(:owner).returns(env)
@@ -167,12 +167,12 @@ class ProfileListBlockTest < ActiveSupport::TestCase
   end
 
   should 'list profiles without image only if profiles with image arent enought' do
-    env = fast_create(Environment)
+    env = create(Environment)
     img1 = create(Image, :uploaded_data => fixture_file_upload('/files/rails.png', 'image/png'))
-    p1 = fast_create(Person, :environment_id => env.id, :image_id => img1.id)
+    p1 = create(Person, :environment_id => env.id, :image_id => img1.id)
     img2 = create(Image, :uploaded_data => fixture_file_upload('/files/rails.png', 'image/png'))
-    p2 = fast_create(Person, :environment_id => env.id, :image_id => img2.id)
-    p_without_image = fast_create(Person, :environment_id => env.id)
+    p2 = create(Person, :environment_id => env.id, :image_id => img2.id)
+    p_without_image = create(Person, :environment_id => env.id)
     block = ProfileListBlock.new
     block.stubs(:owner).returns(env)
     block.stubs(:prioritize_profiles_with_image).returns(true)
@@ -185,12 +185,12 @@ class ProfileListBlockTest < ActiveSupport::TestCase
   end
 
   should 'list profile with image among profiles without image' do
-    env = fast_create(Environment)
+    env = create(Environment)
     5.times do |n|
-      fast_create(Person, :environment_id => env.id)
+      create(Person, :environment_id => env.id)
     end
     img = create(Image, :uploaded_data => fixture_file_upload('/files/rails.png', 'image/png'))
-    with_image = fast_create(Person, :environment_id => env.id, :image_id => img.id)
+    with_image = create(Person, :environment_id => env.id, :image_id => img.id)
     block = ProfileListBlock.new(:limit => 3)
     block.stubs(:prioritize_profiles_with_image).returns(true)
     block.stubs(:owner).returns(env)
@@ -198,11 +198,11 @@ class ProfileListBlockTest < ActiveSupport::TestCase
   end
 
   should 'not prioritize profiles with image if this option is turned off' do
-    env = fast_create(Environment)
+    env = create(Environment)
     img = create(Image, :uploaded_data => fixture_file_upload('/files/rails.png', 'image/png'))
-    with_image = fast_create(Person, :environment_id => env.id, :updated_at => DateTime.now, :image_id => img.id)
+    with_image = create(Person, :environment_id => env.id, :updated_at => DateTime.now, :image_id => img.id)
     5.times do |n|
-      fast_create(Person, :environment_id => env.id, :updated_at => DateTime.now + 1.day)
+      create(Person, :environment_id => env.id, :updated_at => DateTime.now + 1.day)
     end
 
     block = ProfileListBlock.new(:limit => 3)

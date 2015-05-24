@@ -4,7 +4,7 @@ class ProductsBlockTest < ActiveSupport::TestCase
 
   def setup
     @block = ProductsBlock.new
-    @product_category = fast_create(ProductCategory, :name => 'Products')
+    @product_category = create(ProductCategory, :name => 'Products')
   end
   attr_reader :block
 

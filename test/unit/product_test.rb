@@ -4,8 +4,8 @@ class ProductTest < ActiveSupport::TestCase
 
   def setup
     super
-    @product_category = fast_create(ProductCategory, :name => 'Products')
-    @profile = fast_create(Enterprise)
+    @product_category = create(ProductCategory, :name => 'Products')
+    @profile = create(Enterprise)
   end
 
   should 'validate the presence of enterprise' do
@@ -16,9 +16,9 @@ class ProductTest < ActiveSupport::TestCase
   end
 
   should 'return associated enterprise region' do
-    @profile.region = fast_create Region, :name => 'Salvador'
+    @profile.region = create Region, :name => 'Salvador'
     @profile.save!
-    p = fast_create(Product, :name => 'test product1', :product_category_id => @product_category.id, :profile_id => @profile.id)
+    p = create(Product, :name => 'test product1', :product_category_id => @product_category.id, :profile_id => @profile.id)
 
     assert_equal @profile.region, p.region
   end
@@ -31,26 +31,26 @@ class ProductTest < ActiveSupport::TestCase
   end
 
   should 'destroy product' do
-    p = fast_create(Product, :name => 'test product2', :product_category_id => @product_category.id)
+    p = create(Product, :name => 'test product2', :product_category_id => @product_category.id)
     assert_difference 'Product.count', -1 do
       p.destroy
     end
   end
 
   should 'display category name if name is nil' do
-    p = fast_create(Product, :name => nil)
+    p = create(Product, :name => nil)
     p.expects(:category_name).returns('Software')
     assert_equal 'Software', p.name
   end
 
   should 'display category name if name is blank' do
-    p = fast_create(Product, :name => '')
+    p = create(Product, :name => '')
     p.expects(:category_name).returns('Software')
     assert_equal 'Software', p.name
   end
 
   should 'set nil to name if name is equal to category name' do
-    p = fast_create(Product)
+    p = create(Product)
     p.expects(:category_name).returns('Software').at_least_once
     p.name = 'Software'
     p.save
@@ -59,7 +59,7 @@ class ProductTest < ActiveSupport::TestCase
   end
 
   should 'list recent products' do
-    enterprise = fast_create(Enterprise, :name => "My enterprise", :identifier => 'my-enterprise')
+    enterprise = create(Enterprise, :name => "My enterprise", :identifier => 'my-enterprise')
     Product.delete_all
 
     p1 = enterprise.products.create!(:name => 'product 1', :product_category => @product_category)
@@ -70,7 +70,7 @@ class ProductTest < ActiveSupport::TestCase
   end
 
   should 'list recent products with limit' do
-    enterprise = fast_create(Enterprise, :name => "My enterprise", :identifier => 'my-enterprise')
+    enterprise = create(Enterprise, :name => "My enterprise", :identifier => 'my-enterprise')
     Product.delete_all
 
     p1 = enterprise.products.create!(:name => 'product 1', :product_category => @product_category)
@@ -90,7 +90,7 @@ class ProductTest < ActiveSupport::TestCase
   end
 
   should 'have same lat and lng of its enterprise' do
-    ent = fast_create(Enterprise, :name => 'test enterprise', :identifier => 'test_enterprise', :lat => 30.0, :lng => 30.0)
+    ent = create(Enterprise, :name => 'test enterprise', :identifier => 'test_enterprise', :lat => 30.0, :lng => 30.0)
     prod = ent.products.create!(:name => 'test product', :product_category => @product_category)
 
     prod = Product.find(prod.id)
@@ -99,7 +99,7 @@ class ProductTest < ActiveSupport::TestCase
   end
 
   should 'update lat and lng of product afer update enterprise' do
-    ent = fast_create(Enterprise, :name => 'test enterprise', :identifier => 'test_enterprise', :lat => 30.0, :lng => 30.0)
+    ent = create(Enterprise, :name => 'test enterprise', :identifier => 'test_enterprise', :lat => 30.0, :lng => 30.0)
     prod = ent.products.create!(:name => 'test product', :product_category => @product_category)
 
     ent.lat = 45.0; ent.lng = 45.0; ent.save!
@@ -122,8 +122,8 @@ class ProductTest < ActiveSupport::TestCase
   end
 
   should 'respond to public? as its enterprise public?' do
-    e1 = fast_create(Enterprise, :name => 'test ent 1', :identifier => 'test_ent1')
-    p1 = fast_create(Product, :name => 'test product 1', :profile_id => e1.id, :product_category_id => @product_category.id)
+    e1 = create(Enterprise, :name => 'test ent 1', :identifier => 'test_ent1')
+    p1 = create(Product, :name => 'test product 1', :profile_id => e1.id, :product_category_id => @product_category.id)
 
     assert p1.public?
 
@@ -203,23 +203,23 @@ class ProductTest < ActiveSupport::TestCase
   end
 
   should 'format values to float with 2 decimals' do
-    ent = fast_create(Enterprise, :name => 'test ent 1', :identifier => 'test_ent1')
-    product = fast_create(Product, :profile_id => ent.id, :price => 12.994, :discount => 1.994)
+    ent = create(Enterprise, :name => 'test ent 1', :identifier => 'test_ent1')
+    product = create(Product, :profile_id => ent.id, :price => 12.994, :discount => 1.994)
 
     assert_equal "12.99", product.formatted_value(:price)
     assert_equal "1.99", product.formatted_value(:discount)
   end
 
   should 'calculate price with discount' do
-    ent = fast_create(Enterprise, :name => 'test ent 1', :identifier => 'test_ent1')
-    product = fast_create(Product, :profile_id => ent.id, :price => 12.994, :discount => 1.994)
+    ent = create(Enterprise, :name => 'test ent 1', :identifier => 'test_ent1')
+    product = create(Product, :profile_id => ent.id, :price => 12.994, :discount => 1.994)
 
     assert_equal 11.00, product.price_with_discount
   end
 
   should 'calculate price without discount' do
-    ent = fast_create(Enterprise, :name => 'test ent 1', :identifier => 'test_ent1')
-    product = fast_create(Product, :profile_id => ent.id, :price => 12.994, :discount => 0)
+    ent = create(Enterprise, :name => 'test ent 1', :identifier => 'test_ent1')
+    product = create(Product, :profile_id => ent.id, :price => 12.994, :discount => 0)
 
     assert_equal product.price, product.price_with_discount
   end
@@ -240,20 +240,20 @@ class ProductTest < ActiveSupport::TestCase
   end
 
   should 'return product inputs' do
-    ent = fast_create(Enterprise)
-    product = fast_create(Product, :profile_id => ent.id)
-    input = fast_create(Input, :product_id => product.id, :product_category_id => @product_category.id)
+    ent = create(Enterprise)
+    product = create(Product, :profile_id => ent.id)
+    input = create(Input, :product_id => product.id, :product_category_id => @product_category.id)
 
     assert_equal [input], product.inputs
   end
 
   should 'destroy inputs when product is removed' do
-    ent = fast_create(Enterprise)
-    product = fast_create(Product, :profile_id => ent.id)
-    input = fast_create(Input, :product_id => product.id, :product_category_id => @product_category.id)
+    ent = create(Enterprise)
+    product = create(Product, :profile_id => ent.id)
+    input = create(Input, :product_id => product.id, :product_category_id => @product_category.id)
 
-    services_category = fast_create(ProductCategory, :name => 'Services')
-    input2 = fast_create(Input, :product_id => product.id, :product_category_id => services_category.id)
+    services_category = create(ProductCategory, :name => 'Services')
+    input2 = create(Input, :product_id => product.id, :product_category_id => services_category.id)
 
     assert_difference 'Input.count', -2 do
       product.destroy
@@ -280,23 +280,23 @@ class ProductTest < ActiveSupport::TestCase
   end
 
   should 'destroy all qualifiers when save qualifiers list' do
-    product = fast_create(Product)
-    product.product_qualifiers.create(:qualifier => fast_create(Qualifier), :certifier => fast_create(Certifier))
-    product.product_qualifiers.create(:qualifier => fast_create(Qualifier), :certifier => fast_create(Certifier))
-    product.product_qualifiers.create(:qualifier => fast_create(Qualifier), :certifier => fast_create(Certifier))
+    product = create(Product)
+    product.product_qualifiers.create(:qualifier => create(Qualifier), :certifier => create(Certifier))
+    product.product_qualifiers.create(:qualifier => create(Qualifier), :certifier => create(Certifier))
+    product.product_qualifiers.create(:qualifier => create(Qualifier), :certifier => create(Certifier))
 
     assert_equal 3, product.qualifiers.count
 
-    product.qualifiers_list = [[fast_create(Qualifier).id, fast_create(Certifier).id]]
+    product.qualifiers_list = [[create(Qualifier).id, create(Certifier).id]]
 
     assert_equal 1, product.qualifiers.count
   end
 
   should 'save order of inputs' do
-    product = fast_create(Product)
-    first = create(Input, :product => product, :product_category => fast_create(ProductCategory))
-    second = create(Input, :product => product, :product_category => fast_create(ProductCategory))
-    third = create(Input, :product => product, :product_category => fast_create(ProductCategory))
+    product = create(Product)
+    first = create(Input, :product => product, :product_category => create(ProductCategory))
+    second = create(Input, :product => product, :product_category => create(ProductCategory))
+    third = create(Input, :product => product, :product_category => create(ProductCategory))
 
     assert_equal [first, second, third], product.inputs
 
@@ -323,47 +323,47 @@ class ProductTest < ActiveSupport::TestCase
   end
 
   should 'return total value of inputs' do
-    product = fast_create(Product)
-    first = fast_create(Input, :product_id => product.id, :product_category_id => fast_create(ProductCategory).id, :price_per_unit => 20.0, :amount_used => 2)
-    second = fast_create(Input, :product_id => product.id, :product_category_id => fast_create(ProductCategory).id, :price_per_unit => 10.0, :amount_used => 1)
+    product = create(Product)
+    first = create(Input, :product_id => product.id, :product_category_id => create(ProductCategory).id, :price_per_unit => 20.0, :amount_used => 2)
+    second = create(Input, :product_id => product.id, :product_category_id => create(ProductCategory).id, :price_per_unit => 10.0, :amount_used => 1)
 
     assert_equal 50.0, product.inputs_cost
   end
 
   should 'return total value only of inputs relevant to price' do
-    product = fast_create(Product)
-    first_relevant = fast_create(Input, :product_id => product.id, :product_category_id => fast_create(ProductCategory).id, :price_per_unit => 20.0, :amount_used => 2)
-    second_relevant = fast_create(Input, :product_id => product.id, :product_category_id => fast_create(ProductCategory).id, :price_per_unit => 10.0, :amount_used => 1)
-    not_relevant = fast_create(Input, :product_id => product.id, :product_category_id => fast_create(ProductCategory).id, :price_per_unit => 10.0, :amount_used => 1, :relevant_to_price => false)
+    product = create(Product)
+    first_relevant = create(Input, :product_id => product.id, :product_category_id => create(ProductCategory).id, :price_per_unit => 20.0, :amount_used => 2)
+    second_relevant = create(Input, :product_id => product.id, :product_category_id => create(ProductCategory).id, :price_per_unit => 10.0, :amount_used => 1)
+    not_relevant = create(Input, :product_id => product.id, :product_category_id => create(ProductCategory).id, :price_per_unit => 10.0, :amount_used => 1, :relevant_to_price => false)
 
     assert_equal 50.0, product.inputs_cost
   end
 
   should 'return 0 on total value of inputs if has no input' do
-    product = fast_create(Product)
+    product = create(Product)
 
     assert product.inputs_cost.zero?
   end
 
   should 'know if price is described' do
-    product = fast_create(Product, :price => 30.0)
+    product = create(Product, :price => 30.0)
 
-    first = fast_create(Input, :product_id => product.id, :product_category_id => fast_create(ProductCategory).id, :price_per_unit => 20.0, :amount_used => 1)
+    first = create(Input, :product_id => product.id, :product_category_id => create(ProductCategory).id, :price_per_unit => 20.0, :amount_used => 1)
     assert !Product.find(product.id).price_described?
 
-    second = fast_create(Input, :product_id => product.id, :product_category_id => fast_create(ProductCategory).id, :price_per_unit => 10.0, :amount_used => 1)
+    second = create(Input, :product_id => product.id, :product_category_id => create(ProductCategory).id, :price_per_unit => 10.0, :amount_used => 1)
     assert Product.find(product.id).price_described?
   end
 
   should 'return false on price_described if price of product is not defined' do
-    product = fast_create(Product)
+    product = create(Product)
 
     assert_equal false, product.price_described?
   end
 
   should 'create price details' do
-    product = fast_create(Product)
-    cost = fast_create(ProductionCost, :owner_id => Environment.default.id, :owner_type => 'Environment')
+    product = create(Product)
+    cost = create(ProductionCost, :owner_id => Environment.default.id, :owner_type => 'Environment')
     assert product.price_details.empty?
 
     product.update_price_details([{:production_cost_id => cost.id, :price => 10}])
@@ -371,9 +371,9 @@ class ProductTest < ActiveSupport::TestCase
   end
 
   should 'update price of a cost on price details' do
-    product = fast_create(Product)
-    cost = fast_create(ProductionCost, :owner_id => Environment.default.id, :owner_type => 'Environment')
-    cost2 = fast_create(ProductionCost, :owner_id => Environment.default.id, :owner_type => 'Environment')
+    product = create(Product)
+    cost = create(ProductionCost, :owner_id => Environment.default.id, :owner_type => 'Environment')
+    cost2 = create(ProductionCost, :owner_id => Environment.default.id, :owner_type => 'Environment')
     price_detail = product.price_details.create(:production_cost_id => cost.id, :price => 10)
     assert !product.price_details.empty?
 
@@ -383,8 +383,8 @@ class ProductTest < ActiveSupport::TestCase
   end
 
   should 'destroy price details if product is removed' do
-    product = fast_create(Product)
-    cost = fast_create(ProductionCost, :owner_id => Environment.default.id, :owner_type => 'Environment')
+    product = create(Product)
+    cost = create(ProductionCost, :owner_id => Environment.default.id, :owner_type => 'Environment')
     price_detail = product.price_details.create(:production_cost_id => cost.id, :price => 10)
 
     assert_difference 'PriceDetail.count', -1 do
@@ -393,63 +393,63 @@ class ProductTest < ActiveSupport::TestCase
   end
 
   should 'have production costs' do
-    product = fast_create(Product)
-    cost = fast_create(ProductionCost, :owner_id => Environment.default.id, :owner_type => 'Environment')
+    product = create(Product)
+    cost = create(ProductionCost, :owner_id => Environment.default.id, :owner_type => 'Environment')
     product.price_details.create(:production_cost_id => cost.id, :price => 10)
     assert_equal [cost], Product.find(product.id).production_costs
   end
 
   should 'return production costs from enterprise and environment' do
-    ent = fast_create(Enterprise)
-    product = fast_create(Product, :profile_id => ent.id)
-    ent_production_cost = fast_create(ProductionCost, :owner_id => ent.id, :owner_type => 'Profile')
-    env_production_cost = fast_create(ProductionCost, :owner_id => ent.environment.id, :owner_type => 'Environment')
+    ent = create(Enterprise)
+    product = create(Product, :profile_id => ent.id)
+    ent_production_cost = create(ProductionCost, :owner_id => ent.id, :owner_type => 'Profile')
+    env_production_cost = create(ProductionCost, :owner_id => ent.environment.id, :owner_type => 'Environment')
 
     assert_equal [env_production_cost, ent_production_cost], product.available_production_costs
   end
 
   should 'return all production costs' do
-    ent = fast_create(Enterprise)
-    product = fast_create(Product, :profile_id => ent.id)
+    ent = create(Enterprise)
+    product = create(Product, :profile_id => ent.id)
 
-    env_production_cost = fast_create(ProductionCost, :owner_id => ent.environment.id, :owner_type => 'Environment')
-    ent_production_cost = fast_create(ProductionCost, :owner_id => ent.id, :owner_type => 'Profile')
+    env_production_cost = create(ProductionCost, :owner_id => ent.environment.id, :owner_type => 'Environment')
+    ent_production_cost = create(ProductionCost, :owner_id => ent.id, :owner_type => 'Profile')
     create(PriceDetail, :product => product, :production_cost => env_production_cost, :product => product)
     assert_equal [env_production_cost, ent_production_cost], product.available_production_costs
   end
 
   should 'return total value of production costs' do
-    ent = fast_create(Enterprise)
-    product = fast_create(Product, :profile_id => ent.id)
+    ent = create(Enterprise)
+    product = create(Product, :profile_id => ent.id)
 
-    env_production_cost = fast_create(ProductionCost, :owner_id => ent.environment.id, :owner_type => 'Environment')
+    env_production_cost = create(ProductionCost, :owner_id => ent.environment.id, :owner_type => 'Environment')
     price_detail = create(PriceDetail, :product => product, :production_cost => env_production_cost, :price => 10)
 
-    input = fast_create(Input, :product_id => product.id, :product_category_id => fast_create(ProductCategory).id, :price_per_unit => 20.0, :amount_used => 2)
+    input = create(Input, :product_id => product.id, :product_category_id => create(ProductCategory).id, :price_per_unit => 20.0, :amount_used => 2)
 
     assert_equal price_detail.price + input.cost, product.total_production_cost
   end
 
   should 'return inputs cost as total value of production costs if has no price details' do
-    ent = fast_create(Enterprise)
-    product = fast_create(Product, :profile_id => ent.id)
+    ent = create(Enterprise)
+    product = create(Product, :profile_id => ent.id)
 
-    input = fast_create(Input, :product_id => product.id, :product_category_id => fast_create(ProductCategory).id, :price_per_unit => 20.0, :amount_used => 2)
+    input = create(Input, :product_id => product.id, :product_category_id => create(ProductCategory).id, :price_per_unit => 20.0, :amount_used => 2)
 
     assert_equal input.cost, product.total_production_cost
   end
 
   should 'return 0 on total production cost if has no input and price details' do
-    product = fast_create(Product)
+    product = create(Product)
 
     assert product.total_production_cost.zero?
   end
 
   should 'format inputs cost values to float with 2 decimals' do
-    ent = fast_create(Enterprise)
-    product = fast_create(Product, :profile_id => ent.id)
-    first = fast_create(Input, :product_id => product.id, :product_category_id => fast_create(ProductCategory).id, :price_per_unit => 20.0, :amount_used => 2)
-    second = fast_create(Input, :product_id => product.id, :product_category_id => fast_create(ProductCategory).id, :price_per_unit => 10.0, :amount_used => 1)
+    ent = create(Enterprise)
+    product = create(Product, :profile_id => ent.id)
+    first = create(Input, :product_id => product.id, :product_category_id => create(ProductCategory).id, :price_per_unit => 20.0, :amount_used => 2)
+    second = create(Input, :product_id => product.id, :product_category_id => create(ProductCategory).id, :price_per_unit => 10.0, :amount_used => 1)
 
     assert_equal "50.00", product.formatted_value(:inputs_cost)
   end
@@ -459,25 +459,25 @@ class ProductTest < ActiveSupport::TestCase
   end
 
   should 'return 0 on price_description_percentage if price is 0' do
-    product = fast_create(Product, :price => 0)
+    product = create(Product, :price => 0)
 
     assert_equal 0, product.price_description_percentage
   end
 
   should 'return 0 on price_description_percentage if price is not defined' do
-    product = fast_create(Product)
+    product = create(Product)
 
     assert_equal 0, product.price_description_percentage
   end
 
   should 'return 0 on price_description_percentage if total_production_cost is 0' do
-    product = fast_create(Product, :price => 50)
+    product = create(Product, :price => 50)
 
     assert_equal 0, product.price_description_percentage
   end
 
   should 'return solidarity percentage from inputs' do
-    prod = fast_create(Product, :name => 'test product1', :product_category_id => @product_category.id, :profile_id => @profile.id)
+    prod = create(Product, :name => 'test product1', :product_category_id => @product_category.id, :profile_id => @profile.id)
     assert_equal 0, prod.percentage_from_solidarity_economy.first
 
     prod.inputs.create!(:product_id => prod.id, :product_category_id => @product_category.id,
@@ -492,7 +492,7 @@ class ProductTest < ActiveSupport::TestCase
                   :amount_used => 10, :price_per_unit => 10, :is_from_solidarity_economy => false)
     assert_equal 25, prod.percentage_from_solidarity_economy.first
 
-    prod = fast_create(Product, :name => 'test product1', :product_category_id => @product_category.id, :profile_id => @profile.id)
+    prod = create(Product, :name => 'test product1', :product_category_id => @product_category.id, :profile_id => @profile.id)
     prod.inputs.create!(:product_id => prod.id, :product_category_id => @product_category.id,
                   :amount_used => 10, :price_per_unit => 10, :is_from_solidarity_economy => true)
     prod.inputs.create!(:product_id => prod.id, :product_category_id => @product_category.id,
@@ -503,26 +503,26 @@ class ProductTest < ActiveSupport::TestCase
                   :amount_used => 10, :price_per_unit => 10, :is_from_solidarity_economy => false)
     assert_equal 75, prod.percentage_from_solidarity_economy.first
 
-    prod = fast_create(Product, :name => 'test product', :product_category_id => @product_category.id, :profile_id => @profile.id)
+    prod = create(Product, :name => 'test product', :product_category_id => @product_category.id, :profile_id => @profile.id)
     prod.inputs.create!(:product_id => prod.id, :product_category_id => @product_category.id,
                   :amount_used => 10, :price_per_unit => 10, :is_from_solidarity_economy => true)
     assert_equal 100, prod.percentage_from_solidarity_economy.first
   end
 
   should 'delegate region info to enterprise' do
-    enterprise = fast_create(Enterprise)
+    enterprise = create(Enterprise)
     Enterprise.any_instance.expects(:region)
     Enterprise.any_instance.expects(:region_id)
-    product = fast_create(Product, :profile_id => enterprise.id)
+    product = create(Product, :profile_id => enterprise.id)
     product.region
     product.region_id
   end
 
   should 'delegate environment info to enterprise' do
-    enterprise = fast_create(Enterprise)
+    enterprise = create(Enterprise)
     Enterprise.any_instance.expects(:environment)
     Enterprise.any_instance.expects(:environment_id)
-    product = fast_create(Product, :profile_id => enterprise.id)
+    product = create(Product, :profile_id => enterprise.id)
     product.environment
     product.environment_id
   end
@@ -545,10 +545,10 @@ class ProductTest < ActiveSupport::TestCase
     pc1 = ProductCategory.create!(:name => 'PC1', :environment => Environment.default)
     pc2 = ProductCategory.create!(:name => 'PC2', :environment => Environment.default)
     pc3 = ProductCategory.create!(:name => 'PC3', :environment => Environment.default, :parent => pc1)
-    p1 = fast_create(Product, :product_category_id => pc1)
-    p2 = fast_create(Product, :product_category_id => pc1)
-    p3 = fast_create(Product, :product_category_id => pc2)
-    p4 = fast_create(Product, :product_category_id => pc3)
+    p1 = create(Product, :product_category_id => pc1)
+    p2 = create(Product, :product_category_id => pc1)
+    p3 = create(Product, :product_category_id => pc2)
+    p4 = create(Product, :product_category_id => pc3)
 
     products = Product.from_category(pc1)
 
@@ -565,10 +565,10 @@ class ProductTest < ActiveSupport::TestCase
   end
 
   should 'return from_category scope untouched if passed nil' do
-    enterprise = fast_create(Enterprise)
-    p1 = fast_create(Product, :profile_id => enterprise.id)
-    p2 = fast_create(Product, :profile_id => enterprise.id)
-    p3 = fast_create(Product, :profile_id => enterprise.id)
+    enterprise = create(Enterprise)
+    p1 = create(Product, :profile_id => enterprise.id)
+    p2 = create(Product, :profile_id => enterprise.id)
+    p3 = create(Product, :profile_id => enterprise.id)
 
     products = enterprise.products.from_category(nil)
 

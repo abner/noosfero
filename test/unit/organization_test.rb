@@ -4,10 +4,10 @@ class OrganizationTest < ActiveSupport::TestCase
   fixtures :profiles
 
   def create_create_enterprise(org)
-    region = fast_create(Region, :name => 'some region')
+    region = create(Region, :name => 'some region')
     region.validators << org
 
-    requestor = create_user('testreq').person
+    requestor = create(:person)
 
     data = {
       :name => 'My new enterprise',
@@ -134,7 +134,7 @@ class OrganizationTest < ActiveSupport::TestCase
   end
 
   should 'be able to find a pending validation by its code' do
-    org = fast_create(Organization)
+    org = create(Organization)
 
     validation = create_create_enterprise(org)
 
@@ -152,7 +152,7 @@ class OrganizationTest < ActiveSupport::TestCase
   end
 
   should 'be able to find an already processed validation by its code' do
-    org = fast_create(Organization)
+    org = create(Organization)
     validation = create_create_enterprise(org)
     validation.finish
 
@@ -171,7 +171,7 @@ class OrganizationTest < ActiveSupport::TestCase
   end
 
   should 'update contact_person' do
-    org = fast_create(Organization)
+    org = create(Organization)
     assert_nil org.contact_person
     org.contact_person = 'person'
     assert_not_nil org.contact_person
@@ -201,8 +201,8 @@ class OrganizationTest < ActiveSupport::TestCase
   end
 
   should 'allow to add new member' do
-    o = fast_create(Organization)
-    p = create_user('mytestuser').person
+    o = create(Organization)
+    p = create(:person)
 
     o.add_member(p)
 
@@ -210,8 +210,8 @@ class OrganizationTest < ActiveSupport::TestCase
   end
   
   should 'allow to remove members' do
-    c = fast_create(Organization)
-    p = create_user('myothertestuser').person
+    c = create(Organization)
+    p = create(:person)
 
     c.add_member(p)
     assert_includes c.members, p
@@ -221,8 +221,8 @@ class OrganizationTest < ActiveSupport::TestCase
   end
 
   should 'allow to add new moderator' do
-    o = fast_create(Organization)
-    p = create_user('myanothertestuser').person
+    o = create(Organization)
+    p = create(:person)
 
     o.add_moderator(p)
 
@@ -230,21 +230,21 @@ class OrganizationTest < ActiveSupport::TestCase
   end
 
   should 'moderator has moderate_comments permission' do
-    o = fast_create(Organization)
-    p = create_user('myanothertestuser').person
+    o = create(Organization)
+    p = create(:person)
     o.add_moderator(p)
     assert p.has_permission?(:moderate_comments, o)
   end
 
   should 'be able to change identifier' do
-    o = fast_create(Organization)
+    o = create(Organization)
     assert_nothing_raised do
       o.identifier = 'test_org_new_url'
     end
   end
 
   should 'be closed if organization is not public' do
-    organization = fast_create(Organization)
+    organization = create(Organization)
     assert !organization.closed
 
     organization.public_profile = false
@@ -273,10 +273,10 @@ class OrganizationTest < ActiveSupport::TestCase
   end
 
   should "the followed_by? be true only to members" do
-    o = fast_create(Organization)
-    p1 = fast_create(Person)
-    p2 = fast_create(Person)
-    p3 = fast_create(Person)
+    o = create(Organization)
+    p1 = create(Person)
+    p2 = create(Person)
+    p3 = create(Person)
 
     assert !p1.is_member_of?(o)
     o.add_member(p1)
@@ -292,21 +292,21 @@ class OrganizationTest < ActiveSupport::TestCase
   end
 
   should "compose bare jabber id by identifier plus 'conference' and default hostname" do
-    org = fast_create(Organization, :identifier => 'online_community')
+    org = create(Organization, :identifier => 'online_community')
     assert_equal "online_community@conference.#{org.environment.default_hostname}", org.jid
   end
 
   should "compose full jabber id by identifier plus 'conference.default_hostname' and short_name as resource" do
-    org = fast_create(Organization, :identifier => 'online_community')
+    org = create(Organization, :identifier => 'online_community')
     assert_equal "online_community@conference.#{org.environment.default_hostname}/#{org.short_name}", org.full_jid
   end
 
   should 'find more popular organizations' do
-    o1 = fast_create(Organization)
-    o2 = fast_create(Organization)
+    o1 = create(Organization)
+    o2 = create(Organization)
 
-    p1 = fast_create(Person)
-    p2 = fast_create(Person)
+    p1 = create(Person)
+    p2 = create(Person)
     o1.add_member(p1)
     assert_order [o1,o2] , Organization.more_popular
 
@@ -316,19 +316,19 @@ class OrganizationTest < ActiveSupport::TestCase
   end
 
   should 'list organizations that have no members in more popular list' do
-    organization = fast_create(Organization)
+    organization = create(Organization)
     assert_includes Organization.more_popular, organization
   end
 
   should "return no members on label if the organization has no members" do
-    organization = fast_create(Organization)
+    organization = create(Organization)
     assert_equal 0, organization.members_count
     assert_equal "no members", organization.more_popular_label
   end
 
   should "return one member on label if the organization has one member" do
-    person = fast_create(Person)
-    organization = fast_create(Organization)
+    person = create(Person)
+    organization = create(Organization)
     organization.add_member(person)
     organization.reload
 
@@ -336,26 +336,26 @@ class OrganizationTest < ActiveSupport::TestCase
   end
 
   should "return the number of members on label if the organization has more than one member" do
-    person1 = fast_create(Person)
-    person2 = fast_create(Person)
-    organization = fast_create(Organization)
+    person1 = create(Person)
+    person2 = create(Person)
+    organization = create(Organization)
 
     organization.add_member(person1)
     organization.add_member(person2)
     organization.reload
     assert_equal "2 members", organization.more_popular_label
 
-    person3 = fast_create(Person)
+    person3 = create(Person)
     organization.add_member(person3)
     organization.reload
     assert_equal "3 members", organization.more_popular_label
   end
 
   should 'find more active organizations' do
-    person = fast_create(Person)
-    p1 = fast_create(Organization)
-    p2 = fast_create(Organization)
-    p3 = fast_create(Organization)
+    person = create(Person)
+    p1 = create(Organization)
+    p2 = create(Organization)
+    p3 = create(Organization)
 
     ActionTracker::Record.destroy_all
     ActionTracker::Record.create!(:user => person, :target => p1, :verb => 'leave_scrap')
@@ -369,7 +369,7 @@ class OrganizationTest < ActiveSupport::TestCase
   end
 
   should 'list profiles that have no actions in more active list' do
-    profile = fast_create(Organization)
+    profile = create(Organization)
     assert_includes Organization.more_active, profile
   end
 
@@ -384,36 +384,36 @@ class OrganizationTest < ActiveSupport::TestCase
   end
 
   should 'get members by role' do
-    community = fast_create(Community)
+    community = create(Community)
     role1 = Role.create!(:name => 'role1')
-    person1 = fast_create(Person)
+    person1 = create(Person)
     community.affiliate(person1, role1)
     role2 = Role.create!(:name => 'role2')
-    person2 = fast_create(Person)
+    person2 = create(Person)
     community.affiliate(person2, role2)
 
     assert_equal [person1], community.members_by_role([role1])
   end
 
   should 'get members by more than one role' do
-    community = fast_create(Community)
+    community = create(Community)
     role1 = Role.create!(:name => 'role1')
-    person1 = fast_create(Person)
+    person1 = create(Person)
     community.affiliate(person1, role1)
     role2 = Role.create!(:name => 'role2')
-    person2 = fast_create(Person)
+    person2 = create(Person)
     community.affiliate(person2, role2)
     role3 = Role.create!(:name => 'role3')
-    person3 = fast_create(Person)
+    person3 = create(Person)
     community.affiliate(person3, role3)
 
     assert_equivalent [person2, person3], community.members_by_role([role2, role3])
   end
 
   should 'return members by role in a json format' do
-    organization = fast_create(Organization)
-    p1 = create_user('person-1').person
-    p2 = create_user('person-2').person
+    organization = create(Organization)
+    p1 = create(:person)
+    p2 = create(:person)
     role = Profile::Roles.organization_member_roles(organization.environment.id).last
 
     organization.affiliate(p1, role)
@@ -425,7 +425,7 @@ class OrganizationTest < ActiveSupport::TestCase
   end
 
   should 'disable organization' do
-    organization = fast_create(Organization, :visible => true)
+    organization = create(Organization, :visible => true)
     assert organization.visible
 
     organization.disable
@@ -433,8 +433,8 @@ class OrganizationTest < ActiveSupport::TestCase
   end
 
   should 'increase members_count on new membership' do
-    member = fast_create(Person)
-    organization = fast_create(Organization)
+    member = create(Person)
+    organization = create(Organization)
     assert_difference 'organization.members_count', 1 do
       organization.add_member(member)
       organization.reload
@@ -442,8 +442,8 @@ class OrganizationTest < ActiveSupport::TestCase
   end
 
   should 'decrease members_count on membership removal' do
-    member = fast_create(Person)
-    organization = fast_create(Organization)
+    member = create(Person)
+    organization = create(Organization)
     organization.add_member(member)
     organization.reload
     assert_difference 'organization.members_count', -1 do
@@ -453,26 +453,26 @@ class OrganizationTest < ActiveSupport::TestCase
   end
 
   should 'check if a community admin user is really a community admin' do
-    c = fast_create(Organization, :name => 'my test profile', :identifier => 'mytestprofile')
-    admin = create_user('adminuser').person
+    c = create(Organization, :name => 'my test profile', :identifier => 'mytestprofile')
+    admin = create(:person)
     c.add_admin(admin)
    
     assert c.is_admin?(admin)
   end
 
   should 'a member user not be a community admin' do
-    c = fast_create(Organization, :name => 'my test profile', :identifier => 'mytestprofile')
-    admin = create_user('adminuser').person
+    c = create(Organization, :name => 'my test profile', :identifier => 'mytestprofile')
+    admin = create(:person)
     c.add_admin(admin)
 
-    member = create_user('memberuser').person
+    member = create(:person)
     c.add_member(member)
     assert !c.is_admin?(member)
   end
 
   should 'a moderator user not be a community admin' do
-    c = fast_create(Organization, :name => 'my test profile', :identifier => 'mytestprofile')
-    moderator = create_user('moderatoruser').person
+    c = create(Organization, :name => 'my test profile', :identifier => 'mytestprofile')
+    moderator = create(:person)
     c.add_moderator(moderator)
     assert !c.is_admin?(moderator)
   end

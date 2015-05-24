@@ -5,7 +5,7 @@ class TinyMceArticleTest < ActiveSupport::TestCase
 
   def setup
     super
-    @profile = create_user('zezinho').person
+    @profile = create(:person)
   end
   attr_reader :profile
 
@@ -108,29 +108,29 @@ class TinyMceArticleTest < ActiveSupport::TestCase
   end
 
   should 'notifiable be true' do
-    a = fast_create(TinyMceArticle)
+    a = create(TinyMceArticle)
     assert a.notifiable?
   end
 
   should 'notify activity on create' do
     ActionTracker::Record.delete_all
-    create TinyMceArticle, :name => 'test', :profile_id => fast_create(Profile).id, :published => true
+    create TinyMceArticle, :name => 'test', :profile_id => create(Profile).id, :published => true
     assert_equal 1, ActionTracker::Record.count
   end
 
   should 'not group trackers activity of article\'s creation' do
     ActionTracker::Record.delete_all
-    profile = fast_create(Profile)
+    profile = create(Profile)
     create TinyMceArticle, :name => 'bar', :profile_id => profile.id, :published => true
     create TinyMceArticle, :name => 'another bar', :profile_id => profile.id, :published => true
     assert_equal 2, ActionTracker::Record.count
-    create TinyMceArticle, :name => 'another bar', :profile_id => fast_create(Profile).id, :published => true
+    create TinyMceArticle, :name => 'another bar', :profile_id => create(Profile).id, :published => true
     assert_equal 3, ActionTracker::Record.count
   end
 
   should 'not update activity on update of an article' do
     ActionTracker::Record.delete_all
-    profile = fast_create(Profile)
+    profile = create(Profile)
     article = create(TinyMceArticle, :profile_id => profile.id)
     time = article.activity.updated_at
     Time.stubs(:now).returns(time + 1.day)
@@ -143,8 +143,8 @@ class TinyMceArticleTest < ActiveSupport::TestCase
 
   should 'not create trackers activity when updating articles' do
     ActionTracker::Record.delete_all
-    a1 = create TinyMceArticle, :name => 'bar', :profile_id => fast_create(Profile).id, :published => true
-    a2 = create TinyMceArticle, :name => 'another bar', :profile_id => fast_create(Profile).id, :published => true
+    a1 = create TinyMceArticle, :name => 'bar', :profile_id => create(Profile).id, :published => true
+    a2 = create TinyMceArticle, :name => 'another bar', :profile_id => create(Profile).id, :published => true
     assert_no_difference 'ActionTracker::Record.count' do
       a1.name = 'foo';a1.save!
       a2.name = 'another foo';a2.save!
@@ -153,8 +153,8 @@ class TinyMceArticleTest < ActiveSupport::TestCase
 
   should 'remove activity when an article is destroyed' do
     ActionTracker::Record.delete_all
-    a1 = create TinyMceArticle, :name => 'bar', :profile_id => fast_create(Profile).id, :published => true
-    a2 = create TinyMceArticle, :name => 'another bar', :profile_id => fast_create(Profile).id, :published => true
+    a1 = create TinyMceArticle, :name => 'bar', :profile_id => create(Profile).id, :published => true
+    a2 = create TinyMceArticle, :name => 'another bar', :profile_id => create(Profile).id, :published => true
     assert_difference 'ActionTracker::Record.count', -2 do
       a1.destroy
       a2.destroy
@@ -163,7 +163,7 @@ end
 
   should "the tracker action target be defined as the article on articles'creation in communities" do
     ActionTracker::Record.delete_all
-    community = fast_create(Community)
+    community = create(Community)
     p1 = Person.first
     community.add_member(p1)
     assert p1.is_member_of?(community)
@@ -180,7 +180,7 @@ end
 
   should 'not notify activity if the article is not advertise' do
     ActionTracker::Record.delete_all
-    a = create TinyMceArticle, :name => 'bar', :profile_id => fast_create(Profile).id, :published => true, :advertise => false
+    a = create TinyMceArticle, :name => 'bar', :profile_id => create(Profile).id, :published => true, :advertise => false
     assert_equal true, a.published?
     assert_equal true, a.notifiable?
     assert_equal false, a.image?

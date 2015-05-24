@@ -4,7 +4,7 @@ require_relative "../test_helper"
 class CategoryTest < ActiveSupport::TestCase
 
   def setup
-    @env = fast_create(Environment)
+    @env = create(Environment)
   end
 
   def test_mandatory_field_name
@@ -27,7 +27,7 @@ class CategoryTest < ActiveSupport::TestCase
   end
 
   def test_relation_with_parent
-    parent_category = fast_create(Category)
+    parent_category = create(Category)
     c = build(Category, :parent_id => parent_category.id)
     assert_equal parent_category, c.parent
   end
@@ -93,8 +93,8 @@ class CategoryTest < ActiveSupport::TestCase
   end
 
   def test_top_level_for
-    cat = fast_create(Category, :environment_id => @env.id)
-    sub_cat = fast_create(Category, :environment_id => @env.id, :parent_id => cat.id)
+    cat = create(Category, :environment_id => @env.id)
+    sub_cat = create(Category, :environment_id => @env.id, :parent_id => cat.id)
 
     roots = Category.top_level_for(@env)
 
@@ -137,9 +137,9 @@ class CategoryTest < ActiveSupport::TestCase
   end
 
   should 'be able to duplicated slug in different scope' do
-    root1 = fast_create(Category, :name => 'root category 1', :environment_id => @env.id)
-    root2 = fast_create(Category, :name => 'root category 2', :environment_id => @env.id)
-    child1 = fast_create(Category, :name => 'test category', :environment_id => @env.id, :parent_id => root1.id)
+    root1 = create(Category, :name => 'root category 1', :environment_id => @env.id)
+    root2 = create(Category, :name => 'root category 2', :environment_id => @env.id)
+    child1 = create(Category, :name => 'test category', :environment_id => @env.id, :parent_id => root1.id)
 
     child2 = build(Category, :name => 'test category', :environment_id => @env.id, :parent => root2)
     assert child2.valid?
@@ -160,9 +160,9 @@ class CategoryTest < ActiveSupport::TestCase
   end
 
   should 'be able to get top ancestor' do
-    c1 = fast_create(Category, :name => 'test category', :environment_id => @env.id)
-    c2 = fast_create(Category, :name => 'test category', :environment_id => @env.id, :parent_id => c1.id)
-    c3 = fast_create(Category, :name => 'test category', :environment_id => @env.id, :parent_id => c2.id)
+    c1 = create(Category, :name => 'test category', :environment_id => @env.id)
+    c2 = create(Category, :name => 'test category', :environment_id => @env.id, :parent_id => c1.id)
+    c3 = create(Category, :name => 'test category', :environment_id => @env.id, :parent_id => c2.id)
 
     assert_equal c1, c1.top_ancestor
     assert_equal c1, c2.top_ancestor
@@ -192,11 +192,11 @@ class CategoryTest < ActiveSupport::TestCase
 
   should 'list recent people' do
     c = @env.categories.build(:name => 'my category'); c.save!
-    p1 = create_user('testuser').person
+    p1 = create(:person)
     p1.add_category c
     p1.save!
 
-    p2 = create_user('testuser2').person
+    p2 = create(:person)
     p2.add_category c
     p2.save!
 
@@ -205,9 +205,9 @@ class CategoryTest < ActiveSupport::TestCase
 
   should 'list recent enterprises' do
     c = @env.categories.build(:name => 'my category'); c.save!
-    ent1 = fast_create(Enterprise, :identifier => 'enterprise_1', :name => 'Enterprise one')
+    ent1 = create(Enterprise, :identifier => 'enterprise_1', :name => 'Enterprise one')
     ent1.add_category c
-    ent2 = fast_create(Enterprise, :identifier => 'enterprise_2', :name => 'Enterprise one')
+    ent2 = create(Enterprise, :identifier => 'enterprise_2', :name => 'Enterprise one')
     ent2.add_category c
 
     assert_equal [ent2, ent1], c.recent_enterprises
@@ -215,20 +215,20 @@ class CategoryTest < ActiveSupport::TestCase
 
   should 'list recent communities' do
     c = @env.categories.build(:name => 'my category'); c.save!
-    c1 = fast_create(Community, :name => 'testcommunity_1')
+    c1 = create(Community, :name => 'testcommunity_1')
     c1.add_category c
-    c2 = fast_create(Community, :name => 'testcommunity_2')
+    c2 = create(Community, :name => 'testcommunity_2')
     c2.add_category c
 
     assert_equal [c2, c1], c.recent_communities
   end
 
   should 'list recent products' do
-    product_category = fast_create(ProductCategory, :name => 'Products', :environment_id => Environment.default.id)
+    product_category = create(ProductCategory, :name => 'Products', :environment_id => Environment.default.id)
     c = @env.categories.build(:name => 'my category'); c.save!
-    ent1 = fast_create(Enterprise, :identifier => 'enterprise_1', :name => 'Enterprise one')
+    ent1 = create(Enterprise, :identifier => 'enterprise_1', :name => 'Enterprise one')
     ent1.add_category c
-    ent2 = fast_create(Enterprise, :identifier => 'enterprise_2', :name => 'Enterprise one')
+    ent2 = create(Enterprise, :identifier => 'enterprise_2', :name => 'Enterprise one')
     ent2.add_category c
     prod1 = ent1.products.create!(:name => 'test_prod1', :product_category => product_category)
     prod2 = ent2.products.create!(:name => 'test_prod2', :product_category => product_category)
@@ -237,7 +237,7 @@ class CategoryTest < ActiveSupport::TestCase
 
   should 'list recent articles' do
     c = @env.categories.build(:name => 'my category'); c.save!
-    person = create_user('testuser').person
+    person = create(:person)
 
     a1 = person.articles.build(:name => 'art1')
     a1.add_category c
@@ -252,7 +252,7 @@ class CategoryTest < ActiveSupport::TestCase
 
   should 'list recent comments' do
     c = @env.categories.build(:name => 'my category'); c.save!
-    person = create_user('testuser').person
+    person = create(:person)
 
     a1 = person.articles.build(:name => 'art1')
     a1.add_category c
@@ -269,7 +269,7 @@ class CategoryTest < ActiveSupport::TestCase
 
   should 'list most commented articles' do
     c = @env.categories.build(:name => 'my category'); c.save!
-    person = create_user('testuser').person
+    person = create(:person)
 
     a1 = create(Article, :profile => person, :name => 'art1', :category_ids => [c.id])
     a2 = create(Article, :profile => person, :name => 'art2', :category_ids => [c.id])
@@ -285,7 +285,7 @@ class CategoryTest < ActiveSupport::TestCase
 
   should 'have comments' do
     c = @env.categories.build(:name => 'my category'); c.save!
-    person = create_user('testuser').person
+    person = create(:person)
 
     a1 = create(Article, :profile => person, :name => 'art1', :category_ids => [c.id])
     a2 = create(Article, :profile => person, :name => 'art2', :category_ids => [c.id])
@@ -300,9 +300,9 @@ class CategoryTest < ActiveSupport::TestCase
 
   should 'have enterprises' do
     c = @env.categories.build(:name => 'my category'); c.save!
-    ent1 = fast_create(Enterprise, :identifier => 'enterprise_1', :name => 'Enterprise one')
+    ent1 = create(Enterprise, :identifier => 'enterprise_1', :name => 'Enterprise one')
     ent1.add_category c
-    ent2 = fast_create(Enterprise, :identifier => 'enterprise_2', :name => 'Enterprise one')
+    ent2 = create(Enterprise, :identifier => 'enterprise_2', :name => 'Enterprise one')
     ent2.add_category c
     assert_includes c.enterprises, ent1
     assert_includes c.enterprises, ent2
@@ -310,28 +310,28 @@ class CategoryTest < ActiveSupport::TestCase
 
   should 'have people' do
     c = @env.categories.build(:name => 'my category'); c.save!
-    p1 = create_user('testuser_1').person
+    p1 = create(:person)
     p1.add_category c
-    p2 = create_user('testuser_2').person
+    p2 = create(:person)
     p2.add_category c
     assert_equivalent [p1, p2], c.people
   end
 
   should 'have communities' do
     c = @env.categories.build(:name => 'my category'); c.save!
-    c1 = fast_create(Community, :name => 'testcommunity_1')
+    c1 = create(Community, :name => 'testcommunity_1')
     c1.add_category c
-    c2 = fast_create(Community, :name => 'testcommunity_2')
+    c2 = create(Community, :name => 'testcommunity_2')
     c2.add_category c
     assert_equivalent [c1, c2], c.communities
   end
 
   should 'have products through enteprises' do
-    product_category = fast_create(ProductCategory, :name => 'Products', :environment_id => Environment.default.id)
+    product_category = create(ProductCategory, :name => 'Products', :environment_id => Environment.default.id)
     c = @env.categories.build(:name => 'my category'); c.save!
-    ent1 = fast_create(Enterprise, :identifier => 'enterprise_1', :name => 'Enterprise one')
+    ent1 = create(Enterprise, :identifier => 'enterprise_1', :name => 'Enterprise one')
     ent1.add_category c
-    ent2 = fast_create(Enterprise, :identifier => 'enterprise_2', :name => 'Enterprise one')
+    ent2 = create(Enterprise, :identifier => 'enterprise_2', :name => 'Enterprise one')
     ent2.add_category c
     prod1 = ent1.products.create!(:name => 'test_prod1', :product_category => product_category)
     prod2 = ent2.products.create!(:name => 'test_prod2', :product_category => product_category)
@@ -341,9 +341,9 @@ class CategoryTest < ActiveSupport::TestCase
 
   should 'not have person through communities' do
     c = @env.categories.build(:name => 'my category'); c.save!
-    com = fast_create(Community, :identifier => 'community_1', :name => 'Community one')
+    com = create(Community, :identifier => 'community_1', :name => 'Community one')
     com.add_category c
-    person = create_user('test_user').person
+    person = create(:person)
     person.add_category c
     assert_includes c.communities, com
     assert_not_includes c.communities, person
@@ -351,9 +351,9 @@ class CategoryTest < ActiveSupport::TestCase
 
   should 'not have person through enterprises' do
     c = @env.categories.build(:name => 'my category'); c.save!
-    ent = fast_create(Enterprise, :identifier => 'enterprise_1', :name => 'Enterprise one')
+    ent = create(Enterprise, :identifier => 'enterprise_1', :name => 'Enterprise one')
     ent.add_category c
-    person = create_user('test_user').person
+    person = create(:person)
     person.add_category c
     assert_includes c.enterprises, ent
     assert_not_includes c.enterprises, person
@@ -361,9 +361,9 @@ class CategoryTest < ActiveSupport::TestCase
 
   should 'not have enterprises through people' do
     c = @env.categories.build(:name => 'my category'); c.save!
-    person = create_user('test_user').person
+    person = create(:person)
     person.add_category c
-    ent = fast_create(Enterprise, :identifier => 'enterprise_1', :name => 'Enterprise one')
+    ent = create(Enterprise, :identifier => 'enterprise_1', :name => 'Enterprise one')
     ent.add_category c
     assert_includes c.people, person
     assert_not_includes c.people, ent
@@ -379,11 +379,11 @@ class CategoryTest < ActiveSupport::TestCase
   end
 
   should 'display in menu only if have display_menu setted to true' do
-    c   = fast_create(Category, :display_in_menu => true)
-    c1  = fast_create(Category, :display_in_menu => true, :parent_id => c.id)
-    c11 = fast_create(Category, :display_in_menu => true, :parent_id => c1.id)
-    c2  = fast_create(Category, :display_in_menu => true, :parent_id => c.id)
-    c3  = fast_create(Category, :parent_id => c.id)
+    c   = create(Category, :display_in_menu => true)
+    c1  = create(Category, :display_in_menu => true, :parent_id => c.id)
+    c11 = create(Category, :display_in_menu => true, :parent_id => c1.id)
+    c2  = create(Category, :display_in_menu => true, :parent_id => c.id)
+    c3  = create(Category, :parent_id => c.id)
 
     assert_equivalent [c1, c11, c2], c.children_for_menu
   end
@@ -426,11 +426,11 @@ class CategoryTest < ActiveSupport::TestCase
   end
 
   should 'define a leaf to be displayed in menu' do
-    c1 = fast_create(Category, :display_in_menu => true)
-    c11  = fast_create(Category, :display_in_menu => true, :parent_id => c1.id)
-    c2   = fast_create(Category, :display_in_menu => true)
-    c21  = fast_create(Category, :display_in_menu => false, :parent_id => c2.id)
-    c22  = fast_create(Category, :display_in_menu => false, :parent_id => c2.id)
+    c1 = create(Category, :display_in_menu => true)
+    c11  = create(Category, :display_in_menu => true, :parent_id => c1.id)
+    c2   = create(Category, :display_in_menu => true)
+    c21  = create(Category, :display_in_menu => false, :parent_id => c2.id)
+    c22  = create(Category, :display_in_menu => false, :parent_id => c2.id)
 
     assert_equal false, c1.is_leaf_displayable_in_menu?
     assert_equal true, c11.is_leaf_displayable_in_menu?
@@ -440,11 +440,11 @@ class CategoryTest < ActiveSupport::TestCase
   end
 
   should 'filter top_level categories by type' do
-    toplevel_productcategory = fast_create(ProductCategory)
-    leaf_productcategory = fast_create(ProductCategory, :parent_id => toplevel_productcategory.id)
+    toplevel_productcategory = create(ProductCategory)
+    leaf_productcategory = create(ProductCategory, :parent_id => toplevel_productcategory.id)
 
-    toplevel_category = fast_create(Category)
-    leaf_category = fast_create(Category, :parent_id => toplevel_category.id)
+    toplevel_category = create(Category)
+    leaf_category = create(Category, :parent_id => toplevel_category.id)
 
     assert_includes Category.top_level_for(Environment.default).from_types(['ProductCategory']), toplevel_productcategory
     assert_not_includes Category.top_level_for(Environment.default).from_types(['ProductCategory']), leaf_productcategory
@@ -454,7 +454,7 @@ class CategoryTest < ActiveSupport::TestCase
   should 'paginate upcoming events' do
     Event.destroy_all
     category = create(Category, :name => 'category1', :environment_id => Environment.default.id)
-    profile = fast_create(Profile)
+    profile = create(Profile)
     event1 = Event.create!(:name => 'event1', :profile => profile, :start_date => Time.now)
     event2 = Event.create!(:name => 'event2', :profile => profile, :start_date => Time.now + 1.day)
     event3 = Event.create!(:name => 'event3', :profile => profile, :start_date => Time.now + 2.days)
@@ -467,7 +467,7 @@ class CategoryTest < ActiveSupport::TestCase
 
   should 'remove all article categorizations when destroyed' do
     cat = create(Category, :name => 'category 1', :environment_id => Environment.default.id)
-    art = create(Article, :name => 'article 1', :profile_id => fast_create(Person).id)
+    art = create(Article, :name => 'article 1', :profile_id => create(Person).id)
     art.add_category cat
     cat.destroy
     assert art.categories.reload.empty?
@@ -475,19 +475,19 @@ class CategoryTest < ActiveSupport::TestCase
 
   should 'remove all profile categorizations when destroyed' do
     cat = create(Category, :name => 'category 1', :environment_id => Environment.default.id)
-    p = create(Person, :user_id => fast_create(User).id)
+    p = create(Person, :user_id => create(User).id)
     p.add_category cat
     cat.destroy
     assert p.categories.reload.empty?
   end
 
   should 'return categories of a level' do
-    c1 = fast_create(Category)
-    c2 = fast_create(Category)
-    c3 = fast_create(Category, :parent_id => c1)
-    c4 = fast_create(Category, :parent_id => c1)
-    c5 = fast_create(Category, :parent_id => c2)
-    c6 = fast_create(Category, :parent_id => c3)
+    c1 = create(Category)
+    c2 = create(Category)
+    c3 = create(Category, :parent_id => c1)
+    c4 = create(Category, :parent_id => c1)
+    c5 = create(Category, :parent_id => c2)
+    c6 = create(Category, :parent_id => c3)
 
     assert_includes Category.on_level(nil), c1
     assert_includes Category.on_level(nil), c2
@@ -498,34 +498,34 @@ class CategoryTest < ActiveSupport::TestCase
   end
 
   should 'on level named_scope must be able to receive parent or parent_id' do
-    parent = fast_create(Category)
-    category = fast_create(Category, :parent_id => parent)
+    parent = create(Category)
+    category = create(Category, :parent_id => parent)
 
     assert_includes Category.on_level(parent), category
     assert_includes Category.on_level(parent.id), category
   end
 
   should 'return self if the category has display_color defined' do
-    c1 = fast_create(Category)
-    c2 = fast_create(Category, :parent_id => c1)
-    c3 = fast_create(Category, :parent_id => c2, :display_color => 'FFFFFF')
-    c4 = fast_create(Category, :parent_id => c3, :display_color => '000000')
+    c1 = create(Category)
+    c2 = create(Category, :parent_id => c1)
+    c3 = create(Category, :parent_id => c2, :display_color => 'FFFFFF')
+    c4 = create(Category, :parent_id => c3, :display_color => '000000')
     assert_equal c4, c4.with_color
   end
 
   should 'return first category on hierarchy with display_color defined' do
-    c1 = fast_create(Category, :display_color => '111111')
-    c2 = fast_create(Category, :parent_id => c1)
-    c3 = fast_create(Category, :parent_id => c2)
-    c4 = fast_create(Category, :parent_id => c3)
+    c1 = create(Category, :display_color => '111111')
+    c2 = create(Category, :parent_id => c1)
+    c3 = create(Category, :parent_id => c2)
+    c4 = create(Category, :parent_id => c3)
     assert_equal c1, c4.with_color
   end
 
   should 'return nil if no category on hierarchy has display_color defined' do
-    c1 = fast_create(Category)
-    c2 = fast_create(Category, :parent_id => c1)
-    c3 = fast_create(Category, :parent_id => c2)
-    c4 = fast_create(Category, :parent_id => c3)
+    c1 = create(Category)
+    c2 = create(Category, :parent_id => c1)
+    c3 = create(Category, :parent_id => c2)
+    c4 = create(Category, :parent_id => c3)
     assert_equal nil, c4.with_color
   end
 

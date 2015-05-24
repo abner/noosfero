@@ -3,7 +3,7 @@ require_relative "../test_helper"
 class InputTest < ActiveSupport::TestCase
 
   should 'require product_category' do
-    product_category = fast_create(ProductCategory, :name => 'Products')
+    product_category = create(ProductCategory, :name => 'Products')
 
     input = Input.new
     input.valid?
@@ -15,8 +15,8 @@ class InputTest < ActiveSupport::TestCase
   end
 
   should 'require product' do
-    product_category = fast_create(ProductCategory, :name => 'Products')
-    product = fast_create(Product, :name => 'Computer', :product_category_id => product_category.id)
+    product_category = create(ProductCategory, :name => 'Products')
+    product = create(Product, :name => 'Computer', :product_category_id => product_category.id)
 
     input = Input.new
     input.valid?
@@ -28,8 +28,8 @@ class InputTest < ActiveSupport::TestCase
   end
 
   should 'store inputs ordered by position' do
-    product_category = fast_create(ProductCategory)
-    product = fast_create(Product, :product_category_id => product_category.id)
+    product_category = create(ProductCategory)
+    product = create(Product, :product_category_id => product_category.id)
 
     first_input = create(Input, :product => product, :product_category => product_category)
     assert_equal 1, first_input.position
@@ -39,8 +39,8 @@ class InputTest < ActiveSupport::TestCase
   end
 
   should 'move input to top of input list' do
-    product_category = fast_create(ProductCategory)
-    product = fast_create(Product, :product_category_id => product_category.id)
+    product_category = create(ProductCategory)
+    product = create(Product, :product_category_id => product_category.id)
 
     first_input = create(Input, :product => product, :product_category => product_category)
     second_input = create(Input, :product => product, :product_category => product_category)
@@ -54,9 +54,9 @@ class InputTest < ActiveSupport::TestCase
   end
 
   should 'use name of product category' do
-    product_category = fast_create(ProductCategory)
-    product = fast_create(Product, :product_category_id => product_category.id)
-    input = fast_create(Input, :product_id => product.id, :product_category_id => product_category.id)
+    product_category = create(ProductCategory)
+    product = create(Product, :product_category_id => product_category.id)
+    input = create(Input, :product_id => product.id, :product_category_id => product_category.id)
 
     assert_not_nil input.name
     assert_equal product_category.name, input.name
@@ -113,9 +113,9 @@ class InputTest < ActiveSupport::TestCase
   end
 
   should 'display amount used' do
-    ent = fast_create(Enterprise, :name => 'test ent 1', :identifier => 'test_ent1')
-    product_category = fast_create(ProductCategory, :name => 'Products')
-    product = fast_create(Product, :profile_id => ent.id, :product_category_id => product_category.id)
+    ent = create(Enterprise, :name => 'test ent 1', :identifier => 'test_ent1')
+    product_category = create(ProductCategory, :name => 'Products')
+    product = create(Product, :profile_id => ent.id, :product_category_id => product_category.id)
 
     input = build(Input, :product => product)
     input.amount_used = 10.45
@@ -132,9 +132,9 @@ class InputTest < ActiveSupport::TestCase
   end
 
   should 'display only integer value if decimal value is 00' do
-    ent = fast_create(Enterprise, :name => 'test ent 1', :identifier => 'test_ent1')
-    product_category = fast_create(ProductCategory, :name => 'Products')
-    product = fast_create(Product, :profile_id => ent.id, :product_category_id => product_category.id)
+    ent = create(Enterprise, :name => 'test ent 1', :identifier => 'test_ent1')
+    product_category = create(ProductCategory, :name => 'Products')
+    product = create(Product, :profile_id => ent.id, :product_category_id => product_category.id)
 
     input = build(Input, :product => product)
     input.amount_used = 10.00
@@ -142,9 +142,9 @@ class InputTest < ActiveSupport::TestCase
   end
 
   should 'display formatted value' do
-    ent = fast_create(Enterprise, :name => 'test ent 1', :identifier => 'test_ent1')
-    product_category = fast_create(ProductCategory, :name => 'Products')
-    product = fast_create(Product, :profile_id => ent.id, :product_category_id => product_category.id)
+    ent = create(Enterprise, :name => 'test ent 1', :identifier => 'test_ent1')
+    product_category = create(ProductCategory, :name => 'Products')
+    product = create(Product, :profile_id => ent.id, :product_category_id => product_category.id)
 
     input = build(Input, :product => product)
     input.price_per_unit = 1.45
@@ -178,8 +178,8 @@ class InputTest < ActiveSupport::TestCase
   end
 
   should 'list inputs relevants to price' do
-    product_category = fast_create(ProductCategory)
-    product = fast_create(Product, :product_category_id => product_category.id)
+    product_category = create(ProductCategory)
+    product = create(Product, :product_category_id => product_category.id)
 
     i1 = create(Input, :product => product, :product_category => product_category, :relevant_to_price => true)
 

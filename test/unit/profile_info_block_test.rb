@@ -3,7 +3,7 @@ require_relative "../test_helper"
 class ProfileInfoBlockTest < ActiveSupport::TestCase
 
   def setup
-    @profile = create_user('mytestuser').person
+    @profile = create(:person)
 
     @block = ProfileInfoBlock.new
     @profile.boxes.first.blocks << @block

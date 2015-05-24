@@ -3,7 +3,7 @@ require_relative "../test_helper"
 class BlogArchivesBlockTest < ActiveSupport::TestCase
 
   def setup
-    @profile = create_user('flatline').person
+    @profile = create(:person)
     @profile.articles << Blog.new(:name => 'Blog One', :profile => @profile)
   end
   attr_reader :profile
@@ -21,7 +21,7 @@ class BlogArchivesBlockTest < ActiveSupport::TestCase
     date = DateTime.parse('2008-01-10')
     blog = profile.blog
     for i in 1..10 do
-      post = fast_create(TextileArticle, :name => "post #{i} test", :profile_id => profile.id, :parent_id => blog.id)
+      post = create(TextileArticle, :name => "post #{i} test", :profile_id => profile.id, :parent_id => blog.id)
       post.update_attribute(:published_at, date)
     end
     block = BlogArchivesBlock.new
@@ -33,7 +33,7 @@ class BlogArchivesBlockTest < ActiveSupport::TestCase
     date = DateTime.parse('2008-01-10')
     blog = profile.blog
     for i in 1..10 do
-      post = fast_create(TextileArticle, :name => "post #{i} test", :profile_id => profile.id, :parent_id => blog.id)
+      post = create(TextileArticle, :name => "post #{i} test", :profile_id => profile.id, :parent_id => blog.id)
       assert post.update_attribute(:published_at, date)
     end
     block = BlogArchivesBlock.new
@@ -44,7 +44,7 @@ class BlogArchivesBlockTest < ActiveSupport::TestCase
   should 'order list of amount posts' do
     blog = profile.blog
     for i in 1..10 do
-      post = fast_create(TextileArticle, :name => "post #{i} test", :profile_id => profile.id, :parent_id => blog.id)
+      post = create(TextileArticle, :name => "post #{i} test", :profile_id => profile.id, :parent_id => blog.id)
       post.update_attribute(:published_at, DateTime.parse("2008-#{i}-01"))
     end
     block = BlogArchivesBlock.new
@@ -106,10 +106,10 @@ class BlogArchivesBlockTest < ActiveSupport::TestCase
     date = DateTime.parse('2008-01-10')
     blog = profile.blog
     2.times do |i|
-      post = fast_create(TextileArticle, :name => "post #{i} test", :profile_id => profile.id,
+      post = create(TextileArticle, :name => "post #{i} test", :profile_id => profile.id,
                          :parent_id => blog.id, :language => 'en')
       post.update_attribute(:published_at, date)
-      translation = fast_create(TextileArticle, :name => "post #{i} test", :profile_id => profile.id,
+      translation = create(TextileArticle, :name => "post #{i} test", :profile_id => profile.id,
                   :parent_id => blog.id, :language => 'en', :translation_of_id => post.id)
       translation.update_attribute(:published_at, date)
     end
@@ -122,10 +122,10 @@ class BlogArchivesBlockTest < ActiveSupport::TestCase
     date = DateTime.parse('2008-01-10')
     blog = profile.blog
     2.times do |i|
-      post = fast_create(TextileArticle, :name => "post #{i} test", :profile_id => profile.id,
+      post = create(TextileArticle, :name => "post #{i} test", :profile_id => profile.id,
                          :parent_id => blog.id, :language => 'en')
       post.update_attribute(:published_at, date)
-      translation = fast_create(TextileArticle, :name => "post #{i} test", :profile_id => profile.id,
+      translation = create(TextileArticle, :name => "post #{i} test", :profile_id => profile.id,
                   :parent_id => blog.id, :language => 'en', :translation_of_id => post.id)
       translation.update_attribute(:published_at, date)
     end
@@ -135,7 +135,7 @@ class BlogArchivesBlockTest < ActiveSupport::TestCase
   end
 
   should 'not try to load a removed blog' do
-    block = fast_create(BlogArchivesBlock)
+    block = create(BlogArchivesBlock)
     block.blog_id = profile.blog.id
     block.save!
     block.stubs(:owner).returns(profile)
@@ -146,8 +146,8 @@ class BlogArchivesBlockTest < ActiveSupport::TestCase
   end
 
   should 'load next blog if configured blog was removed' do
-    other_blog = fast_create(Blog, :profile_id => profile.id)
-    block = fast_create(BlogArchivesBlock)
+    other_blog = create(Blog, :profile_id => profile.id)
+    block = create(BlogArchivesBlock)
     block.blog_id = profile.blog.id
     block.save!
     block.stubs(:owner).returns(profile)
@@ -161,9 +161,9 @@ class BlogArchivesBlockTest < ActiveSupport::TestCase
 # Checkout this page for further information: http://noosfero.org/Development/ActionItem2705
 #
 #  should 'not count articles if the user can\'t see them' do
-#    person = create_user('testuser').person
-#    blog = fast_create(Blog, :profile_id => profile.id, :path => 'blog_path')
-#    block = fast_create(BlogArchivesBlock)
+#    person = create(:person)
+#    blog = create(Blog, :profile_id => profile.id, :path => 'blog_path')
+#    block = create(BlogArchivesBlock)
 #
 #    feed = mock()
 #    feed.stubs(:url).returns(blog.url)
@@ -171,8 +171,8 @@ class BlogArchivesBlockTest < ActiveSupport::TestCase
 #    block.stubs(:blog).returns(blog)
 #    block.stubs(:owner).returns(profile)
 #
-#    public_post = fast_create(TextileArticle, :profile_id => profile.id, :parent_id => blog.id, :published => true, :published_at => Time.mktime(2012, 'jan'))
-#    private_post = fast_create(TextileArticle, :profile_id => profile.id, :parent_id => blog.id, :published => false, :published_at => Time.mktime(2012, 'jan'))
+#    public_post = create(TextileArticle, :profile_id => profile.id, :parent_id => blog.id, :published => true, :published_at => Time.mktime(2012, 'jan'))
+#    private_post = create(TextileArticle, :profile_id => profile.id, :parent_id => blog.id, :published => false, :published_at => Time.mktime(2012, 'jan'))
 #
 #    assert_match /January \(1\)/, block.content({:person => person})
 #    assert_match /January \(1\)/, block.content()

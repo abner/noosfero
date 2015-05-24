@@ -37,7 +37,7 @@ class BoxesHelperTest < ActionView::TestCase
   end
 
   def create_user_with_blocks
-    p = create_user('test_user').person
+    p = create(:person)
     create(LinkListBlock, :box => p.boxes.first)
     p
   end
@@ -112,7 +112,7 @@ class BoxesHelperTest < ActionView::TestCase
 
   should 'fill context with the article, request_path and locale' do
     request = mock()
-    box = create(Box, :owner => fast_create(Profile))
+    box = create(Box, :owner => create(Profile))
     request.expects(:path).returns('/')
     request.expects(:params).returns({})
     stubs(:request).returns(request)
@@ -172,7 +172,7 @@ class BoxesHelperTest < ActionView::TestCase
     stubs(:user).returns(nil)
     expects(:locale).returns('en')
 
-    box = create(Box, position: 1, owner: fast_create(Profile))
+    box = create(Box, position: 1, owner: create(Profile))
     block = ProfileImageBlock
     block.expects(:new).with(box: box)
 
@@ -183,7 +183,7 @@ class BoxesHelperTest < ActionView::TestCase
   end
 
   should 'display embed button when a block is embedable' do
-    box = create(Box, position: 1, owner: fast_create(Profile))
+    box = create(Box, position: 1, owner: create(Profile))
     block = Block.create!(:box => box)
     block.stubs(:embedable?).returns(true)
     stubs(:url_for).returns('')
@@ -191,7 +191,7 @@ class BoxesHelperTest < ActionView::TestCase
   end
 
   should 'not display embed button when a block is not embedable' do
-    box = create(Box, position: 1, owner: fast_create(Profile))
+    box = create(Box, position: 1, owner: create(Profile))
     block = Block.create!(:box => box)
     block.stubs(:embedable?).returns(false)
     stubs(:url_for).returns('')

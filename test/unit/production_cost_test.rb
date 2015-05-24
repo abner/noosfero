@@ -41,7 +41,7 @@ class ProductionCostTest < ActiveSupport::TestCase
   end
 
   should 'not have duplicated name on same enterprise' do
-    enterprise = fast_create(Enterprise)
+    enterprise = create(Enterprise)
     cost = create(ProductionCost, :name => 'Taxes', :owner => enterprise)
 
     invalid_cost = build(ProductionCost, :name => 'Taxes', :owner => enterprise)
@@ -51,7 +51,7 @@ class ProductionCostTest < ActiveSupport::TestCase
   end
 
   should 'not allow same name on enterprise if already has on environment' do
-    enterprise = fast_create(Enterprise)
+    enterprise = create(Enterprise)
 
     cost1 = create(ProductionCost, :name => 'Taxes', :owner => Environment.default)
     cost2 = create(ProductionCost, :name => 'Taxes', :owner => enterprise)
@@ -62,8 +62,8 @@ class ProductionCostTest < ActiveSupport::TestCase
   end
 
   should 'allow duplicated name on different enterprises' do
-    enterprise = fast_create(Enterprise)
-    enterprise2 = fast_create(Enterprise)
+    enterprise = create(Enterprise)
+    enterprise2 = create(Enterprise)
 
     cost1 = create(ProductionCost, :name => 'Taxes', :owner => enterprise)
     cost2 = build(ProductionCost, :name => 'Taxes', :owner => enterprise2)
@@ -84,7 +84,7 @@ class ProductionCostTest < ActiveSupport::TestCase
   end
 
   should 'be associated to an enterprise as owner' do
-    enterprise = fast_create(Enterprise)
+    enterprise = create(Enterprise)
     p = ProductionCost.new
     p.valid?
     assert p.errors[:owner.to_s].present?
@@ -95,7 +95,7 @@ class ProductionCostTest < ActiveSupport::TestCase
   end
 
   should 'create a production cost on an enterprise' do
-    enterprise = fast_create(Enterprise)
+    enterprise = create(Enterprise)
     create(ProductionCost, :name => 'Energy', :owner => enterprise)
     assert_equal ['Energy'], enterprise.production_costs.map(&:name)
   end

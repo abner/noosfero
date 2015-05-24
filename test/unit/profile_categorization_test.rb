@@ -3,7 +3,7 @@ require_relative "../test_helper"
 class ProfileCategorizationTest < ActiveSupport::TestCase
 
   should 'have profile and category' do
-    person = create_user('test_user').person
+    person = create(:person)
     cat = Environment.default.categories.build(:name => 'a category'); cat.save!
     person.add_category cat
     person.save!
@@ -18,7 +18,7 @@ class ProfileCategorizationTest < ActiveSupport::TestCase
       c.parent_id = c1.id
     end
 
-    p = create_user('testuser').person
+    p = create(:person)
 
     assert_difference 'ProfileCategorization.count(:category_id)', 2 do
       ProfileCategorization.add_category_to_profile(c2, p)
@@ -36,7 +36,7 @@ class ProfileCategorizationTest < ActiveSupport::TestCase
       c.parent_id = c1.id
     end
 
-    p = create_user('testuser').person
+    p = create(:person)
 
     assert_difference 'ProfileCategorization.count(:category_id)', 3 do
       ProfileCategorization.add_category_to_profile(c2, p)
@@ -53,7 +53,7 @@ class ProfileCategorizationTest < ActiveSupport::TestCase
       c.parent_id = c1.id
     end
 
-    p = create_user('testuser').person
+    p = create(:person)
 
     ProfileCategorization.add_category_to_profile(c2, p)
     ProfileCategorization.add_category_to_profile(c3, p)
@@ -66,7 +66,7 @@ class ProfileCategorizationTest < ActiveSupport::TestCase
   [ Region, State, City ].each do |klass|
     should "be able to remove #{klass.name} from profile" do
       region = Environment.default.send(klass.name.underscore.pluralize).create!(:name => 'my region')
-      p = create_user('testuser').person
+      p = create(:person)
       p.region = region
       p.save!
 

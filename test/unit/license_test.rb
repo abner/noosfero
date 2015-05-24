@@ -27,8 +27,8 @@ class LicenseTest < ActiveSupport::TestCase
   end
 
   should 'allow equal slugs in different environments' do
-    e1 = fast_create(Environment)
-    e2 = fast_create(Environment)
+    e1 = create(Environment)
+    e2 = create(Environment)
     License.create!(:name => 'License', :environment => e1)
     license = License.new(:name => 'License', :environment => e2)
 

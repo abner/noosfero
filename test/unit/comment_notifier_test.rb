@@ -8,9 +8,9 @@ class CommentNotifierTest < ActiveSupport::TestCase
     ActionMailer::Base.delivery_method = :test
     ActionMailer::Base.perform_deliveries = true
     ActionMailer::Base.deliveries = []
-    @profile = create_user('content_owner').person
-    @author = create_user('author').person
-    @article = fast_create(Article, :name => 'Article test', :profile_id => @profile.id, :notify_comments => true)
+    @profile = create(:person)
+    @author = create(:person)
+    @article = create(Article, :name => 'Article test', :profile_id => @profile.id, :notify_comments => true)
   end
 
   should 'deliver mail after make an article comment' do
@@ -58,8 +58,8 @@ class CommentNotifierTest < ActiveSupport::TestCase
   end
 
   should "deliver mail to followers" do
-    author = create_user('follower_author').person
-    follower = create_user('follower').person
+    author = create(:person)
+    follower = create(:person)
     @article.followers += [follower.email]
     @article.save!
     create_comment_and_notify(:source => @article, :author => author, :title => 'comment title', :body => 'comment body')
@@ -67,17 +67,17 @@ class CommentNotifierTest < ActiveSupport::TestCase
   end
 
   should "not deliver follower's mail about new comment to comment's author" do
-    follower = create_user('follower').person
+    follower = create(:person)
     create_comment_and_notify(:source => @article, :author => follower, :title => 'comment title', :body => 'comment body')
     assert_not_includes ActionMailer::Base.deliveries.map(&:bcc).flatten, follower.email
   end
 
   should 'not deliver mail to comments author' do
-    community = fast_create(Community)
+    community = create(Community)
     community.add_admin @profile
     community.add_admin @author
 
-    article = fast_create(Article, :name => 'Article test', :profile_id => community.id, :notify_comments => true)
+    article = create(Article, :name => 'Article test', :profile_id => community.id, :notify_comments => true)
     create_comment_and_notify(:source => @article, :author => @author, :title => 'comment title', :body => 'comment body')
     sent = ActionMailer::Base.deliveries.first
     assert_not_includes sent.to, @author.email

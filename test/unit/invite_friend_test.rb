@@ -7,8 +7,8 @@ class InviteFriendTest < ActiveSupport::TestCase
   end
 
   should 'actually create friendships (two way) when confirmed' do
-    p1 = create_user('testuser1').person
-    p2 = create_user('testuser2').person
+    p1 = create(:person)
+    p2 = create(:person)
 
     task = InviteFriend.create!(:person => p1, :friend => p2)
 
@@ -29,7 +29,7 @@ class InviteFriendTest < ActiveSupport::TestCase
 
     ok('must not validate with empty requestor') { task.errors[:requestor_id.to_s].present? }
 
-    task.requestor = create_user('testuser2').person
+    task.requestor = create(:person)
     task.valid?
     ok('must validate when requestor is given') { !task.errors[:requestor_id.to_s].present?}
   end
@@ -46,7 +46,7 @@ class InviteFriendTest < ActiveSupport::TestCase
   end
 
   should 'dont require friend email if target given (person being invited)' do
-    task = InviteFriend.new(:target => create_user('testuser2').person)
+    task = InviteFriend.new(:target => create(:person))
     task.valid?
 
     ok('must validate with empty target email') { !task.errors[:friend_email.to_s].present? }
@@ -58,7 +58,7 @@ class InviteFriendTest < ActiveSupport::TestCase
 
     ok('must not validate with no target') { task.errors[:target_id.to_s].present? }
 
-    task.target =  create_user('testuser2').person
+    task.target =  create(:person)
     task.valid?
     ok('must validate when target is given') { !task.errors[:target_id.to_s].present?}
   end
@@ -71,15 +71,15 @@ class InviteFriendTest < ActiveSupport::TestCase
   end
 
   should 'dont require message if target given (person being invited)' do
-    task = InviteFriend.new(:target => create_user('testuser2').person)
+    task = InviteFriend.new(:target => create(:person))
     task.valid?
 
     ok('must validate with no target') { !task.errors[:message.to_s].present? }
   end
 
   should 'not send e-mails to requestor' do
-    p1 = create_user('testuser1').person
-    p2 = create_user('testuser2').person
+    p1 = create(:person)
+    p2 = create(:person)
 
     TaskMailer.expects(:deliver_task_finished).never
     TaskMailer.expects(:deliver_task_created).never
@@ -89,7 +89,7 @@ class InviteFriendTest < ActiveSupport::TestCase
   end
 
   should 'send e-mails to friend if friend_email given' do
-    p1 = create_user('testuser1').person
+    p1 = create(:person)
 
     mailer = mock
     mailer.expects(:deliver).at_least_once
@@ -99,8 +99,8 @@ class InviteFriendTest < ActiveSupport::TestCase
   end
 
   should 'not send e-mails to friend if target given (person being invited)' do
-    p1 = create_user('testuser1').person
-    p2 = create_user('testuser2').person
+    p1 = create(:person)
+    p2 = create(:person)
 
     TaskMailer.expects(:deliver_invitation_notification).never
 
@@ -113,7 +113,7 @@ class InviteFriendTest < ActiveSupport::TestCase
   end
 
   should 'not invite yourself' do
-    p = create_user('testuser1').person
+    p = create(:person)
 
     task1 = InviteFriend.new(:person => p, :friend => p, :message => 'click here: <url>')
     assert !task1.save
@@ -123,7 +123,7 @@ class InviteFriendTest < ActiveSupport::TestCase
   end
 
   should 'have target notification description' do
-    person = create_user('testuser1').person
+    person = create(:person)
 
     task = InviteFriend.create!(:person => person, :friend_email => 'test@test.com', :message => '<url>')
 
@@ -131,7 +131,7 @@ class InviteFriendTest < ActiveSupport::TestCase
   end
 
   should 'deliver invitation notification' do
-    person = create_user('testuser1').person
+    person = create(:person)
 
     task = InviteFriend.create!(:person => person, :friend_email => 'test@test.com', :message => '<url>')
 
@@ -141,8 +141,8 @@ class InviteFriendTest < ActiveSupport::TestCase
   end
 
   should 'not invite friends if there is a pending invitation' do
-    person = create_user('testuser1').person
-    friend = create_user('testuser2').person
+    person = create(:person)
+    friend = create(:person)
 
     assert_difference 'InviteFriend.count' do
       InviteFriend.create({:person => person, :target => friend})

@@ -34,7 +34,7 @@ class EnvironmentTest < ActiveSupport::TestCase
   end
 
   def test_features
-    v = fast_create(Environment)
+    v = create(Environment)
     v.enable('feature1', false)
     assert v.enabled?('feature1')
     v.disable('feature1', false)
@@ -42,14 +42,14 @@ class EnvironmentTest < ActiveSupport::TestCase
   end
 
   def test_enabled_features
-    v = fast_create(Environment)
+    v = create(Environment)
     v.enable('feature1', false)
     v.enable('feature2', false)
     assert v.enabled?('feature1') && v.enabled?('feature2') && !v.enabled?('feature3')
   end
 
   def test_enabled_features_no_features_enabled
-    v = fast_create(Environment)
+    v = create(Environment)
     assert !v.enabled?('feature1') && !v.enabled?('feature2') && !v.enabled?('feature3')
   end
 
@@ -70,7 +70,7 @@ class EnvironmentTest < ActiveSupport::TestCase
   end
 
   def test_terms_of_use
-    v = fast_create(Environment, :name => 'My test environment')
+    v = create(Environment, :name => 'My test environment')
     assert_nil v.terms_of_use
     v.terms_of_use = 'To be part of this environment, you must accept the following terms: ...'
     assert v.save
@@ -79,7 +79,7 @@ class EnvironmentTest < ActiveSupport::TestCase
   end
 
   should "terms of use not be an empty string" do
-    v = fast_create(Environment, :name => 'My test environment')
+    v = create(Environment, :name => 'My test environment')
     assert_nil v.terms_of_use
     v.terms_of_use = ""
     assert v.save
@@ -95,7 +95,7 @@ class EnvironmentTest < ActiveSupport::TestCase
   end
 
   def test_terms_of_enterprise_use
-    v = fast_create(Environment, :name => 'My test environment')
+    v = create(Environment, :name => 'My test environment')
     assert_nil v.terms_of_enterprise_use
     v.terms_of_enterprise_use = 'To be owner of an enterprise in this environment, you must accept the following terms: ...'
     assert v.save
@@ -113,10 +113,10 @@ class EnvironmentTest < ActiveSupport::TestCase
   end
 
   def test_should_list_top_level_categories
-    env = fast_create(Environment)
-    cat1 = fast_create(Category, :name => 'first category', :environment_id => env.id)
-    cat2 = fast_create(Category, :name => 'second category', :environment_id => env.id)
-    subcat = fast_create(Category, :name => 'child category', :environment_id => env.id, :parent_id => cat2.id)
+    env = create(Environment)
+    cat1 = create(Category, :name => 'first category', :environment_id => env.id)
+    cat2 = create(Category, :name => 'second category', :environment_id => env.id)
+    subcat = create(Category, :name => 'child category', :environment_id => env.id, :parent_id => cat2.id)
 
     cats = env.top_level_categories
     assert_equal 2, cats.size
@@ -126,10 +126,10 @@ class EnvironmentTest < ActiveSupport::TestCase
   end
 
   def test_should_list_all_categories
-    env = fast_create(Environment)
-    cat1 = fast_create(Category, :name => 'first category', :environment_id => env.id)
-    cat2 = fast_create(Category, :name => 'second category', :environment_id => env.id)
-    subcat = fast_create(Category, :name => 'child category', :environment_id => env.id, :parent_id => cat2.id)
+    env = create(Environment)
+    cat1 = create(Category, :name => 'first category', :environment_id => env.id)
+    cat2 = create(Category, :name => 'second category', :environment_id => env.id)
+    subcat = create(Category, :name => 'child category', :environment_id => env.id, :parent_id => cat2.id)
 
     cats = env.categories
     assert_equal 3, cats.size
@@ -139,7 +139,7 @@ class EnvironmentTest < ActiveSupport::TestCase
   end
 
   def test_should_list_all_product_categories
-    env = fast_create(Environment)
+    env = create(Environment)
     create(Category, :name => 'first category', :environment_id => env.id)
     cat = create(Category, :name => 'second category', :environment_id => env.id)
     create(Category, :name => 'child category', :environment_id => env.id, :parent_id => cat.id)
@@ -155,7 +155,7 @@ class EnvironmentTest < ActiveSupport::TestCase
   end
 
   should 'list displayable categories' do
-    env = fast_create(Environment)
+    env = create(Environment)
     cat1 = create(Category, :environment => env, :name => 'category one', :display_color => 'ffa500')
     assert ! cat1.new_record?
 
@@ -172,7 +172,7 @@ class EnvironmentTest < ActiveSupport::TestCase
   end
 
   should 'have regions' do
-    env = fast_create(Environment)
+    env = create(Environment)
     assert_kind_of Array, env.regions
     assert_raise ActiveRecord::AssociationTypeMismatch do
       env.regions << 1
@@ -202,7 +202,7 @@ class EnvironmentTest < ActiveSupport::TestCase
   end
 
   should 'provide a default hostname' do
-    env = fast_create(Environment)
+    env = create(Environment)
     env.domains << create(Domain, :name => 'example.com', :is_default => true)
     assert_equal 'example.com', env.default_hostname
   end
@@ -213,27 +213,27 @@ class EnvironmentTest < ActiveSupport::TestCase
   end
 
   should 'add www when told to force www' do
-    env = fast_create(Environment); env.force_www = true; env.save!
+    env = create(Environment); env.force_www = true; env.save!
 
     env.domains << create(Domain, :name => 'example.com', :is_default => true)
     assert_equal 'www.example.com', env.default_hostname
   end
 
   should 'not add www when requesting domain for email address' do
-    env = fast_create(Environment)
+    env = create(Environment)
     env.domains << create(Domain, :name => 'example.com', :is_default => true)
     assert_equal 'example.com', env.default_hostname(true)
   end
 
   should 'use default domain when there is more than one' do
-    env = fast_create(Environment)
+    env = create(Environment)
     env.domains << create(Domain, :name => 'example.com', :is_default => false)
     env.domains << create(Domain, :name => 'default.com', :is_default => true)
     assert_equal 'default.com', env.default_hostname
   end
 
   should 'use first domain when there is no default' do
-    env = fast_create(Environment)
+    env = create(Environment)
     env.domains << create(Domain, :name => 'domain1.com', :is_default => false)
     env.domains << create(Domain, :name => 'domain2.com', :is_default => false)
     assert_equal 'domain1.com', env.default_hostname
@@ -320,23 +320,23 @@ class EnvironmentTest < ActiveSupport::TestCase
   end
 
   should 'provide recent_documents' do
-    environment = fast_create(Environment)
+    environment = create(Environment)
 
-    p1 = fast_create(Profile, :environment_id => environment.id)
-    p2 = fast_create(Profile, :environment_id => environment.id)
+    p1 = create(Profile, :environment_id => environment.id)
+    p2 = create(Profile, :environment_id => environment.id)
 
     # clear the articles
     Article.destroy_all
 
     # p1 creates one article
-    doc1 = fast_create(Article, :profile_id => p1.id)
+    doc1 = create(Article, :profile_id => p1.id)
 
     # p2 creates two articles
-    doc2 = fast_create(Article, :profile_id => p2.id)
-    doc3 = fast_create(Article, :profile_id => p2.id)
+    doc2 = create(Article, :profile_id => p2.id)
+    doc3 = create(Article, :profile_id => p2.id)
 
     # p1 creates another article
-    doc4 = fast_create(Article, :profile_id => p1.id)
+    doc4 = create(Article, :profile_id => p1.id)
 
     all_recent = environment.recent_documents
     [doc1,doc2,doc3,doc4].each do |item|
@@ -373,7 +373,7 @@ class EnvironmentTest < ActiveSupport::TestCase
 
   should 'be able to add admins easily' do
     env = Environment.default
-    user = create_user('testuser').person
+    user = create(:person)
     env.add_admin(user)
 
     assert_includes Environment.default.admins, user
@@ -381,7 +381,7 @@ class EnvironmentTest < ActiveSupport::TestCase
 
   should 'be able to remove admins easily' do
     env = Environment.default
-    user = create_user('testuser').person
+    user = create(:person)
     env.affiliate(user, Environment::Roles.admin(env.id))
     assert_includes Environment.default.admins, user
 
@@ -390,9 +390,9 @@ class EnvironmentTest < ActiveSupport::TestCase
   end
 
   should 'have products through enterprises' do
-    product_category = fast_create(ProductCategory, :name => 'Products', :environment_id => Environment.default.id)
+    product_category = create(ProductCategory, :name => 'Products', :environment_id => Environment.default.id)
     env = Environment.default
-    e1 = fast_create(Enterprise)
+    e1 = create(Enterprise)
     p1 = e1.products.create!(:name => 'test_prod1', :product_category => product_category)
 
     assert_includes env.products, p1
@@ -400,8 +400,8 @@ class EnvironmentTest < ActiveSupport::TestCase
 
   should 'collect the highlighted products with image through enterprises' do
     env = Environment.default
-    e1 = fast_create(Enterprise)
-    category = fast_create(ProductCategory)
+    e1 = create(Enterprise)
+    category = create(ProductCategory)
     p1 = create(Product, :enterprise => e1, :name => 'test_prod1', :product_category_id => category.id)
     products = []
     3.times {|n|
@@ -419,24 +419,24 @@ class EnvironmentTest < ActiveSupport::TestCase
 
   should 'not have person through communities' do
     env = Environment.default
-    com = fast_create(Community)
-    person = fast_create(Person)
+    com = create(Community)
+    person = create(Person)
     assert_includes env.communities, com
     assert_not_includes env.communities, person
   end
 
   should 'not have person through enterprises' do
     env = Environment.default
-    ent = fast_create(Enterprise)
-    person = fast_create(Person)
+    ent = create(Enterprise)
+    person = create(Person)
     assert_includes env.enterprises, ent
     assert_not_includes env.enterprises, person
   end
 
   should 'not have enterprises through people' do
     env = Environment.default
-    person = fast_create(Person)
-    ent = fast_create(Enterprise)
+    person = create(Person)
+    ent = create(Enterprise)
     assert_includes env.people, person
     assert_not_includes env.people, ent
   end
@@ -519,220 +519,220 @@ class EnvironmentTest < ActiveSupport::TestCase
   end
 
   should 'person_templates return all templates of person' do
-    e = fast_create(Environment)
+    e = create(Environment)
 
-    p1= fast_create(Person, :is_template => true, :environment_id => e.id)
-    p2 = fast_create(Person, :environment_id => e.id)
-    p3 = fast_create(Person, :is_template => true, :environment_id => e.id)
+    p1= create(Person, :is_template => true, :environment_id => e.id)
+    p2 = create(Person, :environment_id => e.id)
+    p3 = create(Person, :is_template => true, :environment_id => e.id)
     assert_equivalent [p1,p3], e.person_templates    
   end
 
   should 'person_templates return an empty array if there is no templates of person' do
-    e = fast_create(Environment)
+    e = create(Environment)
 
-    fast_create(Person, :environment_id => e.id)
-    fast_create(Person, :environment_id => e.id)
+    create(Person, :environment_id => e.id)
+    create(Person, :environment_id => e.id)
     assert_equivalent [], e.person_templates    
   end
 
   should 'person_default_template return the template defined as default' do
-    e = fast_create(Environment)
+    e = create(Environment)
 
-    p1= fast_create(Person, :is_template => true, :environment_id => e.id)
-    p2 = fast_create(Person, :environment_id => e.id)
-    p3 = fast_create(Person, :is_template => true, :environment_id => e.id)
+    p1= create(Person, :is_template => true, :environment_id => e.id)
+    p2 = create(Person, :environment_id => e.id)
+    p3 = create(Person, :is_template => true, :environment_id => e.id)
 
     e.settings[:person_template_id]= p3.id
     assert_equal p3, e.person_default_template
   end
 
   should 'person_default_template not return a person if its not a template' do
-    e = fast_create(Environment)
+    e = create(Environment)
 
-    p1= fast_create(Person, :is_template => true, :environment_id => e.id)
-    p2 = fast_create(Person, :environment_id => e.id)
-    p3 = fast_create(Person, :is_template => true, :environment_id => e.id)
+    p1= create(Person, :is_template => true, :environment_id => e.id)
+    p2 = create(Person, :environment_id => e.id)
+    p3 = create(Person, :is_template => true, :environment_id => e.id)
 
     e.settings[:person_template_id]= p2.id
     assert_nil e.person_default_template
   end
 
   should 'person_default_template= define a person model passed as paremeter as default template' do
-    e = fast_create(Environment)
+    e = create(Environment)
 
-    p1= fast_create(Person, :is_template => true, :environment_id => e.id)
-    p2 = fast_create(Person, :environment_id => e.id)
-    p3 = fast_create(Person, :is_template => true, :environment_id => e.id)
+    p1= create(Person, :is_template => true, :environment_id => e.id)
+    p2 = create(Person, :environment_id => e.id)
+    p3 = create(Person, :is_template => true, :environment_id => e.id)
 
     e.person_default_template= p3
     assert_equal p3, e.person_default_template
   end
 
   should 'person_default_template= define an id passed as paremeter as the default template' do
-    e = fast_create(Environment)
+    e = create(Environment)
 
-    p1= fast_create(Person, :is_template => true, :environment_id => e.id)
-    p2 = fast_create(Person, :environment_id => e.id)
-    p3 = fast_create(Person, :is_template => true, :environment_id => e.id)
+    p1= create(Person, :is_template => true, :environment_id => e.id)
+    p2 = create(Person, :environment_id => e.id)
+    p3 = create(Person, :is_template => true, :environment_id => e.id)
 
     e.person_default_template= p3.id
     assert_equal p3, e.person_default_template
   end
 
   should 'community_templates return all templates of community' do
-    e = fast_create(Environment)
+    e = create(Environment)
 
-    c1= fast_create(Community, :is_template => true, :environment_id => e.id)
-    c2 = fast_create(Community, :environment_id => e.id)
-    c3 = fast_create(Community, :is_template => true, :environment_id => e.id)
+    c1= create(Community, :is_template => true, :environment_id => e.id)
+    c2 = create(Community, :environment_id => e.id)
+    c3 = create(Community, :is_template => true, :environment_id => e.id)
     assert_equivalent [c1,c3], e.community_templates    
   end
 
   should 'community_templates return an empty array if there is no templates of community' do
-    e = fast_create(Environment)
+    e = create(Environment)
 
-    fast_create(Community, :environment_id => e.id)
-    fast_create(Community, :environment_id => e.id)
+    create(Community, :environment_id => e.id)
+    create(Community, :environment_id => e.id)
     assert_equivalent [], e.community_templates
   end
 
   should 'community_default_template return the template defined as default' do
-    e = fast_create(Environment)
+    e = create(Environment)
 
-    c1= fast_create(Community, :is_template => true, :environment_id => e.id)
-    c2 = fast_create(Community, :environment_id => e.id)
-    c3 = fast_create(Community, :is_template => true, :environment_id => e.id)
+    c1= create(Community, :is_template => true, :environment_id => e.id)
+    c2 = create(Community, :environment_id => e.id)
+    c3 = create(Community, :is_template => true, :environment_id => e.id)
 
     e.settings[:community_template_id]= c3.id
     assert_equal c3, e.community_default_template
   end
 
   should 'community_default_template not return a community if its not a template' do
-    e = fast_create(Environment)
+    e = create(Environment)
 
-    c1= fast_create(Community, :is_template => true, :environment_id => e.id)
-    c2 = fast_create(Community, :environment_id => e.id)
-    c3 = fast_create(Community, :is_template => true, :environment_id => e.id)
+    c1= create(Community, :is_template => true, :environment_id => e.id)
+    c2 = create(Community, :environment_id => e.id)
+    c3 = create(Community, :is_template => true, :environment_id => e.id)
 
     e.settings[:community_template_id]= c2.id
     assert_nil e.community_default_template
   end
 
   should 'community_default_template= define a community model passed as paremeter as default template' do
-    e = fast_create(Environment)
+    e = create(Environment)
 
-    c1= fast_create(Community, :is_template => true, :environment_id => e.id)
-    c2 = fast_create(Community, :environment_id => e.id)
-    c3 = fast_create(Community, :is_template => true, :environment_id => e.id)
+    c1= create(Community, :is_template => true, :environment_id => e.id)
+    c2 = create(Community, :environment_id => e.id)
+    c3 = create(Community, :is_template => true, :environment_id => e.id)
 
     e.community_default_template= c3
     assert_equal c3, e.community_default_template
   end
 
   should 'community_default_template= define an id passed as paremeter as the default template' do
-    e = fast_create(Environment)
+    e = create(Environment)
 
-    c1= fast_create(Community, :is_template => true, :environment_id => e.id)
-    c2 = fast_create(Community, :environment_id => e.id)
-    c3 = fast_create(Community, :is_template => true, :environment_id => e.id)
+    c1= create(Community, :is_template => true, :environment_id => e.id)
+    c2 = create(Community, :environment_id => e.id)
+    c3 = create(Community, :is_template => true, :environment_id => e.id)
 
     e.community_default_template= c3.id
     assert_equal c3, e.community_default_template
   end
 
   should 'enterprise_templates return all templates of enterprise' do
-    env = fast_create(Environment)
+    env = create(Environment)
 
-    e1= fast_create(Enterprise, :is_template => true, :environment_id => env.id)
-    e2 = fast_create(Enterprise, :environment_id => env.id)
-    e3 = fast_create(Enterprise, :is_template => true, :environment_id => env.id)
+    e1= create(Enterprise, :is_template => true, :environment_id => env.id)
+    e2 = create(Enterprise, :environment_id => env.id)
+    e3 = create(Enterprise, :is_template => true, :environment_id => env.id)
     assert_equivalent [e1,e3], env.enterprise_templates    
   end
 
   should 'enterprise_templates return an empty array if there is no templates of enterprise' do
-    env = fast_create(Environment)
+    env = create(Environment)
 
-    fast_create(Enterprise, :environment_id => env.id)
-    fast_create(Enterprise, :environment_id => env.id)
+    create(Enterprise, :environment_id => env.id)
+    create(Enterprise, :environment_id => env.id)
     assert_equivalent [], env.enterprise_templates    
   end
 
   should 'enterprise_default_template return the template defined as default' do
-    env = fast_create(Environment)
+    env = create(Environment)
 
-    e1= fast_create(Enterprise, :is_template => true, :environment_id => env.id)
-    e2 = fast_create(Enterprise, :environment_id => env.id)
-    e3 = fast_create(Enterprise, :is_template => true, :environment_id => env.id)
+    e1= create(Enterprise, :is_template => true, :environment_id => env.id)
+    e2 = create(Enterprise, :environment_id => env.id)
+    e3 = create(Enterprise, :is_template => true, :environment_id => env.id)
 
     env.settings[:enterprise_template_id]= e3.id
     assert_equal e3, env.enterprise_default_template
   end
 
   should 'enterprise_default_template not return a enterprise if its not a template' do
-    env = fast_create(Environment)
+    env = create(Environment)
 
-    e1= fast_create(Enterprise, :is_template => true, :environment_id => env.id)
-    e2 = fast_create(Enterprise, :environment_id => env.id)
-    e3 = fast_create(Enterprise, :is_template => true, :environment_id => env.id)
+    e1= create(Enterprise, :is_template => true, :environment_id => env.id)
+    e2 = create(Enterprise, :environment_id => env.id)
+    e3 = create(Enterprise, :is_template => true, :environment_id => env.id)
 
     env.settings[:enterprise_template_id]= e2.id
     assert_nil env.enterprise_default_template
   end
 
   should 'enterprise_default_template= define a enterprise model passed as paremeter as default template' do
-    env = fast_create(Environment)
+    env = create(Environment)
 
-    e1= fast_create(Enterprise, :is_template => true, :environment_id => env.id)
-    e2 = fast_create(Enterprise, :environment_id => env.id)
-    e3 = fast_create(Enterprise, :is_template => true, :environment_id => env.id)
+    e1= create(Enterprise, :is_template => true, :environment_id => env.id)
+    e2 = create(Enterprise, :environment_id => env.id)
+    e3 = create(Enterprise, :is_template => true, :environment_id => env.id)
 
     env.enterprise_default_template= e3
     assert_equal e3, env.enterprise_default_template
   end
 
   should 'enterprise_default_template= define an id passed as paremeter as the default template' do
-    env = fast_create(Environment)
+    env = create(Environment)
 
-    e1= fast_create(Enterprise, :is_template => true, :environment_id => env.id)
-    e2 = fast_create(Enterprise, :environment_id => env.id)
-    e3 = fast_create(Enterprise, :is_template => true, :environment_id => env.id)
+    e1= create(Enterprise, :is_template => true, :environment_id => env.id)
+    e2 = create(Enterprise, :environment_id => env.id)
+    e3 = create(Enterprise, :is_template => true, :environment_id => env.id)
 
     env.enterprise_default_template= e3.id
     assert_equal e3, env.enterprise_default_template
   end
 
   should 'is_default_template? method identify a person default template as default' do
-    env = fast_create(Environment)
+    env = create(Environment)
 
-    p1 = fast_create(Person, :is_template => true, :environment_id => env.id)
+    p1 = create(Person, :is_template => true, :environment_id => env.id)
     env.person_default_template= p1.id
     assert env.is_default_template?(p1)
 
-    p2 = fast_create(Person, :is_template => true, :environment_id => env.id)
+    p2 = create(Person, :is_template => true, :environment_id => env.id)
     env.person_default_template= p2.id
     assert !env.is_default_template?(p1)
   end
 
   should 'is_default_template? method identify a community default template as default' do
-    env = fast_create(Environment)
+    env = create(Environment)
 
-    c1 = fast_create(Community, :is_template => true, :environment_id => env.id)
+    c1 = create(Community, :is_template => true, :environment_id => env.id)
     env.community_default_template= c1.id
     assert env.is_default_template?(c1)
 
-    c2 = fast_create(Community, :is_template => true, :environment_id => env.id)
+    c2 = create(Community, :is_template => true, :environment_id => env.id)
     env.community_default_template= c2.id
     assert !env.is_default_template?(c1)
   end
 
   should 'is_default_template? method identify a enterprise default template as default' do
-    env = fast_create(Environment)
+    env = create(Environment)
 
-    e1 = fast_create(Enterprise, :is_template => true, :environment_id => env.id)
+    e1 = create(Enterprise, :is_template => true, :environment_id => env.id)
     env.enterprise_default_template= e1.id
     assert env.is_default_template?(e1)
 
-    e2 = fast_create(Enterprise, :is_template => true, :environment_id => env.id)
+    e2 = create(Enterprise, :is_template => true, :environment_id => env.id)
     env.enterprise_default_template= e2.id
     assert !env.is_default_template?(e1)
   end
@@ -747,7 +747,7 @@ class EnvironmentTest < ActiveSupport::TestCase
   end
 
   should 'set replace_enterprise_template_when_enable on environment' do
-    e = fast_create(Environment, :name => 'Enterprise test')
+    e = create(Environment, :name => 'Enterprise test')
     e.replace_enterprise_template_when_enable = true
     e.save
     assert_equal true, e.replace_enterprise_template_when_enable
@@ -925,7 +925,7 @@ class EnvironmentTest < ActiveSupport::TestCase
 
   should 'have a portal community' do
     e = Environment.default
-    c = fast_create(Community)
+    c = create(Community)
 
     e.portal_community = c; e.save!
     e.reload
@@ -935,7 +935,7 @@ class EnvironmentTest < ActiveSupport::TestCase
 
   should 'unset the portal community' do
     e = Environment.default
-    c = fast_create(Community)
+    c = create(Community)
 
     e.portal_community = c; e.save!
     e.reload
@@ -951,8 +951,8 @@ class EnvironmentTest < ActiveSupport::TestCase
   should 'have a set of portal folders' do
     e = Environment.default
 
-    c = e.portal_community = fast_create(Community)
-    news_folder = fast_create(Folder, :name => 'news folder', :profile_id => c.id)
+    c = e.portal_community = create(Community)
+    news_folder = create(Folder, :name => 'news folder', :profile_id => c.id)
 
     e.portal_folders = [news_folder]
     e.save!; e.reload
@@ -978,8 +978,8 @@ class EnvironmentTest < ActiveSupport::TestCase
   should 'not crash when a portal folder is removed' do
     e = Environment.default
 
-    c = e.portal_community = fast_create(Community)
-    news_folder = fast_create(Folder, :name => 'news folder', :profile_id => c.id)
+    c = e.portal_community = create(Community)
+    news_folder = create(Folder, :name => 'news folder', :profile_id => c.id)
 
     e.portal_folders = [news_folder]
     e.save!; e.reload
@@ -990,27 +990,27 @@ class EnvironmentTest < ActiveSupport::TestCase
   end
 
   should 'have roles with names independent of other environments' do
-    e1 = fast_create(Environment)
+    e1 = create(Environment)
     role1 = create(Role, :name => 'test_role', :environment => e1)
-    e2 = fast_create(Environment)
+    e2 = create(Environment)
     role2 = build(Role, :name => 'test_role', :environment => e2)
 
     assert role2.valid?
   end
 
   should 'have roles with keys independent of other environments' do
-    e1 = fast_create(Environment)
+    e1 = create(Environment)
     role1 = create(Role, :name => 'test_role', :environment => e1, :key => 'a_member')
-    e2 = fast_create(Environment)
+    e2 = create(Environment)
     role2 = build(Role, :name => 'test_role', :environment => e2, :key => 'a_member')
 
     assert role2.valid?
   end
 
   should 'destroy roles when its environment is destroyed' do
-    e1 = fast_create(Environment)
+    e1 = create(Environment)
     role1 = Role.create!(:name => 'test_role', :environment => e1, :key => 'a_member')
-    e2 = fast_create(Environment)
+    e2 = create(Environment)
     role2 = Role.create!(:name => 'test_role', :environment => e2, :key => 'a_member')
 
     e2.destroy
@@ -1081,7 +1081,7 @@ class EnvironmentTest < ActiveSupport::TestCase
   end
 
   should 'list tags with their counts' do
-    person = fast_create(Person)
+    person = create(Person)
     person.articles.create!(:name => 'article 1', :tag_list => 'first-tag')
     person.articles.create!(:name => 'article 2', :tag_list => 'first-tag, second-tag')
     person.articles.create!(:name => 'article 3', :tag_list => 'first-tag, second-tag, third-tag')
@@ -1090,7 +1090,7 @@ class EnvironmentTest < ActiveSupport::TestCase
   end
 
   should 'not list tags count from other environment' do
-    e = fast_create(Environment)
+    e = create(Environment)
     user = create_user('testinguser', :environment => e).person
     user.articles.build(:name => 'article 1', :tag_list => 'first-tag').save!
 
@@ -1098,7 +1098,7 @@ class EnvironmentTest < ActiveSupport::TestCase
   end
 
   should 'have a list of local documentation links' do
-    e = fast_create(Environment)
+    e = create(Environment)
     e.local_docs = [['/doccommunity/link1', 'Link 1'], ['/doccommunity/link2', 'Link 2']]
     e.save!
 
@@ -1158,13 +1158,13 @@ class EnvironmentTest < ActiveSupport::TestCase
   end
 
   should "not crash when set nil as terms of use" do
-    v = fast_create(Environment, :name => 'My test environment')
+    v = create(Environment, :name => 'My test environment')
     v.terms_of_use = nil
     assert v.save!
   end
 
   should "terms of use not be an blank string" do
-    v = fast_create(Environment)
+    v = create(Environment)
     v.terms_of_use = '   '
     assert !v.has_terms_of_use?
   end
@@ -1194,14 +1194,14 @@ class EnvironmentTest < ActiveSupport::TestCase
   end
 
   should 'set a new theme' do
-    env = fast_create(Environment)
+    env = create(Environment)
     env.theme = 'another'
     env.save! && env.reload
     assert_equal 'another', env.theme
   end
 
   should 'not accept environment without theme' do
-    env = fast_create(Environment)
+    env = create(Environment)
     env.theme = nil
     assert_raise ActiveRecord::RecordInvalid do
       env.save!
@@ -1210,7 +1210,7 @@ class EnvironmentTest < ActiveSupport::TestCase
 
   should 'has many users' do
     user_from_other_environment = create_user('one user from other env', :environment => Environment.default)
-    env = fast_create(Environment)
+    env = create(Environment)
     user_from_this_environment1 = create_user('one user', :environment => env)
     user_from_this_environment2 = create_user('another user', :environment => env)
     user_from_this_environment3 = create_user('some other user', :environment => env)
@@ -1231,7 +1231,7 @@ class EnvironmentTest < ActiveSupport::TestCase
   end
 
   should 'retrieve cache time for home page' do
-    env = fast_create(Environment)
+    env = create(Environment)
     env.home_cache_in_minutes = 33
     env.save!
 
@@ -1254,7 +1254,7 @@ class EnvironmentTest < ActiveSupport::TestCase
   end
 
   should 'retrieve cache time for general content' do
-    env = fast_create(Environment)
+    env = create(Environment)
     env.general_cache_in_minutes = 33
     env.save!
 
@@ -1277,7 +1277,7 @@ class EnvironmentTest < ActiveSupport::TestCase
   end
 
   should 'retrieve cache time for profile content' do
-    env = fast_create(Environment)
+    env = create(Environment)
     env.profile_cache_in_minutes = 33
     env.save!
 
@@ -1318,7 +1318,7 @@ class EnvironmentTest < ActiveSupport::TestCase
   end
 
   should 'get enabled features' do
-    env = fast_create(Environment)
+    env = create(Environment)
     env.enable('feature1', false)
     env.enable('feature2', false)
     env.disable('feature3', false)
@@ -1377,7 +1377,7 @@ class EnvironmentTest < ActiveSupport::TestCase
 
     title1 = "Sample Article1"
     title2 = "Sample Article2"
-    profile = fast_create(Profile)
+    profile = create(Profile)
 
     p1 = build(School::Project, :name => title1, :profile => profile)
     p2 = build(Work::Project, :name => title2, :profile => profile)
@@ -1434,10 +1434,10 @@ class EnvironmentTest < ActiveSupport::TestCase
 
   should 'be able to have many licenses' do
     environment = Environment.default
-    another_environment = fast_create(Environment)
-    l1 = fast_create(License, :environment_id => environment.id)
-    l2 = fast_create(License, :environment_id => environment.id)
-    l3 = fast_create(License, :environment_id => another_environment)
+    another_environment = create(Environment)
+    l1 = create(License, :environment_id => environment.id)
+    l2 = create(License, :environment_id => environment.id)
+    l3 = create(License, :environment_id => another_environment)
 
     environment.reload
 
@@ -1455,7 +1455,7 @@ class EnvironmentTest < ActiveSupport::TestCase
   end
 
   should 'allow only environment login redirection options' do
-    environment = fast_create(Environment)
+    environment = create(Environment)
     environment.redirection_after_login = 'invalid_option'
     environment.save
     assert environment.errors[:redirection_after_login.to_s].present?
@@ -1476,7 +1476,7 @@ class EnvironmentTest < ActiveSupport::TestCase
   end
 
   should 'allow only environment signup redirection options' do
-    environment = fast_create(Environment)
+    environment = create(Environment)
     environment.redirection_after_signup = 'invalid_option'
     environment.save
     assert environment.errors[:redirection_after_signup.to_s].present?
@@ -1653,22 +1653,22 @@ class EnvironmentTest < ActiveSupport::TestCase
   end
 
   should 'has_license be true if there is one license in enviroment' do
-    e = fast_create(Environment)
-    fast_create(License, :name => 'Some', :environment_id => e.id)
+    e = create(Environment)
+    create(License, :name => 'Some', :environment_id => e.id)
 
     assert e.has_license?
   end
 
   should 'has_license be true if there is many licenses in enviroment' do
-    e = fast_create(Environment)
-    fast_create(License, :name => 'Some', :environment_id => e.id)
-    fast_create(License, :name => 'Another', :environment_id => e.id)
+    e = create(Environment)
+    create(License, :name => 'Some', :environment_id => e.id)
+    create(License, :name => 'Another', :environment_id => e.id)
 
     assert e.has_license?
   end
 
   should 'has_license be false if there is no license in enviroment' do
-    e = fast_create(Environment)
+    e = create(Environment)
 
     assert !e.has_license?
   end

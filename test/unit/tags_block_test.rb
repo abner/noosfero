@@ -3,7 +3,7 @@ require_relative "../test_helper"
 class TagsBlockTest < ActiveSupport::TestCase
 
   def setup
-    @user = create_user('testinguser').person
+    @user = create(:person)
     @user.articles.build(:name => 'article 1', :tag_list => 'first-tag').save!
     @user.articles.build(:name => 'article 2', :tag_list => 'first-tag, second-tag').save!
     @user.articles.build(:name => 'article 3', :tag_list => 'first-tag, second-tag, third-tag').save!
@@ -32,7 +32,7 @@ class TagsBlockTest < ActiveSupport::TestCase
   end
 
   should 'generate links to tags on a environment page' do
-    @otheruser = create_user('othertestinguser').person
+    @otheruser = create(:person)
     @otheruser.articles.build(:name => 'article A', :tag_list => 'other-tag').save!
     @otheruser.articles.build(:name => 'article B', :tag_list => 'other-tag, second-tag').save!
     box = create(Box, :owner => Environment.default)

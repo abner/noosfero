@@ -4,7 +4,7 @@ class ImageTest < ActiveSupport::TestCase
   fixtures :images
 
   def setup
-    @profile = create_user('testinguser').person
+    @profile = create(:person)
   end
   attr_reader :profile
 

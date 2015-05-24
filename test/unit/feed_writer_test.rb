@@ -4,9 +4,9 @@ class FeedWriterTest < ActiveSupport::TestCase
 
   should 'generate feeds' do
     articles = []
-    profile = fast_create(:profile, :identifier => "tagger")
-    articles << fast_create(:article, :name => 'text 1', :slug => 'text-1', :path => 'text-1', :profile_id => profile.id)
-    articles << fast_create(:article, :name => 'text 2', :slug => 'text-2', :path => 'text-2', :profile_id => profile.id) 
+    profile = create(:profile, :identifier => "tagger")
+    articles << create(:article, :name => 'text 1', :slug => 'text-1', :path => 'text-1', :profile_id => profile.id)
+    articles << create(:article, :name => 'text 2', :slug => 'text-2', :path => 'text-2', :profile_id => profile.id) 
     writer = FeedWriter.new
 
     feed = writer.write(articles)
@@ -16,8 +16,8 @@ class FeedWriterTest < ActiveSupport::TestCase
 
   should 'generate feed with a gallery' do
     articles = []
-    profile = fast_create(:profile, :identifier => "tagger")
-    articles << fast_create(:gallery, :name => 'my pics', :profile_id => profile.id)
+    profile = create(:profile, :identifier => "tagger")
+    articles << create(:gallery, :name => 'my pics', :profile_id => profile.id)
     writer = FeedWriter.new
 
     feed = writer.write(articles)

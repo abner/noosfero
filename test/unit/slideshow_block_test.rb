@@ -3,12 +3,12 @@ require_relative "../test_helper"
 class SlideshowBlockTest < ActiveSupport::TestCase
 
   def setup
-    @profile = fast_create(Profile)
+    @profile = create(Profile)
   end
   attr_reader :profile
 
   should 'refer to a gallery' do
-    gallery = fast_create(Gallery, :profile_id => profile.id)
+    gallery = create(Gallery, :profile_id => profile.id)
     slideshow_block = create(SlideshowBlock, :gallery_id => gallery.id)
     assert_equal gallery, slideshow_block.gallery
   end
@@ -54,8 +54,8 @@ class SlideshowBlockTest < ActiveSupport::TestCase
   end
 
   should 'not show folders' do
-    folder = fast_create(Folder, :profile_id => profile.id)
-    gallery = fast_create(Folder, :profile_id => profile.id)
+    folder = create(Folder, :profile_id => profile.id)
+    gallery = create(Folder, :profile_id => profile.id)
     gallery.children << folder
     block = SlideshowBlock.new
     block.stubs(:gallery).returns(gallery)

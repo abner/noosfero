@@ -7,7 +7,7 @@ class CommentHelperTest < ActiveSupport::TestCase
   include NoosferoTestHelper
 
   def setup
-    @user = create_user('usertest').person
+    @user = create(:person)
     @profile = @user
     self.stubs(:logged_in?).returns(true)
     self.stubs(:report_abuse).returns('<a href="#">link</a>')

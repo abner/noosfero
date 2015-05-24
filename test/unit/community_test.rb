@@ -3,7 +3,7 @@ require_relative "../test_helper"
 class CommunityTest < ActiveSupport::TestCase
 
   def setup
-    @person = fast_create(Person)
+    @person = create(Person)
   end
 
   attr_reader :person
@@ -48,8 +48,8 @@ class CommunityTest < ActiveSupport::TestCase
   end
 
   should 'allow to add new members' do
-    c = fast_create(Community, :name => 'my test profile', :identifier => 'mytestprofile')
-    p = create_user('mytestuser').person
+    c = create(Community, :name => 'my test profile', :identifier => 'mytestprofile')
+    p = create(:person)
 
     c.add_member(p)
 
@@ -57,8 +57,8 @@ class CommunityTest < ActiveSupport::TestCase
   end
 
   should 'allow to remove members' do
-    c = fast_create(Community, :name => 'my other test profile', :identifier => 'myothertestprofile')
-    p = create_user('myothertestuser').person
+    c = create(Community, :name => 'my other test profile', :identifier => 'myothertestprofile')
+    p = create(:person)
 
     c.add_member(p)
     assert_includes c.members, p
@@ -68,10 +68,10 @@ class CommunityTest < ActiveSupport::TestCase
   end
 
   should 'clear relationships after destroy' do
-    c = fast_create(Community, :name => 'my test profile', :identifier => 'mytestprofile')
-    member = create_user('memberuser').person
-    admin = create_user('adminuser').person
-    moderator = create_user('moderatoruser').person
+    c = create(Community, :name => 'my test profile', :identifier => 'mytestprofile')
+    member = create(:person)
+    admin = create(:person)
+    moderator = create(:person)
 
     c.add_member(member)
     c.add_admin(admin)
@@ -87,7 +87,7 @@ class CommunityTest < ActiveSupport::TestCase
   end
 
   should 'have a community template' do
-    template = fast_create(Community, :is_template => true)
+    template = create(Community, :is_template => true)
     p = create(Community, :name => 'test_com', :identifier => 'test_com', :template => template)
     assert_equal template, p.template
   end
@@ -139,28 +139,28 @@ class CommunityTest < ActiveSupport::TestCase
   end
 
   should 'return newest text articles as news' do
-    c = fast_create(Community, :name => 'test_com')
-    f = fast_create(Folder, :name => 'folder', :profile_id => c.id)
+    c = create(Community, :name => 'test_com')
+    f = create(Folder, :name => 'folder', :profile_id => c.id)
     u = create(UploadedFile, :profile => c, :uploaded_data => fixture_file_upload('/files/rails.png', 'image/png'))
-    older_t = fast_create(TinyMceArticle, :name => 'old news', :profile_id => c.id)
-    t = fast_create(TinyMceArticle, :name => 'news', :profile_id => c.id)
-    t_in_f = fast_create(TinyMceArticle, :name => 'news', :profile_id => c.id, :parent_id => f.id)
+    older_t = create(TinyMceArticle, :name => 'old news', :profile_id => c.id)
+    t = create(TinyMceArticle, :name => 'news', :profile_id => c.id)
+    t_in_f = create(TinyMceArticle, :name => 'news', :profile_id => c.id, :parent_id => f.id)
 
     assert_equal [t_in_f, t], c.news(2)
   end
 
   should 'not return highlighted news when not asked' do
-    c = fast_create(Community, :name => 'test_com')
-    highlighted_t = fast_create(TinyMceArticle, :name => 'high news', :profile_id => c.id, :highlighted => true)
-    t = fast_create(TinyMceArticle, :name => 'news', :profile_id => c.id)
+    c = create(Community, :name => 'test_com')
+    highlighted_t = create(TinyMceArticle, :name => 'high news', :profile_id => c.id, :highlighted => true)
+    t = create(TinyMceArticle, :name => 'news', :profile_id => c.id)
 
     assert_equal [t].map(&:slug), c.news(2).map(&:slug)
   end
 
   should 'return highlighted news when asked' do
-    c = fast_create(Community, :name => 'test_com')
-    highlighted_t = fast_create(TinyMceArticle, :name => 'high news', :profile_id => c.id, :highlighted => true)
-    t = fast_create(TinyMceArticle, :name => 'news', :profile_id => c.id)
+    c = create(Community, :name => 'test_com')
+    highlighted_t = create(TinyMceArticle, :name => 'high news', :profile_id => c.id, :highlighted => true)
+    t = create(TinyMceArticle, :name => 'news', :profile_id => c.id)
 
     assert_equal [highlighted_t].map(&:slug), c.news(2, true).map(&:slug)
   end
@@ -205,7 +205,7 @@ class CommunityTest < ActiveSupport::TestCase
   end
 
   should 'set as member without task if organization is closed and has no members' do
-    community = fast_create(Community)
+    community = create(Community)
     community.closed = true
     community.save
 
@@ -216,7 +216,7 @@ class CommunityTest < ActiveSupport::TestCase
   end
 
   should 'set as member without task if organization is not closed and has no members' do
-    community = fast_create(Community)
+    community = create(Community)
 
     assert_no_difference 'AddMember.count' do
       community.add_member(person)
@@ -225,10 +225,10 @@ class CommunityTest < ActiveSupport::TestCase
   end
 
   should 'not create new request membership if it already exists' do
-    community = fast_create(Community)
+    community = create(Community)
     community.closed = true
     community.save
-    community.add_member(fast_create(Person))
+    community.add_member(create(Person))
     community.reload
 
     community.stubs(:notification_emails).returns(['sample@example.org'])
@@ -257,10 +257,10 @@ class CommunityTest < ActiveSupport::TestCase
   end
 
   should "the followed_by method be protected and true to the community members by default" do
-    c = fast_create(Community)
-    p1 = fast_create(Person)
-    p2 = fast_create(Person)
-    p3 = fast_create(Person)
+    c = create(Community)
+    p1 = create(Person)
+    p2 = create(Person)
+    p3 = create(Person)
 
     assert !p1.is_member_of?(c)
     c.add_member(p1)
@@ -277,9 +277,9 @@ class CommunityTest < ActiveSupport::TestCase
 
   should "be created an tracked action when the user is join to the community" do
     p1 = Person.first
-    community = fast_create(Community)
-    p2 = fast_create(Person)
-    p3 = fast_create(Person)
+    community = create(Community)
+    p2 = create(Person)
+    p3 = create(Person)
 
     RoleAssignment.delete_all
     ActionTrackerNotification.delete_all
@@ -300,9 +300,9 @@ class CommunityTest < ActiveSupport::TestCase
   should "update the action of article creation when an community's article is commented" do
     ActionTrackerNotification.delete_all
     p1 = Person.first
-    community = fast_create(Community)
-    p2 = fast_create(Person)
-    p3 = fast_create(Person)
+    community = create(Community)
+    p2 = create(Person)
+    p3 = create(Person)
     community.add_member(p3)
     article = create(TextileArticle, :profile_id => community.id)
     time = article.activity.updated_at + 1.day
@@ -313,57 +313,57 @@ class CommunityTest < ActiveSupport::TestCase
   end
 
   should "see get all received scraps" do
-    c = fast_create(Community)
+    c = create(Community)
     assert_equal [], c.scraps_received
-    fast_create(Scrap, :receiver_id => c.id)
-    fast_create(Scrap, :receiver_id => c.id)
+    create(Scrap, :receiver_id => c.id)
+    create(Scrap, :receiver_id => c.id)
     assert_equal 2, c.scraps_received.count
-    c2 = fast_create(Community)
-    fast_create(Scrap, :receiver_id => c2.id)
+    c2 = create(Community)
+    create(Scrap, :receiver_id => c2.id)
     assert_equal 2, c.scraps_received.count
-    fast_create(Scrap, :receiver_id => c.id)
+    create(Scrap, :receiver_id => c.id)
     assert_equal 3, c.scraps_received.count
   end
 
   should "see get all received scraps that are not replies" do
-    c = fast_create(Community)
-    s1 = fast_create(Scrap, :receiver_id => c.id)
-    s2 = fast_create(Scrap, :receiver_id => c.id)
-    s3 = fast_create(Scrap, :receiver_id => c.id, :scrap_id => s1.id)
+    c = create(Community)
+    s1 = create(Scrap, :receiver_id => c.id)
+    s2 = create(Scrap, :receiver_id => c.id)
+    s3 = create(Scrap, :receiver_id => c.id, :scrap_id => s1.id)
     assert_equal 3, c.scraps_received.count
     assert_equal [s1,s2], c.scraps_received.not_replies
-    c2 = fast_create(Community)
-    s4 = fast_create(Scrap, :receiver_id => c2.id)
-    s5 = fast_create(Scrap, :receiver_id => c2.id, :scrap_id => s4.id)
+    c2 = create(Community)
+    s4 = create(Scrap, :receiver_id => c2.id)
+    s5 = create(Scrap, :receiver_id => c2.id, :scrap_id => s4.id)
     assert_equal 2, c2.scraps_received.count
     assert_equal [s4], c2.scraps_received.not_replies
   end
 
   should "the community browse for a scrap with a Scrap object" do
-    c = fast_create(Community)
-    s1 = fast_create(Scrap, :receiver_id => c.id)
-    s2 = fast_create(Scrap, :receiver_id => c.id)
-    s3 = fast_create(Scrap, :receiver_id => c.id)
+    c = create(Community)
+    s1 = create(Scrap, :receiver_id => c.id)
+    s2 = create(Scrap, :receiver_id => c.id)
+    s3 = create(Scrap, :receiver_id => c.id)
     assert_equal s2, c.scraps(s2)
   end
 
   should "the person browse for a scrap with an integer and string id" do
-    c = fast_create(Community)
-    s1 = fast_create(Scrap, :receiver_id => c.id)
-    s2 = fast_create(Scrap, :receiver_id => c.id)
-    s3 = fast_create(Scrap, :receiver_id => c.id)
+    c = create(Community)
+    s1 = create(Scrap, :receiver_id => c.id)
+    s2 = create(Scrap, :receiver_id => c.id)
+    s3 = create(Scrap, :receiver_id => c.id)
     assert_equal s2, c.scraps(s2.id)
     assert_equal s2, c.scraps(s2.id.to_s)
   end
 
   should 'receive scrap notification' do
-    community = fast_create(Community)
+    community = create(Community)
     assert_equal false, community.receives_scrap_notification?
   end
 
   should 'return scraps as activities' do
-    person = fast_create(Person)
-    community = fast_create(Community)
+    person = create(Person)
+    community = create(Community)
 
     scrap = create(Scrap, defaults_for_scrap(:sender => person, :receiver => community, :content => 'A scrap'))
     activity = ActionTracker::Record.last
@@ -372,8 +372,8 @@ class CommunityTest < ActiveSupport::TestCase
   end
 
   should 'return tracked_actions of community as activities' do
-    person = fast_create(Person)
-    community = fast_create(Community)
+    person = create(Person)
+    community = create(Community)
 
     UserStampSweeper.any_instance.expects(:current_user).returns(person).at_least_once
     assert_difference 'ActionTracker::Record.count', 1 do
@@ -383,9 +383,9 @@ class CommunityTest < ActiveSupport::TestCase
   end
 
   should 'not return tracked_actions of other community as activities' do
-    person = fast_create(Person)
-    community = fast_create(Community)
-    community2 = fast_create(Community)
+    person = create(Person)
+    community = create(Community)
+    community2 = create(Community)
 
     UserStampSweeper.any_instance.expects(:current_user).returns(person).at_least_once
     article = create(TinyMceArticle, :profile => community2, :name => 'Another article about free software')
@@ -395,26 +395,26 @@ class CommunityTest < ActiveSupport::TestCase
 
  
   should 'check if a community admin user is really a community admin' do
-    c = fast_create(Community, :name => 'my test profile', :identifier => 'mytestprofile')
-    admin = create_user('adminuser').person
+    c = create(Community, :name => 'my test profile', :identifier => 'mytestprofile')
+    admin = create(:person)
     c.add_admin(admin)
    
     assert c.is_admin?(admin)
   end
 
   should 'a member user not be a community admin' do
-    c = fast_create(Community, :name => 'my test profile', :identifier => 'mytestprofile')
-    admin = create_user('adminuser').person
+    c = create(Community, :name => 'my test profile', :identifier => 'mytestprofile')
+    admin = create(:person)
     c.add_admin(admin)
 
-    member = create_user('memberuser').person
+    member = create(:person)
     c.add_member(member)
     assert !c.is_admin?(member)
   end
 
   should 'a moderator user not be a community admin' do
-    c = fast_create(Community, :name => 'my test profile', :identifier => 'mytestprofile')
-    moderator = create_user('moderatoruser').person
+    c = create(Community, :name => 'my test profile', :identifier => 'mytestprofile')
+    moderator = create(:person)
     c.add_moderator(moderator)
     assert !c.is_admin?(moderator)
   end

@@ -16,7 +16,7 @@ class LayoutHelperTest < ActionView::TestCase
   end
 
   should 'add global.css to noosfero_stylesheets if env theme has it' do
-    env = fast_create Environment
+    env = create Environment
     env.theme = 'my-theme'
     @plugins = []
     expects(:profile).returns(nil).at_least_once

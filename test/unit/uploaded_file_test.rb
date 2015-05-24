@@ -3,7 +3,7 @@ require_relative "../test_helper"
 class UploadedFileTest < ActiveSupport::TestCase
 
   def setup
-    @profile = create_user('testinguser').person
+    @profile = create(:person)
   end
   attr_reader :profile
 
@@ -84,8 +84,8 @@ class UploadedFileTest < ActiveSupport::TestCase
   end
 
   should 'create icon when created in folder' do
-    p = create_user('test_user').person
-    f = fast_create(Folder, :name => 'test_folder', :profile_id => p.id)
+    p = create(:person)
+    f = create(Folder, :name => 'test_folder', :profile_id => p.id)
     file = create(UploadedFile, :uploaded_data => fixture_file_upload('/files/rails.png', 'image/png'), :parent_id => f.id, :profile => p)
 
     process_delayed_job_queue
@@ -96,7 +96,7 @@ class UploadedFileTest < ActiveSupport::TestCase
   end
 
   should 'create icon when not created in folder' do
-    p = create_user('test_user').person
+    p = create(:person)
     file = create(UploadedFile, :uploaded_data => fixture_file_upload('/files/rails.png', 'image/png'), :profile => p)
 
     process_delayed_job_queue
@@ -112,7 +112,7 @@ class UploadedFileTest < ActiveSupport::TestCase
   end
 
   should 'display link to download of non-image files' do
-    p = create_user('test_user').person
+    p = create(:person)
     file = create(UploadedFile, :uploaded_data => fixture_file_upload('/files/test.txt', 'text/plain'), :profile => p)
 
     ENV.stubs('[]').with('RAILS_ENV').returns('other')
@@ -227,7 +227,7 @@ class UploadedFileTest < ActiveSupport::TestCase
   end
 
   should 'track action when a published image is uploaded in a gallery' do
-    p = fast_create(Gallery, :profile_id => @profile.id)
+    p = create(Gallery, :profile_id => @profile.id)
     f = create(UploadedFile, :uploaded_data => fixture_file_upload('/files/rails.png', 'image/png'), :parent => p, :profile => @profile)
     ta = ActionTracker::Record.last(:conditions => { :verb => "upload_image" })
     assert_kind_of String, ta.get_thumbnail_path[0]
@@ -238,7 +238,7 @@ class UploadedFileTest < ActiveSupport::TestCase
 
   should 'not track action when is not image' do
     ActionTracker::Record.delete_all
-    p = fast_create(Gallery, :profile_id => @profile.id)
+    p = create(Gallery, :profile_id => @profile.id)
     f = create(UploadedFile, :uploaded_data => fixture_file_upload('/files/test.txt', 'text/plain'), :parent => p, :profile => @profile)
     assert_nil ActionTracker::Record.last(:conditions => { :verb => "upload_image" })
   end
@@ -250,27 +250,27 @@ class UploadedFileTest < ActiveSupport::TestCase
 
   should 'not track action when is not published' do
     ActionTracker::Record.delete_all
-    p = fast_create(Gallery, :profile_id => @profile.id)
+    p = create(Gallery, :profile_id => @profile.id)
     f = create(UploadedFile, :uploaded_data => fixture_file_upload('/files/rails.png', 'image/png'), :parent => p, :profile => @profile, :published => false)
     assert_nil ActionTracker::Record.last(:conditions => { :verb => "upload_image" })
   end
 
   should 'not track action when parent is not gallery' do
     ActionTracker::Record.delete_all
-    p = fast_create(Folder, :profile_id => @profile.id)
+    p = create(Folder, :profile_id => @profile.id)
     f = create(UploadedFile, :uploaded_data => fixture_file_upload('/files/rails.png', 'image/png'), :parent => p, :profile => @profile)
     assert_nil ActionTracker::Record.last(:conditions => { :verb => "upload_image" })
   end
 
   should 'not crash if first paragraph called' do
-    f = fast_create(UploadedFile)
+    f = create(UploadedFile)
     assert_nothing_raised do
       f.first_paragraph
     end
   end
 
   should 'return empty string to lead if no abstract given' do
-    f = fast_create(UploadedFile, :abstract => nil)
+    f = create(UploadedFile, :abstract => nil)
     assert_equal '', f.lead
   end
 
@@ -317,7 +317,7 @@ class UploadedFileTest < ActiveSupport::TestCase
   end
 
   should 'use gallery as target for action tracker' do
-    gallery = fast_create(Gallery, :profile_id => profile.id)
+    gallery = create(Gallery, :profile_id => profile.id)
     image = create(UploadedFile, :uploaded_data => fixture_file_upload('/files/rails.png', 'image/png'), :parent => gallery, :profile => profile)
     activity = ActionTracker::Record.find_last_by_verb 'upload_image'
     assert_equal gallery, activity.target
@@ -326,7 +326,7 @@ class UploadedFileTest < ActiveSupport::TestCase
   should 'group trackers activity of image\'s upload' do
     ActionTracker::Record.delete_all
     ActionTracker::Record.stubs(:current_user_from_model).returns(profile)
-    gallery = fast_create(Gallery, :profile_id => profile.id)
+    gallery = create(Gallery, :profile_id => profile.id)
 
     image1 = UploadedFile.create!(:uploaded_data => fixture_file_upload('/files/rails.png', 'image/png'), :parent => gallery, :profile => profile)
     assert_equal 1, ActionTracker::Record.find_all_by_verb('upload_image').count

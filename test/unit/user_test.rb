@@ -164,7 +164,7 @@ class UserTest < ActiveSupport::TestCase
   end
 
   should 'set the same environment for user and person objects' do
-    env = fast_create(Environment)
+    env = create(Environment)
     user = new_user(:environment_id => env.id)
     assert_equal env, user.environment
     assert_equal env, user.person.environment
@@ -322,7 +322,7 @@ class UserTest < ActiveSupport::TestCase
   end
 
   should 'be able to use [] operator to find users by login' do
-    user = fast_create(User)
+    user = create(User)
     assert_equal user, User[user.login]
   end
 
@@ -337,7 +337,7 @@ class UserTest < ActiveSupport::TestCase
   end
 
   should "have data_hash method defined" do
-    user = fast_create(User)
+    user = create(User)
     assert user.respond_to?(:data_hash)
   end
 
@@ -349,7 +349,7 @@ class UserTest < ActiveSupport::TestCase
   end
 
   should "data_hash friends_list method have the following keys" do
-    person = create_user('coldplay').person
+    person = create(:person)
     friend = create_user('coldplayfriend', :chat_status => 'chat', :chat_status_at => DateTime.now).person
     person.add_friend(friend)
     expected_keys = ['avatar','name','jid','status']
@@ -358,7 +358,7 @@ class UserTest < ActiveSupport::TestCase
   end
 
   should "data_hash method return the user information" do
-    person = create_user('x_and_y').person
+    person = create(:person)
     Person.any_instance.stubs(:is_admin?).returns(true)
     Person.any_instance.stubs(:created_at).returns(DateTime.parse('16-08-2010'))
     expected_hash = {
@@ -385,7 +385,7 @@ class UserTest < ActiveSupport::TestCase
   end
 
   should "data_hash return the friends_list information" do
-    person = create_user('coldplay').person
+    person = create(:person)
     friend = create_user('coldplayfriend', :chat_status => 'chat', :chat_status_at => DateTime.now).person
     person.add_friend(friend)
     Person.any_instance.stubs(:profile_custom_icon).returns('/custom_icon')
@@ -398,7 +398,7 @@ class UserTest < ActiveSupport::TestCase
   end
 
   should "data_hash return the correct number of friends parameter" do
-    person = create_user('coldplay').person
+    person = create(:person)
     friend = create_user('coldplayfriend', :chat_status => 'chat', :chat_status_at => DateTime.now).person
     person.add_friend(friend)
     another_friend = create_user('coldplayanotherfriend', :chat_status => 'chat', :chat_status_at => DateTime.now).person
@@ -407,21 +407,21 @@ class UserTest < ActiveSupport::TestCase
   end
 
   should "data_hash collect friend with online status and with presence in last 15 minutes" do
-    person = create_user('coldplay').person
+    person = create(:person)
     friend = create_user('coldplayfriend', :chat_status => 'chat', :chat_status_at => DateTime.now).person
     person.add_friend(friend)
     assert_equal 1, person.user.data_hash['amount_of_friends']
   end
 
   should "data_hash collect friend with busy status and with presence in last 15 minutes" do
-    person = create_user('coldplay').person
+    person = create(:person)
     friend = create_user('coldplayfriend', :chat_status => 'dnd', :chat_status_at => DateTime.now).person
     person.add_friend(friend)
     assert_equal 1, person.user.data_hash['amount_of_friends']
   end
 
   should "data_hash status friend be described" do
-    person = create_user('coldplay').person
+    person = create(:person)
     friend = create_user('coldplayfriend', :chat_status => 'chat', :chat_status_at => DateTime.now).person
     person.add_friend(friend)
     assert_equal 'chat', person.user.data_hash['friends_list'][friend.identifier]['status']
@@ -433,7 +433,7 @@ class UserTest < ActiveSupport::TestCase
 
   should 'return list of enterprises in data_hash' do
     user = create_user('testuser')
-    enterprise = fast_create(Enterprise, :name => "My enterprise", :identifier => 'my-enterprise')
+    enterprise = create(Enterprise, :name => "My enterprise", :identifier => 'my-enterprise')
     user.person.expects(:enterprises).returns([enterprise])
     assert_includes user.data_hash['enterprises'], {'name' => 'My enterprise', 'identifier' => 'my-enterprise'}
   end
@@ -443,7 +443,7 @@ class UserTest < ActiveSupport::TestCase
   end
 
   should "return status of chat on environment in data_hash" do
-    person = create_user('coldplay').person
+    person = create(:person)
     env = person.environment
     env.enable('xmpp_chat')
     env.save

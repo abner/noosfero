@@ -6,7 +6,7 @@ class EnvironmentMailingTest < ActiveSupport::TestCase
     ActionMailer::Base.delivery_method = :test
     ActionMailer::Base.perform_deliveries = true
     ActionMailer::Base.deliveries = []
-    @environment = fast_create(Environment, :name => 'Network')
+    @environment = create(Environment, :name => 'Network')
     @person_1 = create_user('user_one', :environment_id => @environment.id).person
     @person_2 = create_user('user_two', :environment_id => @environment.id).person
   end
@@ -90,7 +90,7 @@ class EnvironmentMailingTest < ActiveSupport::TestCase
   end
 
   should 'return false if did not sent mailing to a recipient' do
-    recipient = fast_create(Person)
+    recipient = create(Person)
     person = Person['user_one']
     mailing = create_mailing(environment, :person => person_1)
     process_delayed_job_queue

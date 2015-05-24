@@ -3,7 +3,7 @@ require_relative "../test_helper"
 class CreateEnterpriseTest < ActiveSupport::TestCase
 
   def setup
-    @person = fast_create(Person)
+    @person = create(Person)
   end
   attr_reader :person
 
@@ -35,7 +35,7 @@ class CreateEnterpriseTest < ActiveSupport::TestCase
     task.valid?
 
     assert task.errors[:requestor_id.to_s].present?
-    task.requestor = create_user('testuser').person
+    task.requestor = create(:person)
     task.valid?
     assert !task.errors[:requestor_id.to_s].present?
   end
@@ -53,9 +53,9 @@ class CreateEnterpriseTest < ActiveSupport::TestCase
   end
 
   should 'require that the informed target (validator organization) actually validates for the chosen region' do
-    environment = fast_create(Environment)
-    region = fast_create(Region, :name => 'My region', :environment_id => environment.id)
-    validator = fast_create(Organization, :name => "My organization", :identifier => 'myorg', :environment_id => environment.id)
+    environment = create(Environment)
+    region = create(Region, :name => 'My region', :environment_id => environment.id)
+    validator = create(Organization, :name => "My organization", :identifier => 'myorg', :environment_id => environment.id)
 
     task = CreateEnterprise.new
     task.stubs(:environment).returns(Environment.default)
@@ -103,12 +103,12 @@ class CreateEnterpriseTest < ActiveSupport::TestCase
 
   should 'actually create an enterprise when finishing the task and associate the task requestor as its owner through the "user" association' do
 
-    environment = fast_create(Environment)
+    environment = create(Environment)
     environment.create_roles
-    region = fast_create(Region, :name => 'My region', :environment_id => environment.id)
-    validator = fast_create(Organization, :name => "My organization", :identifier => 'myorg', :environment_id => environment.id)
+    region = create(Region, :name => 'My region', :environment_id => environment.id)
+    validator = create(Organization, :name => "My organization", :identifier => 'myorg', :environment_id => environment.id)
     region.validators << validator
-    person = create_user('testuser').person
+    person = create(:person)
     person.environment = environment
     person.save
 
@@ -140,12 +140,12 @@ class CreateEnterpriseTest < ActiveSupport::TestCase
 
   should 'actually create an enterprise when finishing the task and associate the task requestor as its owner through the "user" association even when environment is not default' do
 
-    environment = fast_create(Environment)
+    environment = create(Environment)
     environment.create_roles
-    region = fast_create(Region, :name => 'My region', :environment_id => environment.id)
-    validator = fast_create(Organization, :name => "My organization", :identifier => 'myorg', :environment_id => environment.id)
+    region = create(Region, :name => 'My region', :environment_id => environment.id)
+    validator = create(Organization, :name => "My organization", :identifier => 'myorg', :environment_id => environment.id)
     region.validators << validator
-    person = create_user('testuser').person
+    person = create(:person)
     person.environment = environment
     person.save
 
@@ -186,11 +186,11 @@ class CreateEnterpriseTest < ActiveSupport::TestCase
   end
 
   should 'validate that eveything is ok but the validator (target)' do
-    environment = fast_create(Environment)
-    region = fast_create(Region, :name => 'My region', :environment_id => environment.id)
-    validator = fast_create(Organization, :name => "My organization", :identifier => 'myorg', :environment_id => environment.id)
+    environment = create(Environment)
+    region = create(Region, :name => 'My region', :environment_id => environment.id)
+    validator = create(Organization, :name => "My organization", :identifier => 'myorg', :environment_id => environment.id)
     region.validators << validator
-    person = create_user('testuser').person
+    person = create(:person)
     task = CreateEnterprise.new({
       :name => 'My new enterprise',
       :identifier => 'mynewenterprise',

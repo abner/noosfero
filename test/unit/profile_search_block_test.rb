@@ -11,7 +11,7 @@ class ProfileSearchBlockTest < ActiveSupport::TestCase
   end
 
   should 'render profile search' do
-    person = fast_create(Person)
+    person = create(Person)
 
     block = ProfileSearchBlock.new
     block.stubs(:owner).returns(person)
@@ -21,7 +21,7 @@ class ProfileSearchBlockTest < ActiveSupport::TestCase
   end
 
   should 'provide view_title' do
-    person = fast_create(Person)
+    person = create(Person)
     person.boxes << Box.new
     block = ProfileSearchBlock.new(:title => 'Title from block')
     person.boxes.first.blocks << block

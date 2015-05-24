@@ -54,13 +54,13 @@ class EnterprisesBlockTest < ActiveSupport::TestCase
   end
 
   should 'count number of owner enterprises' do
-    user = create_user('testuser').person
+    user = create(:person)
 
-    ent1 = fast_create(Enterprise, :name => 'test enterprise 1', :identifier => 'ent1')
+    ent1 = create(Enterprise, :name => 'test enterprise 1', :identifier => 'ent1')
     ent1.expects(:closed?).returns(false)
     ent1.add_member(user)
 
-    ent2 = fast_create(Enterprise, :name => 'test enterprise 2', :identifier => 'ent2')
+    ent2 = create(Enterprise, :name => 'test enterprise 2', :identifier => 'ent2')
     ent2.expects(:closed?).returns(false)
     ent2.add_member(user)
 

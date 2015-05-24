@@ -8,9 +8,9 @@ class BlockTest < ActiveSupport::TestCase
   end
 
   should 'access owner through box' do
-    user = create_user('testinguser').person
+    user = create(:person)
 
-    box = fast_create(Box, :owner_id => user, :owner_type => 'Person')
+    box = create(Box, :owner_id => user, :owner_type => 'Person')
 
     block = Block.new
     block.box = box
@@ -71,8 +71,8 @@ class BlockTest < ActiveSupport::TestCase
   end
 
   should 'list enabled blocks' do
-    block1 = fast_create(Block, :title => 'test 1')
-    block2 = fast_create(Block, :title => 'test 2', :enabled => false)
+    block1 = create(Block, :title => 'test 1')
+    block2 = create(Block, :title => 'test 2', :enabled => false)
     assert_includes Block.enabled, block1
     assert_not_includes Block.enabled, block2
   end
@@ -125,16 +125,16 @@ class BlockTest < ActiveSupport::TestCase
   end
 
   should 'be able to save display setting' do
-    user = create_user('testinguser').person
-    box = fast_create(Box, :owner_id => user.id, :owner_type => 'Profile')
+    user = create(:person)
+    box = create(Box, :owner_id => user.id, :owner_type => 'Profile')
     block = create(Block, :display => 'never', :box_id => box.id)
     block.reload
     assert_equal 'never', block.display
   end
 
   should 'be able to update display setting' do
-    user = create_user('testinguser').person
-    box = fast_create(Box, :owner_id => user.id, :owner_type => 'Profile')
+    user = create(:person)
+    box = create(Box, :owner_id => user.id, :owner_type => 'Profile')
     block = create(Block, :display => 'never', :box_id => box.id)
     assert block.update_attributes!(:display => 'always')
     block.reload
@@ -168,7 +168,7 @@ class BlockTest < ActiveSupport::TestCase
   end
 
   should 'delegate environment to box' do
-    box = fast_create(Box, :owner_id => fast_create(Profile).id)
+    box = create(Box, :owner_id => create(Profile).id)
     block = build(Block, :box => box)
     box.stubs(:environment).returns(Environment.default)
 
@@ -186,14 +186,14 @@ class BlockTest < ActiveSupport::TestCase
   end
 
   should 'create a cloned block' do
-    block = fast_create(Block, :title => 'test 1', :position => 1)
+    block = create(Block, :title => 'test 1', :position => 1)
     assert_difference 'Block.count', 1 do
       block.duplicate
     end
   end
 
   should 'clone and keep some fields' do
-    box = fast_create(Box, :owner_id => fast_create(Profile).id)
+    box = create(Box, :owner_id => create(Profile).id)
     block = create(TagsBlock, :title => 'test 1', :box_id => box.id, :settings => {:test => 'test'})
     duplicated = block.duplicate
     [:title, :box_id, :type].each do |f|
@@ -203,7 +203,7 @@ class BlockTest < ActiveSupport::TestCase
   end
 
   should 'clone block and set fields' do
-    box = fast_create(Box, :owner_id => fast_create(Profile).id)
+    box = create(Box, :owner_id => create(Profile).id)
     block = create(TagsBlock, :title => 'test 1', :box_id => box.id, :settings => {:test => 'test'}, :position => 1)
     block2 = create(TagsBlock, :title => 'test 2', :box_id => box.id, :settings => {:test => 'test'}, :position => 2)
     duplicated = block.duplicate
@@ -216,7 +216,7 @@ class BlockTest < ActiveSupport::TestCase
   end
 
   should 'not clone date creation and update attributes' do
-    box = fast_create(Box, :owner_id => fast_create(Profile).id)
+    box = create(Box, :owner_id => create(Profile).id)
     block = create(TagsBlock, :title => 'test 1', :box_id => box.id, :settings => {:test => 'test'}, :position => 1)
     duplicated = block.duplicate
 
@@ -297,17 +297,17 @@ class BlockTest < ActiveSupport::TestCase
   end
 
   should 'accept user as parameter on cache_key without change its value' do
-    person = fast_create(Person)
+    person = create(Person)
     block = Block.new
     assert_equal block.cache_key('en'), block.cache_key('en', person)
   end
 
   should 'display block to members of community for display_user = members' do
-    community = fast_create(Community)
+    community = create(Community)
     user = create_user('testinguser')
     community.add_member(user.person)
 
-    box = fast_create(Box, :owner_id => community.id, :owner_type => 'Community')
+    box = create(Box, :owner_id => community.id, :owner_type => 'Community')
     block = create(Block, :box_id => box.id)
     block.display_user = 'followers'
     block.save!
@@ -315,10 +315,10 @@ class BlockTest < ActiveSupport::TestCase
   end
 
   should 'do not display block to non members of community for display_user = members' do
-    community = fast_create(Community)
+    community = create(Community)
     user = create_user('testinguser')
 
-    box = fast_create(Box, :owner_id => community.id, :owner_type => 'Community')
+    box = create(Box, :owner_id => community.id, :owner_type => 'Community')
     block = create(Block, :box_id => box.id)
     block.display_user = 'followers'
     block.save!
@@ -326,12 +326,12 @@ class BlockTest < ActiveSupport::TestCase
   end
 
   should 'display block to friends of person for display_user = friends' do
-    person = create_user('person_one').person
-    person_friend = create_user('person_friend').person
+    person = create(:person)
+    person_friend = create(:person)
 
     person.add_friend(person_friend)
 
-    box = fast_create(Box, :owner_id => person.id, :owner_type => 'Person')
+    box = create(Box, :owner_id => person.id, :owner_type => 'Person')
     block = create(Block, :box_id => box.id)
     block.display_user = 'followers'
     block.save!
@@ -339,10 +339,10 @@ class BlockTest < ActiveSupport::TestCase
   end
 
   should 'do not display block to non friends of person for display_user = friends' do
-    person = create_user('person_one').person
-    person_friend = create_user('person_friend').person
+    person = create(:person)
+    person_friend = create(:person)
 
-    box = fast_create(Box, :owner_id => person.id, :owner_type => 'Person')
+    box = create(Box, :owner_id => person.id, :owner_type => 'Person')
     block = create(Block, :box_id => box.id)
     block.display_user = 'followers'
     block.save!

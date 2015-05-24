@@ -23,7 +23,7 @@ class FolderHelperTest < ActionView::TestCase
   end
 
   should 'display icon for images' do
-    profile = fast_create(Profile)
+    profile = create(Profile)
     file = create(UploadedFile, :uploaded_data => fixture_file_upload('/files/rails.png', 'image/png'), :profile => profile)
     file = FilePresenter.for file
     process_delayed_job_queue
@@ -37,11 +37,11 @@ class FolderHelperTest < ActionView::TestCase
   end
 
   should 'list all the folder\'s children to the owner' do
-    profile = create_user('Folder Owner').person
-    folder = fast_create(Folder, :profile_id => profile.id)
-    sub_folder = fast_create(Folder, {:parent_id => folder.id, :profile_id => profile.id})
-    sub_blog = fast_create(Blog, {:parent_id => folder.id, :profile_id => profile.id})
-    sub_article = fast_create(Article, {:parent_id => folder.id, :profile_id => profile.id, :published => false})
+    profile = create(:person)
+    folder = create(Folder, :profile_id => profile.id)
+    sub_folder = create(Folder, {:parent_id => folder.id, :profile_id => profile.id})
+    sub_blog = create(Blog, {:parent_id => folder.id, :profile_id => profile.id})
+    sub_article = create(Article, {:parent_id => folder.id, :profile_id => profile.id, :published => false})
 
     result = available_articles(folder.children, profile)
 
@@ -51,11 +51,11 @@ class FolderHelperTest < ActionView::TestCase
   end
 
   should 'list the folder\'s children that are public to the user' do
-    profile = create_user('Folder Owner').person
-    profile2 = create_user('Folder Viwer').person
-    folder = fast_create(Folder, :profile_id => profile.id)
-    public_article = fast_create(Article, {:parent_id => folder.id, :profile_id => profile.id, :published => true})
-    not_public_article = fast_create(Article, {:parent_id => folder.id, :profile_id => profile.id, :published => false})
+    profile = create(:person)
+    profile2 = create(:person)
+    folder = create(Folder, :profile_id => profile.id)
+    public_article = create(Article, {:parent_id => folder.id, :profile_id => profile.id, :published => true})
+    not_public_article = create(Article, {:parent_id => folder.id, :profile_id => profile.id, :published => false})
 
     result = available_articles(folder.children, profile2)
 
@@ -64,12 +64,12 @@ class FolderHelperTest < ActionView::TestCase
   end
 
   should ' not list the folder\'s children to the user because the owner\'s profile is not public' do
-    profile = create_user('folder-owner').person
+    profile = create(:person)
     profile.public_profile = false
     profile.save!
-    profile2 = create_user('Folder Viwer').person
-    folder = fast_create(Folder, :profile_id => profile.id, :published => false)
-    article = fast_create(Article, {:parent_id => folder.id, :profile_id => profile.id})
+    profile2 = create(:person)
+    folder = create(Folder, :profile_id => profile.id, :published => false)
+    article = create(Article, {:parent_id => folder.id, :profile_id => profile.id})
 
     result = available_articles(folder.children, profile2)
 
@@ -77,12 +77,12 @@ class FolderHelperTest < ActionView::TestCase
   end
 
   should ' not list the folder\'s children to the user because the owner\'s profile is not visible' do
-    profile = create_user('folder-owner').person
+    profile = create(:person)
     profile.visible = false
     profile.save!
-    profile2 = create_user('Folder Viwer').person
-    folder = fast_create(Folder, :profile_id => profile.id)
-    article = fast_create(Article, {:parent_id => folder.id, :profile_id => profile.id})
+    profile2 = create(:person)
+    folder = create(Folder, :profile_id => profile.id)
+    article = create(Article, {:parent_id => folder.id, :profile_id => profile.id})
 
     result = available_articles(folder.children, profile2)
 
@@ -90,10 +90,10 @@ class FolderHelperTest < ActionView::TestCase
   end
 
   should 'list subitems as HTML content' do
-    profile = create_user('folder-owner').person
-    folder = fast_create(Folder, {:name => 'Parent Folder', :profile_id => profile.id})
-    article1 = fast_create(Article, {:name => 'Article1', :parent_id => folder.id, :profile_id => profile.id, :updated_at => DateTime.now })
-    article2 = fast_create(Article, {:name => 'Article2', :parent_id => folder.id, :profile_id => profile.id, :updated_at => DateTime.now })
+    profile = create(:person)
+    folder = create(Folder, {:name => 'Parent Folder', :profile_id => profile.id})
+    article1 = create(Article, {:name => 'Article1', :parent_id => folder.id, :profile_id => profile.id, :updated_at => DateTime.now })
+    article2 = create(Article, {:name => 'Article2', :parent_id => folder.id, :profile_id => profile.id, :updated_at => DateTime.now })
     self.stubs(:params).returns({:npage => nil})
 
     contents = folder.children.order('updated_at DESC').paginate(:per_page => 10, :page => params[:npage])
@@ -113,16 +113,16 @@ class FolderHelperTest < ActionView::TestCase
   end
 
   should 'explictly advise if empty' do
-    profile = create_user('folder-owner').person
-    folder = fast_create(Folder, {:name => 'Parent Folder', :profile_id => profile.id})
+    profile = create(:person)
+    folder = create(Folder, {:name => 'Parent Folder', :profile_id => profile.id})
     result = render 'content_viewer/folder', binding
 
     assert_match '(empty folder)', result
   end
 
   should 'show body (folder description)' do
-    profile = create_user('folder-owner').person
-    folder = fast_create(Folder, {:name => 'Parent Folder', :profile_id => profile.id, :body => "This is the folder description"})
+    profile = create(:person)
+    folder = create(Folder, {:name => 'Parent Folder', :profile_id => profile.id, :body => "This is the folder description"})
     result = render 'content_viewer/folder', binding
     assert_match 'This is the folder description', result
   end

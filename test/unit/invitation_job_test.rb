@@ -4,7 +4,7 @@ class InvitationJobTest < ActiveSupport::TestCase
 
   should 'invoke invitation' do
     contact_list = ContactList.create!
-    person = create_user('maluquete').person
+    person = create(:person)
     contacts_to_invite = ['email1@example.com', 'email2@example.com']
 
     job = InvitationJob.new(person.id, contacts_to_invite, 'Hi!', person.id, contact_list.id)
@@ -27,7 +27,7 @@ class InvitationJobTest < ActiveSupport::TestCase
 
   should 'skip contact list deletion if it not exists' do
     contact_list = ContactList.create!
-    person = create_user('maluquete').person
+    person = create(:person)
     job = InvitationJob.new(person.id, ['email1@example.com'], 'Hi!', person.id, contact_list.id)
     contact_list.destroy
     assert_nothing_raised do

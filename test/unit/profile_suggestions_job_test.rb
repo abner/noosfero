@@ -3,14 +3,14 @@ require File.dirname(__FILE__) + '/../test_helper'
 class ProfileSuggestionsJobTest < ActiveSupport::TestCase
 
   should 'suggest friends from friends' do
-    person = create_user('person').person
-    friend = create_user('friend').person
-    friend2 = create_user('friend2').person
+    person = create(:person)
+    friend = create(:person)
+    friend2 = create(:person)
 
     person.add_friend friend
     person.add_friend friend2
 
-    friend_of_friend = create_user('friend_of_friend').person
+    friend_of_friend = create(:person)
     friend.add_friend friend_of_friend
 
     friend_of_friend.add_friend friend
@@ -24,12 +24,12 @@ class ProfileSuggestionsJobTest < ActiveSupport::TestCase
   end
 
   should 'suggest friends from communities' do
-    person = create_user('person').person
-    c1 = fast_create(Community)
-    c2 = fast_create(Community)
+    person = create(:person)
+    c1 = create(Community)
+    c2 = create(Community)
 
-    member1 = create_user('member1').person
-    member2 = create_user('member2').person
+    member1 = create(:person)
+    member2 = create(:person)
 
     c1.add_member person
     c1.add_member member1
@@ -46,9 +46,9 @@ class ProfileSuggestionsJobTest < ActiveSupport::TestCase
   end
 
   should 'suggest friends from tags' do
-    person = create_user('person').person
-    person2 = create_user('person2').person
-    person3 = create_user('person3').person
+    person = create(:person)
+    person2 = create(:person)
+    person3 = create(:person)
 
     create(Article, :created_by => person, :profile => person, :tag_list => 'first-tag, second-tag')
     create(Article, :created_by => person2, :profile => person2, :tag_list => 'first-tag, second-tag, third-tag')
@@ -62,15 +62,15 @@ class ProfileSuggestionsJobTest < ActiveSupport::TestCase
   end
 
   should 'suggest from communities friends' do
-    person = create_user('person').person
+    person = create(:person)
 
-    member1 = create_user('member1').person
-    member2 = create_user('member2').person
+    member1 = create(:person)
+    member2 = create(:person)
 
     person.add_friend member1
     person.add_friend member2
 
-    community = fast_create(Community)
+    community = create(Community)
     community.add_member member1
     community.add_member member2
 
@@ -82,10 +82,10 @@ class ProfileSuggestionsJobTest < ActiveSupport::TestCase
   end
 
   should 'suggest communities from tags' do
-    person = create_user('person').person
-    person2 = create_user('person2').person
+    person = create(:person)
+    person2 = create(:person)
 
-    community = fast_create(Community)
+    community = create(Community)
     community.add_admin person2
 
     create(Article, :created_by => person, :profile => person, :tag_list => 'first-tag, second-tag')
@@ -99,7 +99,7 @@ class ProfileSuggestionsJobTest < ActiveSupport::TestCase
   end
 
   should 'send suggestion e-mail only if the user enabled it' do
-    person = create_user('person').person
+    person = create(:person)
     person.email_suggestions = true
     person.save!
     job = ProfileSuggestionsJob.new(person.id)
@@ -109,7 +109,7 @@ class ProfileSuggestionsJobTest < ActiveSupport::TestCase
   end
 
   should 'not send suggestion e-mail if the user disabled it' do
-    person = create_user('person').person
+    person = create(:person)
     person.email_suggestions = false
     person.save!
     job = ProfileSuggestionsJob.new(person.id)

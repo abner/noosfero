@@ -11,13 +11,13 @@ class ManageProductsHelperTest < ActionView::TestCase
   def setup
     stubs(:show_date).returns('')
     @environment = Environment.default
-    @profile = create_user('blog_helper_test').person
+    @profile = create(:person)
   end
 
   should 'display select for categories' do
-    category_1 = fast_create(ProductCategory, :name => 'Category 1', :environment_id => @environment.id)
-    fast_create(ProductCategory, :name => 'Category 2.1', :environment_id => @environment.id, :parent_id => category_1.id)
-    fast_create(ProductCategory, :name => 'Category 2.2', :environment_id => @environment.id, :parent_id => category_1.id)
+    category_1 = create(ProductCategory, :name => 'Category 1', :environment_id => @environment.id)
+    create(ProductCategory, :name => 'Category 2.1', :environment_id => @environment.id, :parent_id => category_1.id)
+    create(ProductCategory, :name => 'Category 2.2', :environment_id => @environment.id, :parent_id => category_1.id)
 
     assert_tag_in_string select_for_categories(category_1.children(true), 1), :tag => 'select', :attributes => {:id => 'category_id'}
   end
@@ -37,8 +37,8 @@ class ManageProductsHelperTest < ActionView::TestCase
     @controller = mock
     @controller.expects(:user).returns(user).at_least_once
     @controller.expects(:profile).returns(mock)
-    category = fast_create(ProductCategory, :name => 'Category 1', :environment_id => @environment.id)
-    product = fast_create(Product, :product_category_id => category.id)
+    category = create(ProductCategory, :name => 'Category 1', :environment_id => @environment.id)
+    product = create(Product, :product_category_id => category.id)
     assert_equal '', edit_product_link_to_remote(product, 'field', 'link to edit')
   end
 
@@ -48,8 +48,8 @@ class ManageProductsHelperTest < ActionView::TestCase
     @controller = mock
     @controller.expects(:user).returns(user).at_least_once
     @controller.expects(:profile).returns(mock)
-    category = fast_create(ProductCategory, :name => 'Category 1', :environment_id => @environment.id)
-    product = fast_create(Product, :product_category_id => category.id)
+    category = create(ProductCategory, :name => 'Category 1', :environment_id => @environment.id)
+    product = create(Product, :product_category_id => category.id)
 
     expects(:link_to_remote).with('link to edit', {:update => "product-name", :loading => "loading_for_button('#link-edit-product-name')", :url => {:controller => 'manage_products', :action => 'edit', :id => product.id, :field => 'name'}, :method => :get}, anything).returns('LINK')
 
@@ -62,8 +62,8 @@ class ManageProductsHelperTest < ActionView::TestCase
     @controller = mock
     @controller.expects(:user).returns(user).at_least_once
     @controller.expects(:profile).returns(mock)
-    category = fast_create(ProductCategory, :name => 'Category 1', :environment_id => @environment.id)
-    product = fast_create(Product, :product_category_id => category.id)
+    category = create(ProductCategory, :name => 'Category 1', :environment_id => @environment.id)
+    product = create(Product, :product_category_id => category.id)
     assert_equal '', edit_link('link to edit category', { :action => 'edit_category', :id => product.id })
   end
 
@@ -73,8 +73,8 @@ class ManageProductsHelperTest < ActionView::TestCase
     @controller = mock
     @controller.expects(:user).returns(user).at_least_once
     @controller.expects(:profile).returns(mock)
-    category = fast_create(ProductCategory, :name => 'Category 1', :environment_id => @environment.id)
-    product = fast_create(Product, :product_category_id => category.id)
+    category = create(ProductCategory, :name => 'Category 1', :environment_id => @environment.id)
+    product = create(Product, :product_category_id => category.id)
 
     expects(:link_to).with('link to edit category', { :action => 'edit_category', :id => product.id }, {} ).returns('LINK')
 
@@ -87,8 +87,8 @@ class ManageProductsHelperTest < ActionView::TestCase
     @controller = mock
     @controller.expects(:user).returns(user).at_least_once
     @controller.expects(:profile).returns(mock)
-    category = fast_create(ProductCategory, :name => 'Category 1', :environment_id => @environment.id)
-    product = fast_create(Product, :product_category_id => category.id)
+    category = create(ProductCategory, :name => 'Category 1', :environment_id => @environment.id)
+    product = create(Product, :product_category_id => category.id)
     assert_equal '', edit_ui_button(product, 'field', 'link to edit')
   end
 
@@ -98,8 +98,8 @@ class ManageProductsHelperTest < ActionView::TestCase
     @controller = mock
     @controller.expects(:user).returns(user).at_least_once
     @controller.expects(:profile).returns(mock)
-    category = fast_create(ProductCategory, :name => 'Category 1', :environment_id => @environment.id)
-    product = fast_create(Product, :product_category_id => category.id)
+    category = create(ProductCategory, :name => 'Category 1', :environment_id => @environment.id)
+    product = create(Product, :product_category_id => category.id)
 
     expects(:ui_button_to_remote).with('link to edit', {:update => "product-info", :url => {:controller => 'manage_products', :action => 'edit', :id => product.id, :field => 'info'}, :complete => "jQuery('#edit-product-button-ui-info').hide()", :method => :get, :loading => "loading_for_button('#edit-product-remote-button-ui-info')", }, :id => 'edit-product-remote-button-ui-info').returns('LINK')
 
@@ -113,8 +113,8 @@ class ManageProductsHelperTest < ActionView::TestCase
     @controller = mock
     @controller.expects(:user).returns(user).at_least_once
     @controller.expects(:profile).returns(mock)
-    category = fast_create(ProductCategory, :name => 'Category 1', :environment_id => @environment.id)
-    product = fast_create(Product, :product_category_id => category.id)
+    category = create(ProductCategory, :name => 'Category 1', :environment_id => @environment.id)
+    product = create(Product, :product_category_id => category.id)
 
     expects(:ui_button).with('link to edit', { :action => 'add_input', :id => product.id }, {}).returns('LINK')
 
@@ -134,16 +134,16 @@ class ManageProductsHelperTest < ActionView::TestCase
   end
 
   should 'sort qualifiers by name' do
-    fast_create(Qualifier, :name => 'Organic')
-    fast_create(Qualifier, :name => 'Non Organic')
+    create(Qualifier, :name => 'Organic')
+    create(Qualifier, :name => 'Non Organic')
     result = qualifiers_for_select
     assert_equal ["Select...", "Non Organic", "Organic"], result.map{|i| i[0]}
   end
 
   should 'sort certifiers by name' do
-    qualifier = fast_create(Qualifier, :name => 'Organic')
-    fbes = fast_create(Certifier, :name => 'FBES')
-    colivre = fast_create(Certifier, :name => 'Colivre')
+    qualifier = create(Qualifier, :name => 'Organic')
+    fbes = create(Certifier, :name => 'FBES')
+    colivre = create(Certifier, :name => 'Colivre')
     create(QualifierCertifier, :qualifier => qualifier, :certifier => colivre)
     create(QualifierCertifier, :qualifier => qualifier, :certifier => fbes)
 
@@ -152,17 +152,17 @@ class ManageProductsHelperTest < ActionView::TestCase
   end
 
   should 'list qualifiers and certifiers of a product' do
-    product = fast_create(Product)
-    qualifier = fast_create(Qualifier)
-    certifier = fast_create(Certifier)
+    product = create(Product)
+    qualifier = create(Qualifier)
+    certifier = create(Certifier)
     create(ProductQualifier, :product => product, :qualifier => qualifier, :certifier => certifier)
     assert_match /✔ Qualifier \d+ certified by Certifier \d+/, display_qualifiers(product)
   end
 
   should 'product survive to a Qualifier deletation' do
-    product = fast_create(Product)
-    qualifier = fast_create(Qualifier)
-    certifier = fast_create(Certifier)
+    product = create(Product)
+    qualifier = create(Qualifier)
+    certifier = create(Certifier)
     create(ProductQualifier, :product => product, :qualifier => qualifier, :certifier => certifier)
     qualifier.destroy
     assert_nothing_raised do
@@ -171,9 +171,9 @@ class ManageProductsHelperTest < ActionView::TestCase
   end
 
   should 'delete product Qualifier self-declared when Certifier is deleted' do
-    product = fast_create(Product)
-    qualifier = fast_create(Qualifier)
-    certifier = fast_create(Certifier)
+    product = create(Product)
+    qualifier = create(Qualifier)
+    certifier = create(Certifier)
     create(ProductQualifier, :product => product, :qualifier => qualifier, :certifier => certifier)
     certifier.destroy
     assert_nothing_raised do

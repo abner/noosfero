@@ -42,7 +42,7 @@ class LinkListBlockTest < ActiveSupport::TestCase
   should 'replace {portal} with environment portal identifier' do
     env = Environment.default
     env.enable('use_portal_community')
-    portal = fast_create(Community, :identifier => 'portal-community', :environment_id => env.id)
+    portal = create(Community, :identifier => 'portal-community', :environment_id => env.id)
     env.portal_community = portal
     env.save
 
@@ -55,7 +55,7 @@ class LinkListBlockTest < ActiveSupport::TestCase
   should 'not change address if no {portal} there' do
     env = Environment.default
     env.enable('use_portal_community')
-    portal = fast_create(Community, :identifier => 'portal-community', :environment_id => env.id)
+    portal = create(Community, :identifier => 'portal-community', :environment_id => env.id)
     env.portal_community = portal
     env.save
 
@@ -112,8 +112,8 @@ class LinkListBlockTest < ActiveSupport::TestCase
   end
 
   should 'be able to update display setting' do
-    user = create_user('testinguser').person
-    box = fast_create(Box, :owner_id => user.id)
+    user = create(:person)
+    box = create(Box, :owner_id => user.id)
     block = LinkListBlock.new(:display => 'never').tap do |b|
       b.box = box
     end

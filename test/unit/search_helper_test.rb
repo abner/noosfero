@@ -141,14 +141,14 @@ class SearchHelperTest < ActiveSupport::TestCase
   end
 
   should 'return an empty string in assets_submenu for people asset with only one template' do
-    t = fast_create(Person, :is_template => true)
+    t = create(Person, :is_template => true)
     @templates = {:people => [t]}
     assert_equal '', assets_submenu(:people)
   end
 
   should 'return a select of templates for people asset with more then one template' do
-    t1 = fast_create(Person, :is_template => true)
-    t2 = fast_create(Person, :is_template => true)
+    t1 = create(Person, :is_template => true)
+    t2 = create(Person, :is_template => true)
     @templates = {:people => [t1,t2]}
     SearchHelperTest.any_instance.stubs(:params).returns({})
     assert_match /select/, assets_submenu(:people)
@@ -165,14 +165,14 @@ class SearchHelperTest < ActiveSupport::TestCase
   end
 
   should 'return an empty string in assets_submenu for communities asset with only one template' do
-    t = fast_create(Community, :is_template => true)
+    t = create(Community, :is_template => true)
     @templates = {:communities => [t]}
     assert_equal '', assets_submenu(:communities)
   end
 
   should 'return a select of templates for communities asset with more then one template' do
-    t1 = fast_create(Community, :is_template => true)
-    t2 = fast_create(Community, :is_template => true)
+    t1 = create(Community, :is_template => true)
+    t2 = create(Community, :is_template => true)
     @templates = {:communities => [t1,t2]}
     SearchHelperTest.any_instance.stubs(:params).returns({})
     assert_match /select/, assets_submenu(:communities)
@@ -189,14 +189,14 @@ class SearchHelperTest < ActiveSupport::TestCase
   end
 
   should 'return an empty string in assets_submenu for enterprises asset with only one template' do
-    t = fast_create(Enterprise, :is_template => true)
+    t = create(Enterprise, :is_template => true)
     @templates = {:enterprises => [t]}
     assert_equal '', assets_submenu(:enterprises)
   end
 
   should 'return a select of templates for enterprises asset with more then one template' do
-    t1 = fast_create(Enterprise, :is_template => true)
-    t2 = fast_create(Enterprise, :is_template => true)
+    t1 = create(Enterprise, :is_template => true)
+    t2 = create(Enterprise, :is_template => true)
     @templates = {:enterprises => [t1,t2]}
     SearchHelperTest.any_instance.stubs(:params).returns({})
     assert_match /select/, assets_submenu(:enterprises)

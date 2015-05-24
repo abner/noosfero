@@ -9,7 +9,7 @@ class ChatHelperTest < ActionView::TestCase
     env = Environment.default
     stubs(:environment).returns(env)
     stubs(:profile).returns(nil)
-    stubs(:user).returns(create_user('testing').person)
+    stubs(:user).returns(create(:person))
     links = user_status_menu('fake-class', 'offline')
     assert_match /Online/, links
     assert_match /Busy/, links

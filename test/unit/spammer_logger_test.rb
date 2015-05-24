@@ -8,7 +8,7 @@ class SpammerLoggerTest < ActiveSupport::TestCase
   end
 
   should 'log the spammer ip with comment associated' do
-    comment = fast_create(Comment)
+    comment = create(Comment)
     SpammerLogger.log('192.168.0.1', comment)
     log = File.open('log/test_spammers.log')
     assert_match "Comment-id: #{comment.id} IP: 192.168.0.1", log.read

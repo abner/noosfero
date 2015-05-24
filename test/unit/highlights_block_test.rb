@@ -58,8 +58,8 @@ class HighlightsBlockTest < ActiveSupport::TestCase
   end
 
   should 'be able to update display setting' do
-    user = create_user('testinguser').person
-    box = fast_create(Box, :owner_id => user.id)
+    user = create(:person)
+    box = create(Box, :owner_id => user.id)
     block = HighlightsBlock.create!(:display => 'never').tap do |b|
       b.box = box
     end
@@ -121,7 +121,7 @@ class HighlightsBlockTest < ActiveSupport::TestCase
 
   [Environment, Profile].each do |klass|
     should "choose between owner galleries when owner is #{klass.name}" do
-      owner = fast_create(klass)
+      owner = create(klass)
 
       block = HighlightsBlock.new
       block.stubs(:owner).returns(owner)

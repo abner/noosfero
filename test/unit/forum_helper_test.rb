@@ -10,8 +10,8 @@ class ForumHelperTest < ActiveSupport::TestCase
 
   def setup
     @environment = Environment.default
-    @profile = create_user('forum_helper_test').person
-    @forum = fast_create(Forum, :profile_id => profile.id, :name => 'Forum test')
+    @profile = create(:person)
+    @forum = create(Forum, :profile_id => profile.id, :name => 'Forum test')
   end
 
   attr :profile
@@ -37,7 +37,7 @@ class ForumHelperTest < ActiveSupport::TestCase
   end
 
   should 'return post update if it has no comments' do
-    author = create_user('forum test author').person
+    author = create(:person)
     some_post = create(TextileArticle, :name => 'First post', :profile => profile, :parent => forum, :published => true, :author => author)
     assert some_post.comments.empty?
     out = last_topic_update(some_post)
@@ -47,7 +47,7 @@ class ForumHelperTest < ActiveSupport::TestCase
 
   should 'return last comment date if it has comments' do
     some_post = create(TextileArticle, :name => 'First post', :profile => profile, :parent => forum, :published => true)
-    a1, a2 = create_user('a1').person, create_user('a2').person
+    a1, a2 = create(:person)
     some_post.comments << build(Comment, :title => 'test', :body => 'test', :author => a1, :created_at => Time.now - 1.day)
     some_post.comments << build(Comment, :title => 'test', :body => 'test', :author => a2, :created_at => Time.now)
     c = Comment.last

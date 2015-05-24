@@ -4,6 +4,10 @@ FactoryGirl.define do
     "identifier#{n}"
   end
 
+  sequence :code do |n|
+    "code#{n}"
+  end
+
   sequence :user_login do |n|
     "user#{n}"
   end
@@ -103,6 +107,8 @@ FactoryGirl.define do
 
     factory :community, class: Community do
     end
+    factory :enterprise, class: Enterprise do
+    end
   end
 
   factory :role do
@@ -126,7 +132,7 @@ FactoryGirl.define do
   end
 
   factory :task do
-    code FFaker::Lorem.word
+    code { generate(:code) }
 
     factory :approve_article, class: ApproveArticle do
     end
@@ -155,6 +161,12 @@ FactoryGirl.define do
 
   factory :domain do
     name FFaker::Lorem.word + '.com'
+  end
+
+  factory :scrap do
+    content FFaker::Lorem.word
+#    sender FactoryGirl.create(:person)
+#    receiver profile
   end
 
 end

@@ -3,7 +3,7 @@ require_relative "../test_helper"
 class MailingSentTest < ActiveSupport::TestCase
 
   should 'return mailing and person' do
-    person = fast_create(Person)
+    person = create(Person)
     environment = Environment.default
     mailing = environment.mailings.create(:subject => 'Hello', :body => 'We have some news')
 

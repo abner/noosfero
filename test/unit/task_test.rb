@@ -85,7 +85,7 @@ class TaskTest < ActiveSupport::TestCase
   end
 
   should 'provide a description method' do
-    requestor = create_user('requestor').person
+    requestor = create(:person)
     assert_kind_of Hash, build(Task, :requestor => requestor).information
   end
 
@@ -160,7 +160,7 @@ class TaskTest < ActiveSupport::TestCase
 
   should 'send notification to target just after task creation' do
     task = Task.new
-    target = fast_create(Profile)
+    target = create(Profile)
     target.stubs(:notification_emails).returns(['adm@example.com'])
     task.target = target
     task.stubs(:target_notification_message).returns('some non nil message to be sent to target')
@@ -173,7 +173,7 @@ class TaskTest < ActiveSupport::TestCase
 
   should 'not send notification to target if the task is hidden' do
     task = build(Task, :status => Task::Status::HIDDEN)
-    target = fast_create(Profile)
+    target = create(Profile)
     target.stubs(:notification_emails).returns(['adm@example.com'])
     task.target = target
     task.stubs(:target_notification_message).returns('some non nil message to be sent to target')
@@ -208,7 +208,7 @@ class TaskTest < ActiveSupport::TestCase
   end
 
   should 'be destroyed when requestor destroyed' do
-    user = create_user('test_user').person
+    user = create(:person)
     assert_no_difference 'Task.count' do
       create(Task, :requestor => user)
       user.destroy
@@ -287,7 +287,7 @@ class TaskTest < ActiveSupport::TestCase
 
   should 'send notification message to target just after task activation' do
     task = build(Task, :status => Task::Status::HIDDEN)
-    target = fast_create(Profile)
+    target = create(Profile)
     target.stubs(:notification_emails).returns(['target@example.com'])
     task.target = target
     task.save!
@@ -300,9 +300,9 @@ class TaskTest < ActiveSupport::TestCase
   end
 
   should 'filter tasks to a profile' do
-    requestor = fast_create(Person)
-    person = fast_create(Person)
-    another_person = fast_create(Person)
+    requestor = create(Person)
+    person = create(Person)
+    another_person = create(Person)
     environment = Environment.default
     environment.add_admin(person)
     t1 = create(Task, :requestor => requestor, :target => person)
@@ -320,8 +320,8 @@ class TaskTest < ActiveSupport::TestCase
   should 'filter tasks by type with named_scope' do
     class CleanHouse < Task; end
     class FeedDog < Task; end
-    requestor = fast_create(Person)
-    target = fast_create(Person)
+    requestor = create(Person)
+    target = create(Person)
     t1 = create(CleanHouse, :requestor => requestor, :target => target)
     t2 = create(CleanHouse, :requestor => requestor, :target => target)
     t3 = create(FeedDog, :requestor => requestor, :target => target)
@@ -335,10 +335,10 @@ class TaskTest < ActiveSupport::TestCase
 
   should 'order tasks by some attribute correctly' do
     Task.destroy_all
-    t1 = fast_create(Task, :status => 4, :created_at => Time.now + 1.hour)
-    t2 = fast_create(Task, :status => 3, :created_at => Time.now + 2.hour)
-    t3 = fast_create(Task, :status => 2, :created_at => Time.now + 3.hour)
-    t4 = fast_create(Task, :status => 1, :created_at => Time.now + 4.hour)
+    t1 = create(Task, :status => 4, :created_at => Time.now + 1.hour)
+    t2 = create(Task, :status => 3, :created_at => Time.now + 2.hour)
+    t3 = create(Task, :status => 2, :created_at => Time.now + 3.hour)
+    t4 = create(Task, :status => 1, :created_at => Time.now + 4.hour)
 
     assert_equal [t1,t2,t3,t4], Task.order_by('created_at', 'asc')
     assert_equal [t4,t3,t2,t1], Task.order_by('created_at', 'desc')
@@ -347,10 +347,10 @@ class TaskTest < ActiveSupport::TestCase
   end
 
   should 'retrieve tasks by status' do
-    pending = fast_create(Task, :status => Task::Status::ACTIVE)
-    hidden = fast_create(Task, :status => Task::Status::HIDDEN)
-    finished = fast_create(Task, :status => Task::Status::FINISHED)
-    canceled = fast_create(Task, :status => Task::Status::CANCELLED)
+    pending = create(Task, :status => Task::Status::ACTIVE)
+    hidden = create(Task, :status => Task::Status::HIDDEN)
+    finished = create(Task, :status => Task::Status::FINISHED)
+    canceled = create(Task, :status => Task::Status::CANCELLED)
 
     assert_includes Task.pending, pending
     assert_not_includes Task.pending, hidden
@@ -403,30 +403,30 @@ class TaskTest < ActiveSupport::TestCase
   end
 
   should 'be able to select non-spam tasks' do
-    t1 = fast_create(Task)
-    t2 = fast_create(Task, :spam => false)
-    t3 = fast_create(Task, :spam => true)
+    t1 = create(Task)
+    t2 = create(Task, :spam => false)
+    t3 = create(Task, :spam => true)
 
     assert_equivalent [t1,t2], Task.without_spam
   end
 
   should 'be able to select spam tasks' do
-    t1 = fast_create(Task)
-    t2 = fast_create(Task, :spam => false)
-    t3 = fast_create(Task, :spam => true)
+    t1 = create(Task)
+    t2 = create(Task, :spam => false)
+    t3 = create(Task, :spam => true)
 
     assert_equivalent [t3], Task.spam
   end
 
   should 'be able to mark as spam' do
-    t1 = fast_create(Task)
+    t1 = create(Task)
     t1.spam!
     t1.reload
     assert t1.spam?
   end
 
   should 'be able to mark as ham' do
-    t1 = fast_create(Task)
+    t1 = create(Task)
     t1.ham!
     t1.reload
     assert t1.ham?

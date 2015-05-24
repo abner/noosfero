@@ -3,7 +3,7 @@ require_relative "../test_helper"
 class MailingJobTest < ActiveSupport::TestCase
 
   def setup
-    @environment = fast_create(Environment)
+    @environment = create(Environment)
     @person_1 = create_user('user_one', :environment_id => @environment.id).person
     create_user('user_two', :environment_id => @environment.id)
   end

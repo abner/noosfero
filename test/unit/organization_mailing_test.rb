@@ -6,10 +6,10 @@ class OrganizationMailingTest < ActiveSupport::TestCase
     ActionMailer::Base.delivery_method = :test
     ActionMailer::Base.perform_deliveries = true
     ActionMailer::Base.deliveries = []
-    @community = fast_create(Community)
-    @person = create_user('john').person
-    member_1 = create_user('user_one').person
-    member_2 = create_user('user_two').person
+    @community = create(Community)
+    @person = create(:person)
+    member_1 = create(:person)
+    member_2 = create(:person)
     @community.add_member(member_1)
     @community.add_member(member_2)
   end
@@ -111,7 +111,7 @@ class OrganizationMailingTest < ActiveSupport::TestCase
   end
 
   should 'return false if did not sent mailing to a recipient' do
-    recipient = fast_create(Person)
+    recipient = create(Person)
     mailing = create(OrganizationMailing, :source => community, :subject => 'Hello', :body => 'We have some news', :person => person)
     process_delayed_job_queue
 

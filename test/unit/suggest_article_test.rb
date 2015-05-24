@@ -6,7 +6,7 @@ class SuggestArticleTest < ActiveSupport::TestCase
     ActionMailer::Base.delivery_method = :test
     ActionMailer::Base.perform_deliveries = true
     ActionMailer::Base.deliveries = []
-    @profile = create_user('test_user').person
+    @profile = create(:person)
     Noosfero::Plugin.stubs(:all).returns(['SuggestArticleTest::EverythingIsSpam', 'SuggestArticleTest::SpamNotification'])
   end
   attr_reader :profile
@@ -209,14 +209,14 @@ class SuggestArticleTest < ActiveSupport::TestCase
   end
 
   should 'not require name and email when requestor is present' do
-    t = SuggestArticle.new(:requestor => fast_create(Person))
+    t = SuggestArticle.new(:requestor => create(Person))
     t.valid?
     assert t.errors[:email].blank?
     assert t.errors[:name].blank?
   end
 
   should 'return name as sender when requestor is setted' do
-    person = fast_create(Person)
+    person = create(Person)
     t = SuggestArticle.new(:requestor => person)
     assert_equal person.name, t.sender
   end

@@ -3,8 +3,8 @@ require_relative "../test_helper"
 class EnterpriseHomepageTest < ActiveSupport::TestCase
   
   def setup
-    @profile = create_user('testing').person
-    @product_category = fast_create(ProductCategory, :name => 'Products')
+    @profile = create(:person)
+    @product_category = create(ProductCategory, :name => 'Products')
   end
   attr_reader :profile
 

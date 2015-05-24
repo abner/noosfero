@@ -7,9 +7,9 @@ class ApproveCommentTest < ActiveSupport::TestCase
     ActionMailer::Base.perform_deliveries = true
     ActionMailer::Base.deliveries = []
     @profile = create_user('test_user', :email => "someone@anyhost.com").person
-    @article = fast_create(TextileArticle, :profile_id => @profile.id, :name => 'test name', :abstract => 'Lead of article', :body => 'This is my article')
+    @article = create(TextileArticle, :profile_id => @profile.id, :name => 'test name', :abstract => 'Lead of article', :body => 'This is my article')
     @community = create(Community, :contact_email => "someone@anyhost.com")
-    @comment = build(Comment, :article => @article, :title => 'any comment', :body => "any text", :author => create_user('someperson').person)
+    @comment = build(Comment, :article => @article, :title => 'any comment', :body => "any text", :author => create(:person))
   end
 
   attr_reader :profile, :article, :community
@@ -207,12 +207,12 @@ class ApproveCommentTest < ActiveSupport::TestCase
   end
 
   should 'requestor name be the name of the requestor' do
-    a = fast_create(ApproveComment, :target_id => community, :requestor_id => profile)
+    a = create(ApproveComment, :target_id => community, :requestor_id => profile)
     assert_equal profile.name, a.requestor_name
   end
 
   should 'requestor name be Anonymous if there is no requestor' do
-    a = fast_create(ApproveComment, :target_id => community)
+    a = create(ApproveComment, :target_id => community)
     a.comment_attributes = @comment.attributes.to_json
     assert_equal 'Anonymous', a.requestor_name
   end

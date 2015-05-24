@@ -102,7 +102,7 @@ class ThemeTest < ActiveSupport::TestCase
   end
 
   should 'have an owner' do
-    profile = create_user('testinguser').person
+    profile = create(:person)
     t = Theme.new('mytheme')
     t.owner = profile
     t.save
@@ -116,7 +116,7 @@ class ThemeTest < ActiveSupport::TestCase
   end
 
   should 'be able to find by owner' do
-    profile = create_user('testinguser').person
+    profile = create(:person)
     t = Theme.new('mytheme')
     t.owner = profile
     t.save
@@ -125,12 +125,12 @@ class ThemeTest < ActiveSupport::TestCase
   end
 
   should 'be able to set attributes in constructor' do
-    p = create_user('testuser').person
+    p = create(:person)
     assert_equal p, Theme.new('test', :owner => p).owner
   end
 
   should 'pass attributes to constructor' do
-    p = create_user('testuser').person
+    p = create(:person)
     assert_equal p, Theme.create('test', :owner => p).owner
   end
 
@@ -158,8 +158,8 @@ class ThemeTest < ActiveSupport::TestCase
   should 'be able to find approved themes' do
     Theme.stubs(:system_themes_dir).returns(TMP_THEMES_DIR)
 
-    profile = create_user('testinguser').person
-    profile2 = create_user('testinguser2').person
+    profile = create(:person)
+    profile2 = create(:person)
     t1 = Theme.new('mytheme1', :name => 'mytheme1', :owner => profile, :public => false); t1.save
     t2 = Theme.new('mytheme2', :name => 'mytheme2', :owner => profile2, :public => true); t2.save
     t3 = Theme.new('mytheme3', :name => 'mytheme3', :public => false); t3.save
@@ -192,7 +192,7 @@ class ThemeTest < ActiveSupport::TestCase
   end
 
   should 'not crash with nil or invalid owner_type' do
-    profile = fast_create(Profile)
+    profile = create(Profile)
     Theme.stubs(:system_themes_dir).returns(TMP_THEMES_DIR)
 
     t1 = Theme.new('t1').save

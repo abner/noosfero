@@ -72,8 +72,8 @@ class ExternalFeedTest < ActiveSupport::TestCase
   end
 
   should 'list enabled external feeds' do
-    e1 = fast_create(:external_feed, :enabled => true)
-    e2 = fast_create(:external_feed, :enabled => false)
+    e1 = create(:external_feed, :enabled => true)
+    e2 = create(:external_feed, :enabled => false)
     assert_includes ExternalFeed.enabled, e1
     assert_not_includes ExternalFeed.enabled, e2
   end
@@ -110,8 +110,8 @@ class ExternalFeedTest < ActiveSupport::TestCase
     # Noosfero is configured to update feeds every 4 hours
     FeedUpdater.stubs(:update_interval).returns(4.hours)
 
-    expired = fast_create(:external_feed)
-    not_expired = fast_create(:external_feed)
+    expired = create(:external_feed)
+    not_expired = create(:external_feed)
 
     # 5 hours ago
     Time.stubs(:now).returns(now  - 5.hours)
@@ -129,7 +129,7 @@ class ExternalFeedTest < ActiveSupport::TestCase
   end
 
   should 'consider recently-created instance as expired' do
-    new = fast_create(:external_feed)
+    new = create(:external_feed)
     assert_includes ExternalFeed.expired, new
   end
 
@@ -179,8 +179,8 @@ class ExternalFeedTest < ActiveSupport::TestCase
   end
 
   should 'allow mass assign attributes' do
-    p = create_user('testuser').person
-    blog = fast_create(Blog, :profile_id => p.id, :name => 'Blog test')
+    p = create(:person)
+    blog = create(Blog, :profile_id => p.id, :name => 'Blog test')
 
     assert_difference 'ExternalFeed.count', 1 do
       efeed = blog.create_external_feed(:address => 'http://invalid.url', :enabled => true, :only_once => 'false')

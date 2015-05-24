@@ -24,7 +24,7 @@ class RssFeedTest < ActiveSupport::TestCase
   end
 
   should 'list recent articles of profile when top-level' do
-    profile = create_user('testuser').person
+    profile = create(:person)
     a1 = profile.articles.build(:name => 'article 1'); a1.save!
     a2 = profile.articles.build(:name => 'article 2'); a2.save!
     a3 = profile.articles.build(:name => 'article 3'); a3.save!
@@ -40,7 +40,7 @@ class RssFeedTest < ActiveSupport::TestCase
   end
 
   should 'not list self' do
-    profile = create_user('testuser').person
+    profile = create(:person)
     a1 = profile.articles.build(:name => 'article 1'); a1.save!
     a2 = profile.articles.build(:name => 'article 2'); a2.save!
     a3 = profile.articles.build(:name => 'article 3'); a3.save!
@@ -54,7 +54,7 @@ class RssFeedTest < ActiveSupport::TestCase
   end
 
   should 'list recent article from parent article' do
-    profile = create_user('testuser').person
+    profile = create(:person)
     feed = RssFeed.new
     feed.expects(:profile).returns(profile).at_least_once
     array = []
@@ -63,7 +63,7 @@ class RssFeedTest < ActiveSupport::TestCase
   end
 
   should "be able to search only children of feed's parent" do
-    profile = create_user('testuser').person
+    profile = create(:person)
     a1 = profile.articles.build(:name => 'article 1'); a1.save!
     a2 = profile.articles.build(:name => 'article 2'); a2.save!
 
@@ -90,11 +90,11 @@ class RssFeedTest < ActiveSupport::TestCase
   end
 
   should 'list blog posts with more recent first and respecting limit' do
-    profile = create_user('testuser').person
+    profile = create(:person)
     blog = create(Blog, :name => 'blog-test', :profile => profile)
     posts = []
     6.times do |i|
-      posts << fast_create(TextArticle, :name => "post #{i}", :profile_id => profile.id, :parent_id => blog.id)
+      posts << create(TextArticle, :name => "post #{i}", :profile_id => profile.id, :parent_id => blog.id)
     end
     feed = blog.feed
     feed.limit = 5
@@ -104,11 +104,11 @@ class RssFeedTest < ActiveSupport::TestCase
   end
 
   should 'list only published posts from blog' do
-    profile = create_user('testuser').person
+    profile = create(:person)
     blog = create(Blog, :name => 'blog-test', :profile => profile)
     posts = []
     5.times do |i|
-      posts << fast_create(TextArticle, :name => "post #{i}", :profile_id => profile.id, :parent_id => blog.id)
+      posts << create(TextArticle, :name => "post #{i}", :profile_id => profile.id, :parent_id => blog.id)
     end
     posts[0].published = false
     posts[0].save!
@@ -118,7 +118,7 @@ class RssFeedTest < ActiveSupport::TestCase
 
 
   should 'provide link to profile' do
-    profile = create_user('testuser').person
+    profile = create(:person)
     feed = build(RssFeed, :name => 'testfeed')
     feed.profile = profile
     feed.save!
@@ -127,7 +127,7 @@ class RssFeedTest < ActiveSupport::TestCase
   end
 
   should 'provide link to each article' do
-    profile = create_user('testuser').person
+    profile = create(:person)
     art = profile.articles.build(:name => 'myarticle'); art.save!
     feed = build(RssFeed, :name => 'testfeed')
     feed.profile = profile
@@ -139,7 +139,7 @@ class RssFeedTest < ActiveSupport::TestCase
   end
 
   should 'be able to indicate maximum number of items' do
-    profile = create_user('testuser').person
+    profile = create(:person)
     a1 = profile.articles.build(:name => 'article 1'); a1.save!
     a2 = profile.articles.build(:name => 'article 2'); a2.save!
     a3 = profile.articles.build(:name => 'article 3'); a3.save!
@@ -192,22 +192,22 @@ class RssFeedTest < ActiveSupport::TestCase
   end
 
   should 'advertise is false before create' do
-    profile = create_user('testuser').person
+    profile = create(:person)
     feed = create(RssFeed, :name => 'testfeed', :profile => profile)
     assert !feed.advertise?
   end
 
   should 'can display hits' do
-    p = create_user('testuser').person
+    p = create(:person)
     a = create(RssFeed, :name => 'Test article', :profile => p)
     assert_equal false, a.can_display_hits?
   end
 
   should 'display the referenced body of a article published' do
-    article = fast_create(TextileArticle, :body => 'This is the content of the Sample Article.', :profile_id => fast_create(Person).id)
-    profile = fast_create(Profile)
-    blog = fast_create(Blog, :profile_id => profile.id)
-    a = create(ApproveArticle, :name => 'test name', :article => article, :target => profile, :requestor => fast_create(Person))
+    article = create(TextileArticle, :body => 'This is the content of the Sample Article.', :profile_id => create(Person).id)
+    profile = create(Profile)
+    blog = create(Blog, :profile_id => profile.id)
+    a = create(ApproveArticle, :name => 'test name', :article => article, :target => profile, :requestor => create(Person))
     a.requestor.stubs(:notification_emails).returns(['random@example.org'])
     a.finish
 
@@ -221,7 +221,7 @@ class RssFeedTest < ActiveSupport::TestCase
   end
 
   should 'display articles even within a private profile' do
-    profile = create_user('testuser').person
+    profile = create(:person)
     profile.public_profile = false
     profile.save!
     a1 = profile.articles.build(:name => 'article 1'); a1.save!
@@ -243,21 +243,21 @@ class RssFeedTest < ActiveSupport::TestCase
   end
 
   should 'include posts from all languages' do
-    profile = create_user('testuser').person
+    profile = create(:person)
     blog = create(Blog, :name => 'blog-test', :profile => profile, :language => nil)
-    blog.posts << en_post = fast_create(TextArticle, :name => "English", :profile_id => profile.id, :parent_id => blog.id, :published => true, :language => 'en')
-    blog.posts << es_post = fast_create(TextArticle, :name => "Spanish", :profile_id => profile.id, :parent_id => blog.id, :published => true, :language => 'es')
+    blog.posts << en_post = create(TextArticle, :name => "English", :profile_id => profile.id, :parent_id => blog.id, :published => true, :language => 'en')
+    blog.posts << es_post = create(TextArticle, :name => "Spanish", :profile_id => profile.id, :parent_id => blog.id, :published => true, :language => 'es')
 
     assert blog.feed.fetch_articles.include?(en_post)
     assert blog.feed.fetch_articles.include?(es_post)
   end
 
   should 'include only posts from some language' do
-    profile = create_user('testuser').person
+    profile = create(:person)
     blog = create(Blog, :name => 'blog-test', :profile => profile)
     blog.feed.update_attributes! :language => 'es'
-    blog.posts << en_post = fast_create(TextArticle, :name => "English", :profile_id => profile.id, :parent_id => blog.id, :published => true, :language => 'en')
-    blog.posts << es_post = fast_create(TextArticle, :name => "Spanish", :profile_id => profile.id, :parent_id => blog.id, :published => true, :language => 'es')
+    blog.posts << en_post = create(TextArticle, :name => "English", :profile_id => profile.id, :parent_id => blog.id, :published => true, :language => 'en')
+    blog.posts << es_post = create(TextArticle, :name => "Spanish", :profile_id => profile.id, :parent_id => blog.id, :published => true, :language => 'es')
 
     assert_equal [es_post], blog.feed.fetch_articles
   end

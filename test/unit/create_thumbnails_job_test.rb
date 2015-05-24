@@ -3,7 +3,7 @@ require_relative "../test_helper"
 class CreateThumbnailsJobTest < ActiveSupport::TestCase
 
   should 'create thumbnails to uploaded files' do
-    person = create_user('test_user').person
+    person = create(:person)
     file = UploadedFile.create!(:uploaded_data => fixture_file_upload('/files/rails.png', 'image/png'), :profile => person)
 
     assert_equal [], file.thumbnails
@@ -14,7 +14,7 @@ class CreateThumbnailsJobTest < ActiveSupport::TestCase
   end
 
   should 'set thumbnails_processed to true after finished' do
-    person = create_user('test_user').person
+    person = create(:person)
     file = UploadedFile.create!(:uploaded_data => fixture_file_upload('/files/rails.png', 'image/png'), :profile => person)
 
     job = CreateThumbnailsJob.new(file.class.name, file.id)
@@ -25,7 +25,7 @@ class CreateThumbnailsJobTest < ActiveSupport::TestCase
   end
 
   should 'not create thumbnails from deleted files' do
-    person = create_user('test_user').person
+    person = create(:person)
     file = UploadedFile.create!(:uploaded_data => fixture_file_upload('/files/rails.png', 'image/png'), :profile => person)
     job = CreateThumbnailsJob.new(file.class.name, file.id)
     file.destroy

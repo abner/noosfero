@@ -71,7 +71,7 @@ class EventTest < ActiveSupport::TestCase
   end
 
   should 'find by range of dates' do
-    profile = create_user('testuser').person
+    profile = create(:person)
     e1 = create(Event, :name => 'e1', :start_date =>  Date.new(2008,1,1), :profile => profile)
     e2 = create(Event, :name => 'e2', :start_date =>  Date.new(2008,2,1), :profile => profile)
     e3 = create(Event, :name => 'e3', :start_date =>  Date.new(2008,3,1), :profile => profile)
@@ -83,7 +83,7 @@ class EventTest < ActiveSupport::TestCase
   end
 
   should 'filter events by range' do
-    profile = create_user('testuser').person
+    profile = create(:person)
     e1 = create(Event, :name => 'e1', :start_date => Date.new(2008,1,15), :profile => profile)
     assert_includes profile.events.by_range(Date.new(2008, 1, 10)..Date.new(2008, 1, 20)), e1
   end
@@ -148,7 +148,7 @@ class EventTest < ActiveSupport::TestCase
   end
 
   should 'filter HTML in body' do
-    profile = create_user('testuser').person
+    profile = create(:person)
     e = create(Event, :profile => profile, :name => 'test', :body => '<p>a paragraph (valid)</p><script type="text/javascript">/* this is invalid */</script>"', :link => 'www.colivre.coop.br', :start_date => Date.today)
 
     assert_tag_in_string e.body, :tag => 'p', :content => 'a paragraph (valid)'
@@ -156,7 +156,7 @@ class EventTest < ActiveSupport::TestCase
   end
 
   should 'filter HTML in name' do
-    profile = create_user('testuser').person
+    profile = create(:person)
     e = create(Event, :profile => profile, :name => '<p>a paragraph (valid)</p><script type="text/javascript">/* this is invalid */</script>"', :link => 'www.colivre.coop.br', :start_date => Date.today)
 
     assert_tag_in_string e.name, :tag => 'p', :content => 'a paragraph (valid)'
@@ -171,7 +171,7 @@ class EventTest < ActiveSupport::TestCase
   end
 
   should 'list all events' do
-    profile = fast_create(Profile)
+    profile = create(Profile)
     event1 = build(Event, :name => 'Ze Birthday', :start_date => Date.today)
     event2 = build(Event, :name => 'Mane Birthday', :start_date => Date.today >> 1)
     profile.events << [event1, event2]
@@ -180,7 +180,7 @@ class EventTest < ActiveSupport::TestCase
   end
 
   should 'list events by day' do
-    profile = fast_create(Profile)
+    profile = create(Profile)
 
     today = Date.today
     yesterday_event = build(Event, :name => 'Joao Birthday', :start_date => today - 1.day)
@@ -193,7 +193,7 @@ class EventTest < ActiveSupport::TestCase
   end
 
   should 'list events by month' do
-    profile = fast_create(Profile)
+    profile = create(Profile)
 
     today = Date.new(2013, 10, 6)
 
@@ -216,7 +216,7 @@ class EventTest < ActiveSupport::TestCase
   end
 
   should 'event by month ordered by start date'do
-    profile = fast_create(Profile)
+    profile = create(Profile)
 
     today = Date.new(2013, 10, 6)
 
@@ -234,7 +234,7 @@ class EventTest < ActiveSupport::TestCase
   end
 
   should 'list events in a range' do
-    profile = fast_create(Profile)
+    profile = create(Profile)
 
     today = Date.today
     event_in_range = build(Event, :name => 'Noosfero Conference', :start_date => today - 2.day, :end_date => today + 2.day)
@@ -248,7 +248,7 @@ class EventTest < ActiveSupport::TestCase
   end
 
   should 'not list events out of range' do
-    profile = fast_create(Profile)
+    profile = create(Profile)
 
     today = Date.today
     event_in_range1 = build(Event, :name => 'Foswiki Conference', :start_date => today - 2.day, :end_date => today + 2.day)
@@ -321,9 +321,9 @@ class EventTest < ActiveSupport::TestCase
   end
 
   should 'not be translatable if there is no language available on environment' do
-    environment = fast_create(Environment)
+    environment = create(Environment)
     environment.languages = nil
-    profile = fast_create(Person, :environment_id => environment.id)
+    profile = create(Person, :environment_id => environment.id)
  
     event = Event.new(:profile => profile)
 
@@ -331,10 +331,10 @@ class EventTest < ActiveSupport::TestCase
   end
 
   should 'be translatable if there is languages on environment' do
-    environment = fast_create(Environment)
+    environment = create(Environment)
     environment.languages = nil
-    profile = fast_create(Person, :environment_id => environment.id)
-    event = fast_create(Event, :profile_id => profile.id)
+    profile = create(Person, :environment_id => environment.id)
+    event = create(Event, :profile_id => profile.id)
 
     assert !event.translatable?
  

@@ -10,8 +10,8 @@ class BlogHelperTest < ActionView::TestCase
   def setup
     stubs(:show_date).returns('')
     @environment = Environment.default
-    @profile = create_user('blog_helper_test').person
-    @blog = fast_create(Blog, :profile_id => profile.id, :name => 'Blog test')
+    @profile = create(:person)
+    @blog = create(Blog, :profile_id => profile.id, :name => 'Blog test')
   end
 
   attr :profile
@@ -63,7 +63,7 @@ class BlogHelperTest < ActionView::TestCase
   end
 
   should 'display empty post if body is nil' do
-    blog.children << article = fast_create(Article, :profile_id => profile.id, :parent_id => blog.id, :body => nil)
+    blog.children << article = create(Article, :profile_id => profile.id, :parent_id => blog.id, :body => nil)
     expects(:article_title).with(article, anything).returns('TITLE')
     expects(:content_tag).with('p', '').returns('')
     self.stubs(:params).returns({:npage => nil})
@@ -72,7 +72,7 @@ class BlogHelperTest < ActionView::TestCase
   end
 
   should 'display full post by default' do
-    blog.children << article = fast_create(Article, :profile_id => profile.id, :parent_id => blog.id, :body => nil)
+    blog.children << article = create(Article, :profile_id => profile.id, :parent_id => blog.id, :body => nil)
     expects(:article_title).with(article, anything).returns('')
     expects(:display_full_format).with(article).returns('FULL POST')
 
@@ -80,7 +80,7 @@ class BlogHelperTest < ActionView::TestCase
   end
 
   should 'no_comments is false if blog displays full post' do
-    blog.children << article = fast_create(Article, :profile_id => profile.id, :parent_id => blog.id, :body => nil)
+    blog.children << article = create(Article, :profile_id => profile.id, :parent_id => blog.id, :body => nil)
     expects(:article_title).with(article, :no_comments => false).returns('')
     expects(:display_full_format).with(article).returns('FULL POST')
 
@@ -89,7 +89,7 @@ class BlogHelperTest < ActionView::TestCase
 
   should 'no_comments is true if blog displays short post' do
     blog.update_attribute(:visualization_format, 'short')
-    blog.children << article = fast_create(Article, :profile_id => profile.id, :parent_id => blog.id, :body => nil)
+    blog.children << article = create(Article, :profile_id => profile.id, :parent_id => blog.id, :body => nil)
     expects(:article_title).with(article, :no_comments => true).returns('')
     expects(:display_short_format).with(article).returns('SHORT POST')
 

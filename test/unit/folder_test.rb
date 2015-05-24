@@ -23,77 +23,77 @@ class FolderTest < ActiveSupport::TestCase
   end
 
   should 'can display hits' do
-    profile = create_user('testuser').person
-    a = fast_create(Folder, :profile_id => profile.id)
+    profile = create(:person)
+    a = create(Folder, :profile_id => profile.id)
     assert_equal false, a.can_display_hits?
   end
 
   should 'have images that are only images or other folders' do
-    p = create_user('test_user').person
-    f = fast_create(Folder, :profile_id => p.id)
+    p = create(:person)
+    f = create(Folder, :profile_id => p.id)
     file = create(UploadedFile, :uploaded_data => fixture_file_upload('/files/test.txt', 'text/plain'), :parent => f, :profile => p)
     image = create(UploadedFile, :uploaded_data => fixture_file_upload('/files/rails.png', 'image/png'), :parent => f, :profile => p)
-    folder = fast_create(Folder, :profile_id => p.id, :parent_id => f.id)
+    folder = create(Folder, :profile_id => p.id, :parent_id => f.id)
 
     assert_equivalent [folder, image], f.images
   end
 
   should 'bring folders first in alpha order in images listing' do
-    p = create_user('test_user').person
-    f = fast_create(Folder, :profile_id => p.id)
-    folder1 = fast_create(Folder, :name => 'b', :profile_id => p.id, :parent_id => f.id)
+    p = create(:person)
+    f = create(Folder, :profile_id => p.id)
+    folder1 = create(Folder, :name => 'b', :profile_id => p.id, :parent_id => f.id)
     image = create(UploadedFile, :uploaded_data => fixture_file_upload('/files/rails.png', 'image/png'), :parent => f, :profile => p)
-    folder2 = fast_create(Folder, :name => 'c', :profile_id => p.id, :parent_id => f.id)
-    folder3 = fast_create(Folder, :name => 'a', :profile_id => p.id, :parent_id => f.id)
+    folder2 = create(Folder, :name => 'c', :profile_id => p.id, :parent_id => f.id)
+    folder3 = create(Folder, :name => 'a', :profile_id => p.id, :parent_id => f.id)
 
     assert_equal [folder3.id, folder1.id, folder2.id, image.id], f.images.map(&:id)
   end
 
   should 'images support pagination' do
-    p = create_user('test_user').person
-    f = fast_create(Folder, :profile_id => p.id)
-    folder = fast_create(Folder, :profile_id => p.id, :parent_id => f.id)
+    p = create(:person)
+    f = create(Folder, :profile_id => p.id)
+    folder = create(Folder, :profile_id => p.id, :parent_id => f.id)
     image = create(UploadedFile, :uploaded_data => fixture_file_upload('/files/rails.png', 'image/png'), :parent => f, :profile => p)
 
     assert_equal [image], f.images.paginate(:page => 2, :per_page => 1)
   end
 
   should 'return newest text articles as news' do
-    c = fast_create(Community)
-    folder = fast_create(Folder, :profile_id => c.id)
-    f = fast_create(Folder, :name => 'folder', :profile_id => c.id, :parent_id => folder.id)
+    c = create(Community)
+    folder = create(Folder, :profile_id => c.id)
+    f = create(Folder, :name => 'folder', :profile_id => c.id, :parent_id => folder.id)
     u = create(UploadedFile, :profile => c, :uploaded_data => fixture_file_upload('/files/rails.png', 'image/png'), :parent => folder)
-    older_t = fast_create(TinyMceArticle, :name => 'old news', :profile_id => c.id, :parent_id => folder.id)
-    t = fast_create(TinyMceArticle, :name => 'news', :profile_id => c.id, :parent_id => folder.id)
-    t_in_f = fast_create(TinyMceArticle, :name => 'news', :profile_id => c.id, :parent_id => f.id)
+    older_t = create(TinyMceArticle, :name => 'old news', :profile_id => c.id, :parent_id => folder.id)
+    t = create(TinyMceArticle, :name => 'news', :profile_id => c.id, :parent_id => folder.id)
+    t_in_f = create(TinyMceArticle, :name => 'news', :profile_id => c.id, :parent_id => f.id)
 
     assert_equal [t], folder.news(1)
   end
 
   should 'not return highlighted news when not asked' do
-    c = fast_create(Community)
-    folder = fast_create(Folder, :profile_id => c.id)
-    highlighted_t = fast_create(TinyMceArticle, :name => 'high news', :profile_id => c.id, :highlighted => true, :parent_id => folder.id)
-    t = fast_create(TinyMceArticle, :name => 'news', :profile_id => c.id, :parent_id => folder.id)
+    c = create(Community)
+    folder = create(Folder, :profile_id => c.id)
+    highlighted_t = create(TinyMceArticle, :name => 'high news', :profile_id => c.id, :highlighted => true, :parent_id => folder.id)
+    t = create(TinyMceArticle, :name => 'news', :profile_id => c.id, :parent_id => folder.id)
 
     assert_equal [t].map(&:slug), folder.news(2).map(&:slug)
   end
 
   should 'return highlighted news when asked' do
-    c = fast_create(Community)
-    folder = fast_create(Folder, :profile_id => c.id)
-    highlighted_t = fast_create(TinyMceArticle, :name => 'high news', :profile_id => c.id, :highlighted => true, :parent_id => folder.id)
-    t = fast_create(TinyMceArticle, :name => 'news', :profile_id => c.id, :parent_id => folder.id)
+    c = create(Community)
+    folder = create(Folder, :profile_id => c.id)
+    highlighted_t = create(TinyMceArticle, :name => 'high news', :profile_id => c.id, :highlighted => true, :parent_id => folder.id)
+    t = create(TinyMceArticle, :name => 'news', :profile_id => c.id, :parent_id => folder.id)
 
     assert_equal [highlighted_t].map(&:slug), folder.news(2, true).map(&:slug)
   end
 
   should 'return published images as images' do
-    person = create_user('test_user').person
+    person = create(:person)
     image = UploadedFile.create!(:profile => person, :uploaded_data => fixture_file_upload('/files/rails.png', 'image/png'))
 
-    community = fast_create(Community)
-    folder = fast_create(Folder, :profile_id => community.id)
+    community = create(Community)
+    folder = create(Folder, :profile_id => community.id)
     a = create(ApproveArticle, :article => image, :target => community, :requestor => person, :article_parent => folder)
     a.finish
 
@@ -149,7 +149,7 @@ class FolderTest < ActiveSupport::TestCase
   end
 
   should 'accept uploads' do
-    folder = fast_create(Folder)
+    folder = create(Folder)
     assert folder.accept_uploads?
   end
 

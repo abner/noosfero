@@ -6,7 +6,7 @@ class ProductCategoryTest < ActiveSupport::TestCase
     c0 = Environment.default.product_categories.create!(:name => 'base_cat')
     assert_equivalent [], c0.all_products
 
-    profile = fast_create(Enterprise)
+    profile = create(Enterprise)
     p0 = profile.products.create(:name => 'product1', :product_category => c0)
     c0.reload
     assert_equivalent [p0], c0.all_products
@@ -37,7 +37,7 @@ class ProductCategoryTest < ActiveSupport::TestCase
   end
 
   should 'provide a scope based on the enterprise' do
-    enterprise = fast_create(Enterprise)
+    enterprise = create(Enterprise)
     c1 = ProductCategory.create!(:name => 'test cat 1', :environment => Environment.default)
     c2 = ProductCategory.create!(:name => 'test cat 2', :environment => Environment.default)
     c3 = ProductCategory.create!(:name => 'test cat 3', :environment => Environment.default)

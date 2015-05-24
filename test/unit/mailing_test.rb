@@ -4,7 +4,7 @@ class MailingTest < ActiveSupport::TestCase
 
   def setup
     ActionMailer::Base.deliveries = []
-    @environment = fast_create(Environment, :name => 'Network')
+    @environment = create(Environment, :name => 'Network')
     create_user('user_one', :environment_id => @environment.id)
     create_user('user_two', :environment_id => @environment.id)
   end
