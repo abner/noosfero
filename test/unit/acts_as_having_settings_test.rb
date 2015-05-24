@@ -40,7 +40,7 @@ class ActsAsHavingSettingsTest < ActiveSupport::TestCase
 
   should 'properly save the settings' do
     # RecentDocumentsBlock declares an actual setting called limit
-    profile = create_user('testuser').person
+    profile = create(:person)
     block = RecentDocumentsBlock.new
     block.box = profile.boxes.first
     block.limit = 15
