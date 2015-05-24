@@ -19,7 +19,7 @@ module CatalogHelper
     ancestors = category.ancestors.map { |c| link_to(c.name, {:controller => :catalog, :action => 'index', :level => c.id}) }.reverse
     current_level = content_tag('strong', category.name)
     all_items = [start] + ancestors + [current_level]
-    content_tag('div', all_items.join(' &rarr; '), :id => 'breadcrumb')
+    content_tag('div', safe_join(all_items, ' &rarr; '), :id => 'breadcrumb')
   end
 
   def category_link(category)

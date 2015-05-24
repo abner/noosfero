@@ -1003,12 +1003,12 @@ class ProfileEditorControllerTest < ActionController::TestCase
   should 'add extra content on person info from plugins' do
     class Plugin1 < Noosfero::Plugin
       def profile_info_extra_contents
-        proc {"<strong>Plugin1 text</strong>"}
+        proc {"<strong>Plugin1 text</strong>".html_safe}
       end
     end
     class Plugin2 < Noosfero::Plugin
       def profile_info_extra_contents
-        proc {"<strong>Plugin2 text</strong>"}
+        proc {"<strong>Plugin2 text</strong>".html_safe}
       end
     end
     Noosfero::Plugin.stubs(:all).returns([Plugin1.to_s, Plugin2.to_s])
@@ -1025,12 +1025,12 @@ class ProfileEditorControllerTest < ActionController::TestCase
   should 'add extra content on organization info from plugins' do
     class Plugin1 < Noosfero::Plugin
       def profile_info_extra_contents
-        proc {"<strong>Plugin1 text</strong>"}
+        proc {"<strong>Plugin1 text</strong>".html_safe}
       end
     end
     class Plugin2 < Noosfero::Plugin
       def profile_info_extra_contents
-        proc {"<strong>Plugin2 text</strong>"}
+        proc {"<strong>Plugin2 text</strong>".html_safe}
       end
     end
     Noosfero::Plugin.stubs(:all).returns([Plugin1.to_s, Plugin2.to_s])

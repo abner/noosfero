@@ -89,8 +89,13 @@ module BoxesHelper
   end
 
   def display_block_content(block, person, main_content = nil)
-    content = block.main? ? wrap_main_content(main_content) : block.content({:person => person})
-    #binding.pry
+    if block.main? then
+      content = wrap_main_content(main_content)
+    else
+      content = block.content({:person => person})
+    end
+    #content = block.main? ? wrap_main_content(main_content) : block.content({:person => person})
+
     result = extract_block_content(content)
     footer_content = extract_block_content(block.footer)
     unless footer_content.blank?
@@ -109,21 +114,22 @@ module BoxesHelper
     end
 
     result = filter_html(result, block)
-    c = content_tag('div',
-      box_decorator.block_target(block.box, block) +
-        content_tag('div',
-         content_tag('div',
-           content_tag('div',
-             result + footer_content + box_decorator.block_edit_buttons(block),
-             :class => 'block-inner-2'),
-           :class => 'block-inner-1'),
-       options),
-    :class => 'block-outer')
-    (c + box_decorator.block_handle(block))
+
+    join_result = safe_join([result, footer_content, box_decorator.block_edit_buttons(block)])
+    content_tag_inner_1 = content_tag('div', join_result, :class => 'block-inner-2')
+
+    content_tag_inner_2 = content_tag('div', content_tag_inner_1, :class => 'block-inner-1')
+    content_tag_inner_3 = content_tag('div', content_tag_inner_2, options)
+    content_tag_inner_4 = box_decorator.block_target(block.box, block) + content_tag_inner_3
+    c = content_tag('div', content_tag_inner_4, :class => 'block-outer')
+    box_decorator_result = box_decorator.block_handle(block)
+    result_final = safe_join([c, box_decorator_result], "")
+    
+
+    return result_final
   end
 
   def wrap_main_content(content)
-    puts "wrap_main_content: #{content}"
     (1..8).to_a.reverse.inject(content) { |acc,n| 
       content_tag('div', acc, :id => 'main-content-wrapper-' + n.to_s) 
     }

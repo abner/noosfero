@@ -56,17 +56,20 @@ class LinkListBlock < Block
   end
 
   def content(args={})
-    block_title(title) +
-    content_tag('ul',
-      links.select{|i| !i[:name].blank? and !i[:address].blank?}.map{|i| content_tag('li', link_html(i))}.join
-    )
+    ret = "".html_safe
+    ret = ret + block_title(title)
+    selected_links = links.select{ |i| !i[:name].blank? and !i[:address].blank? }
+    ret_links = selected_links.map { |i| content_tag('li', link_html(i).html_safe) }
+    inner_join = ret_links.join.html_safe
+    return ret + content_tag('ul', inner_join)
   end
 
   def link_html(link)
     klass = 'icon-' + link[:icon] if link[:icon]
-    sanitize_link(
+    sanitized_link = sanitize_link(
       link_to(link[:name], expand_address(link[:address]), :target => link[:target], :class => klass, :title => link[:title])
     )
+    return sanitized_link
   end
 
   def expand_address(address)

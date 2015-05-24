@@ -171,7 +171,7 @@ class HomeControllerTest < ActionController::TestCase
   should 'plugins add class to the <html>' do
     class Plugin1 < Noosfero::Plugin
       def html_tag_classes
-        lambda { ['t1', 't2'] }
+        lambda { ['t1'.html_safe, 't2'.html_safe] }
       end
     end
 

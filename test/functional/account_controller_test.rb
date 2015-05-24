@@ -706,14 +706,14 @@ class AccountControllerTest < ActionController::TestCase
   should 'merge user data with extra stuff from plugins' do
     class Plugin1 < Noosfero::Plugin
       def user_data_extras
-        {:foo => 'bar'}
+        {:foo => 'bar'}.html_safe
       end
     end
 
     class Plugin2 < Noosfero::Plugin
       def user_data_extras
         proc do
-          {:test => 5}
+          {:test => 5}.html_safe
         end
       end
     end
@@ -800,12 +800,12 @@ class AccountControllerTest < ActionController::TestCase
   should 'add extra content on signup forms from plugins' do
     class Plugin1 < Noosfero::Plugin
       def signup_extra_contents
-        proc {"<strong>Plugin1 text</strong>"}
+        proc {"<strong>Plugin1 text</strong>".html_safe}
       end
     end
     class Plugin2 < Noosfero::Plugin
       def signup_extra_contents
-        proc {"<strong>Plugin2 text</strong>"}
+        proc {"<strong>Plugin2 text</strong>".html_safe}
       end
     end
     Noosfero::Plugin.stubs(:all).returns([Plugin1.name, Plugin2.name])
@@ -922,12 +922,12 @@ class AccountControllerTest < ActionController::TestCase
   should 'add extra content on login form from plugins' do
     class Plugin1 < Noosfero::Plugin
       def login_extra_contents
-        proc {"<strong>Plugin1 text</strong>"}
+        proc {"<strong>Plugin1 text</strong>".html_safe}
       end
     end
     class Plugin2 < Noosfero::Plugin
       def login_extra_contents
-        proc {"<strong>Plugin2 text</strong>"}
+        proc {"<strong>Plugin2 text</strong>".html_safe}
       end
     end
     Noosfero::Plugin.stubs(:all).returns([Plugin1.name, Plugin2.name])

@@ -40,6 +40,7 @@ class BlogArchivesBlock < Block
       end
       results << "</ul>"
     end
+    results.html_safe
     block_title(title) +
     content_tag('ul', results, :class => 'blog-archives') +
     content_tag('div', link_to(_('Subscribe RSS Feed'), owner_blog.feed.url), :class => 'subscribe-feed')

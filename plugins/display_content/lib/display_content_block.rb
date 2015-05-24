@@ -131,7 +131,7 @@ class DisplayContentBlock < Block
     docs = owner.articles.order(order_string).where(["articles.type IN(:types) #{nodes.blank? ? '' : nodes_conditions}", {:nodes => self.nodes, :types => self.types}]).includes(:profile, :image, :tags)
     docs = docs.limit(limit_final) if display_folder_children
 
-    proc do
+    ret = (proc do
       block.block_title(block.title) +
         content_tag('ul', docs.map {|item|
         if !item.folder? && item.class != RssFeed
@@ -170,7 +170,8 @@ class DisplayContentBlock < Block
           content_tag('li', content_sections)
         end
       }.join(" "))
-    end
+    end)
+    ret.html_safe
   end
 
   def url_params

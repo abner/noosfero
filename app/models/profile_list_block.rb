@@ -42,7 +42,7 @@ class ProfileListBlock < Block
 
   def content(args={})
     profiles = self.profile_list
-    title = self.view_title
+    title = self.view_title.html_safe
     nl = "\n".html_safe
     proc do |context|
       count=0

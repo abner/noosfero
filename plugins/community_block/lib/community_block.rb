@@ -10,7 +10,6 @@ class CommunityBlock < Block
 
   def content(arg={})
     block = self
-
     proc do
       render :file => 'community_block', :locals => { :block => block }
     end

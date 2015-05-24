@@ -81,7 +81,7 @@ class PeopleBlockBase < Block
         end
         list = content_tag 'ul', list
       end
-      block_title(title) + content_tag('div', list + tag('br', :style => 'clear:both'))
+      (block_title(title) + content_tag('div', list + tag('br', :style => 'clear:both'))).html_safe
     end
   end
 

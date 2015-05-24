@@ -87,7 +87,6 @@ module ApplicationHelper
   #
   # TODO: implement correcly the 'Help' button click
   def help(content = nil, link_name = nil, options = {}, &block)
-
     link_name ||= _('Help')
 
     @help_message_id ||= 1
@@ -110,7 +109,7 @@ module ApplicationHelper
     button = link_to_function(content_tag('span', link_name), "Element.show('#{help_id}')", options )
     close_button = content_tag("div", link_to_function(_("Close"), "Element.hide('#{help_id}')", :class => 'close_help_button'))
 
-    text = content_tag('div', button + content_tag('div', content_tag('div', content) + close_button, :class => 'help_message', :id => help_id, :style => 'display: none;'), :class => 'help_box')
+    text = content_tag('div', button + content_tag('div', content_tag('div', content.html_safe) + close_button, :class => 'help_message', :id => help_id, :style => 'display: none;'), :class => 'help_box')
 
     unless block.nil?
       concat(text)
