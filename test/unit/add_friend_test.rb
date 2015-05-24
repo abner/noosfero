@@ -3,8 +3,8 @@ require_relative "../test_helper"
 class AddFriendTest < ActiveSupport::TestCase
 
   def setup
-    @person1 = create_user('testuser1').person
-    @person2 = create_user('testuser2').person
+    @person1 = create(:person)
+    @person2 = create(:person)
   end
   attr_reader :person1, :person2
 
@@ -14,7 +14,7 @@ class AddFriendTest < ActiveSupport::TestCase
 
   should 'actually create friendships (two way) when confirmed' do
 
-    task = fast_create(AddFriend, :requestor_id => person1.id, :target_id => person2.id, :target_type => 'Person')
+    task = create(AddFriend, :requestor_id => person1.id, :target_id => person2.id, :target_type => 'Person')
 
     assert_difference 'Friendship.count', 2 do
       task.finish
@@ -27,7 +27,7 @@ class AddFriendTest < ActiveSupport::TestCase
   end
 
   should 'put friendships in the right groups' do
-    task = fast_create(AddFriend, :requestor_id => person1, :target_id => person2.id, :target_type => 'Person')
+    task = create(AddFriend, :requestor_id => person1.id, :target_id => person2.id, :target_type => 'Person')
     task.group_for_person = 'friend1'
     task.group_for_friend = 'friend2'
     assert task.save

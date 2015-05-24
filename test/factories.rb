@@ -117,7 +117,7 @@ FactoryGirl.define do
 
   factory :environment do
     name FFaker::Lorem.word
-#    email { "#{name}@example.com".downcase }
+    contact_email FFaker::Internet.email
   end
 
   factory :license do
@@ -129,6 +129,8 @@ FactoryGirl.define do
     code FFaker::Lorem.word
 
     factory :approve_article, class: ApproveArticle do
+    end
+    factory :add_friend, class: AddFriend do
     end
   end
 
