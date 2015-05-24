@@ -6,9 +6,9 @@ class ApproveArticleTest < ActiveSupport::TestCase
     ActionMailer::Base.delivery_method = :test
     ActionMailer::Base.perform_deliveries = true
     ActionMailer::Base.deliveries = []
-    @profile = create_user('test_user').person
-    @article = fast_create(TextileArticle, :profile_id => @profile.id, :name => 'test name', :abstract => 'Lead of article', :body => 'This is my article')
-    @community = fast_create(Community)
+    @profile = create(:person)
+    @article = create(TextileArticle, :profile_id => @profile.id, :name => 'test name', :abstract => 'Lead of article', :body => 'This is my article')
+    @community = create(Community)
   end
   attr_reader :profile, :article, :community
 
@@ -35,7 +35,7 @@ class ApproveArticleTest < ActiveSupport::TestCase
 
   should 'override target notification message method from Task' do
     p1 = profile
-    p2 = create_user('testuser2').person
+    p2 = create(:person)
     task = build(AddFriend, :person => p1, :friend => p2)
     assert_nothing_raised NotImplementedError do
       task.target_notification_message
@@ -160,7 +160,9 @@ class ApproveArticleTest < ActiveSupport::TestCase
   end
 
   should 'not be created in blog if community does not have a blog' do
-    profile_blog = fast_create(Blog, :profile_id => profile.id)
+    Article.delete_all
+    profile_blog = create(Blog, :profile_id => profile.id)
+    article = create(TextileArticle, :profile_id => profile.id)
     article.parent = profile_blog
     article.save
 
@@ -172,7 +174,7 @@ class ApproveArticleTest < ActiveSupport::TestCase
   end
 
   should 'be created in community blog if came from a blog' do
-    profile_blog = fast_create(Blog, :profile_id => profile.id)
+    profile_blog = create(Blog, :profile_id => profile.id)
     article.parent = profile_blog
     article.save
 
@@ -184,11 +186,11 @@ class ApproveArticleTest < ActiveSupport::TestCase
   end
 
   should 'not be created in community blog if did not come from a blog' do
-    profile_folder = fast_create(Folder, :profile_id => profile.id)
+    profile_folder = create(Folder, :profile_id => profile.id)
     article.parent = profile_folder
     article.save
 
-    blog = fast_create(Blog, :profile_id => community.id)
+    blog = create(Blog, :profile_id => community.id)
     a = create(ApproveArticle, :article => article, :target => community, :requestor => profile)
     a.finish
 
@@ -196,12 +198,12 @@ class ApproveArticleTest < ActiveSupport::TestCase
   end
 
   should 'overwrite blog if parent was choosen on published' do
-    profile_blog = fast_create(Blog, :profile_id => profile.id)
+    profile_blog = create(Blog, :profile_id => profile.id)
     article.parent = profile_blog
     article.save
 
     community.articles << Blog.new(:profile => community)
-    community_folder = fast_create(Folder, :profile_id => profile.id)
+    community_folder = create(Folder, :profile_id => profile.id)
 
     a = create(ApproveArticle, :article => article, :target => community, :requestor => profile, :article_parent => community_folder)
     a.finish
@@ -228,7 +230,7 @@ class ApproveArticleTest < ActiveSupport::TestCase
   end
 
   should 'the published article have parent if defined' do
-    folder = fast_create(Folder, :profile_id => community.id)
+    folder = create(Folder, :profile_id => community.id)
     a = create(ApproveArticle, :article => article, :target => community, :requestor => profile, :article_parent => folder)
     a.finish
 
@@ -253,16 +255,16 @@ class ApproveArticleTest < ActiveSupport::TestCase
   should 'not group trackers activity of article\'s creation' do
     ActionTracker::Record.delete_all
 
-    article = fast_create(TextileArticle)
+    article = create(TextileArticle)
     a = create(ApproveArticle, :name => 'bar', :article => article, :target => community, :requestor => profile)
     a.finish
 
-    article = fast_create(TextileArticle)
+    article = create(TextileArticle)
     a = create(ApproveArticle, :name => 'another bar', :article => article, :target => community, :requestor => profile)
     a.finish
 
-    article = fast_create(TextileArticle)
-    other_community = fast_create(Community)
+    article = create(TextileArticle)
+    other_community = create(Community)
     a = create(ApproveArticle, :name => 'another bar', :article => article, :target => other_community, :requestor => profile)
     a.finish
     assert_equal 3, ActionTracker::Record.count
@@ -270,12 +272,12 @@ class ApproveArticleTest < ActiveSupport::TestCase
 
   should 'not create trackers activity when updating articles' do
     ActionTracker::Record.delete_all
-    article1 = fast_create(TextileArticle)
+    article1 = create(TextileArticle)
     a = create(ApproveArticle, :name => 'bar', :article => article1, :target => community, :requestor => profile)
     a.finish
 
-    article2 = fast_create(TinyMceArticle)
-    other_community = fast_create(Community)
+    article2 = create(TinyMceArticle)
+    other_community = create(Community)
     a = create(ApproveArticle, :name => 'another bar', :article => article2, :target => other_community, :requestor => profile)
     a.finish
     assert_equal 2, ActionTracker::Record.count
@@ -291,7 +293,7 @@ class ApproveArticleTest < ActiveSupport::TestCase
 
   should "the tracker action target be defined as the article on articles'creation in communities" do
     ActionTracker::Record.delete_all
-    person = fast_create(Person)
+    person = create(Person)
     community.add_member(person)
 
     a = create(ApproveArticle, :article => article, :target => community, :requestor => profile)
@@ -304,7 +306,7 @@ class ApproveArticleTest < ActiveSupport::TestCase
 
   should "the tracker action target be defined as the article on articles'creation in profile" do
     ActionTracker::Record.delete_all
-    person = fast_create(Person)
+    person = create(Person)
     person.stubs(:notification_emails).returns(['target@example.org'])
 
     a = create(ApproveArticle, :article => article, :target => person, :requestor => profile)
@@ -372,7 +374,7 @@ class ApproveArticleTest < ActiveSupport::TestCase
   end
 
   should 'approve an event' do
-    event = fast_create(Event, :profile_id => profile.id, :name => 'Event test', :slug => 'event-test', :abstract => 'Lead of article', :body => 'This is my event')
+    event = create(Event, :profile_id => profile.id, :name => 'Event test', :slug => 'event-test', :abstract => 'Lead of article', :body => 'This is my event')
     task = create(ApproveArticle, :name => 'Event test', :article => event, :target => community, :requestor => profile)
     assert_difference 'event.class.count' do
       task.finish
@@ -416,7 +418,7 @@ class ApproveArticleTest < ActiveSupport::TestCase
   end
 
   should 'not save 4 on the new article\'s last_changed_by_ud after approval if author is nil' do
-    article = fast_create(Article)
+    article = create(Article)
     task = create(ApproveArticle, :article => article, :target => community, :requestor => profile)
     task.finish
     new_article = Article.last
@@ -424,7 +426,7 @@ class ApproveArticleTest < ActiveSupport::TestCase
   end
 
   should 'not crash if target has its own domain' do
-    article = fast_create(Article)
+    article = create(Article)
     profile.domains << create(Domain, :name => 'example.org')
     assert_nothing_raised do
       create(ApproveArticle, :article => article, :target => profile, :requestor => community)
@@ -432,7 +434,7 @@ class ApproveArticleTest < ActiveSupport::TestCase
   end
 
   should 'create link to referenced article' do
-    article = fast_create(Article)
+    article = create(Article)
     a = create(ApproveArticle, :name => 'test name', :article => article, :target => community, :requestor => profile)
     a.create_link = true
     a.finish
