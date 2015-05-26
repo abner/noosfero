@@ -165,8 +165,11 @@ FactoryGirl.define do
 
   factory :scrap do
     content FFaker::Lorem.word
-#    sender FactoryGirl.create(:person)
-#    receiver profile
+  end
+
+  factory :certifier do
+    name FFaker::Lorem.word
+    environment
   end
 
 end
