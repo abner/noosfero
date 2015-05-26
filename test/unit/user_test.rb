@@ -79,7 +79,7 @@ class UserTest < ActiveSupport::TestCase
     users_count = User.count
     person_count = Person.count
 
-    user = create_user('new_user', :email => 'new_user@example.com', :password => 'test', :password_confirmation => 'test')
+    user = create(:user, :password_confirmation => 'test')
 
     assert Person.exists?(['user_id = ?', user.id])
 
@@ -122,7 +122,7 @@ class UserTest < ActiveSupport::TestCase
   end
 
   def test_should_change_password
-    user = create_user('changetest', :password => 'test', :password_confirmation => 'test', :email => 'changetest@example.com')
+    user = create(:user,  :password => 'test', :password_confirmation => 'test', :email => 'changetest@example.com')
     assert_nothing_raised do
       user.change_password!('test', 'newpass', 'newpass')
     end
@@ -131,7 +131,7 @@ class UserTest < ActiveSupport::TestCase
   end
 
   def test_should_give_correct_current_password_for_changing_password
-    user = create_user('changetest', :password => 'test', :password_confirmation => 'test', :email => 'changetest@example.com')
+    user = create(:user, :password => 'test', :password_confirmation => 'test', :email => 'changetest@example.com')
     assert_raise User::IncorrectPassword do
       user.change_password!('wrong', 'newpass', 'newpass')
     end
@@ -140,7 +140,7 @@ class UserTest < ActiveSupport::TestCase
   end
 
   should 'require matching confirmation when changing password by force' do
-    user = create_user('changetest', :password => 'test', :password_confirmation => 'test', :email => 'changetest@example.com')
+    user = create(:user, :password => 'test', :password_confirmation => 'test', :email => 'changetest@example.com')
     assert_raise ActiveRecord::RecordInvalid do
       user.force_change_password!('newpass', 'newpasswrong')
     end
@@ -149,7 +149,7 @@ class UserTest < ActiveSupport::TestCase
   end
 
   should 'be able to force password change' do
-    user = create_user('changetest', :password => 'test', :password_confirmation => 'test', :email => 'changetest@example.com')
+    user = create(:user, :email => 'changetest@example.com')
     assert_nothing_raised  do
       user.force_change_password!('newpass', 'newpass')
     end
@@ -290,34 +290,34 @@ class UserTest < ActiveSupport::TestCase
   end
 
   should 'enable email' do
-    user = create_user('cooler')
+    user = create(:user)
     assert !user.enable_email
     assert user.enable_email!
     assert user.enable_email
   end
 
   should 'has email activation pending' do
-    user = create_user('cooler')
+    user = create(:user)
     user.update_attribute(:environment_id, Environment.default.id)
     EmailActivation.create!(:requestor => user.person, :target => Environment.default)
     assert user.email_activation_pending?
   end
 
   should 'not has email activation pending if not have environment' do
-    user = create_user('cooler')
+    user = create(:user)
     user.expects(:environment).returns(nil)
     EmailActivation.create!(:requestor => user.person, :target => Environment.default)
     assert !user.email_activation_pending?
   end
 
   should 'has moderate registration pending' do
-    user = create_user('cooler')
+    user = create(:user)
     ModerateUserRegistration.create!(:requestor => user.person, :target => Environment.default)
     assert user.moderate_registration_pending?
   end
 
   should 'not has moderate registration pending if not have a pending task' do
-    user = create_user('cooler')
+    user = create(:user)
     assert !user.moderate_registration_pending?
   end
 
@@ -342,15 +342,15 @@ class UserTest < ActiveSupport::TestCase
   end
 
   should "data_hash method have at least the following keys" do
-    user = create_user('coldplay')
+    user = create(:user)
     expected_keys = ['login','is_admin','since_month', 'since_year', 'email_domain','friends_list','amount_of_friends', 'enterprises', ]
     data = user.data_hash
     assert(expected_keys.all? { |k| data.has_key?(k) }, "User#data_hash expected to have at least the following keys: #{expected_keys.inspect} (missing: #{(expected_keys-data.keys).inspect})")
   end
 
   should "data_hash friends_list method have the following keys" do
-    person = create(:person)
-    friend = create_user('coldplayfriend', :chat_status => 'chat', :chat_status_at => DateTime.now).person
+    person = create(:user, :login => 'x_and_y').person
+    friend = create(:user, :login => 'coldplayfriend', :chat_status => 'chat', :chat_status_at => DateTime.now).person
     person.add_friend(friend)
     expected_keys = ['avatar','name','jid','status']
     assert_equal [], expected_keys - person.user.data_hash['friends_list']['coldplayfriend'].keys
@@ -358,7 +358,7 @@ class UserTest < ActiveSupport::TestCase
   end
 
   should "data_hash method return the user information" do
-    person = create(:person)
+    person = create(:user, :login => 'x_and_y').person
     Person.any_instance.stubs(:is_admin?).returns(true)
     Person.any_instance.stubs(:created_at).returns(DateTime.parse('16-08-2010'))
     expected_hash = {
@@ -386,7 +386,7 @@ class UserTest < ActiveSupport::TestCase
 
   should "data_hash return the friends_list information" do
     person = create(:person)
-    friend = create_user('coldplayfriend', :chat_status => 'chat', :chat_status_at => DateTime.now).person
+    friend = create(:user, :login => 'coldplayfriend', :chat_status => 'chat', :chat_status_at => DateTime.now).person
     person.add_friend(friend)
     Person.any_instance.stubs(:profile_custom_icon).returns('/custom_icon')
     expected_hash = {
@@ -399,40 +399,42 @@ class UserTest < ActiveSupport::TestCase
 
   should "data_hash return the correct number of friends parameter" do
     person = create(:person)
-    friend = create_user('coldplayfriend', :chat_status => 'chat', :chat_status_at => DateTime.now).person
+    friend = create(:user, :chat_status => 'chat', :chat_status_at => DateTime.now).person
     person.add_friend(friend)
-    another_friend = create_user('coldplayanotherfriend', :chat_status => 'chat', :chat_status_at => DateTime.now).person
+    another_friend = create(:user, :chat_status => 'chat', :chat_status_at => DateTime.now).person
     person.add_friend(another_friend)
     assert_equal 2, person.user.data_hash['amount_of_friends']
   end
 
   should "data_hash collect friend with online status and with presence in last 15 minutes" do
     person = create(:person)
-    friend = create_user('coldplayfriend', :chat_status => 'chat', :chat_status_at => DateTime.now).person
+    friend = create(:user,  :chat_status => 'chat', :chat_status_at => DateTime.now).person
     person.add_friend(friend)
     assert_equal 1, person.user.data_hash['amount_of_friends']
   end
 
   should "data_hash collect friend with busy status and with presence in last 15 minutes" do
     person = create(:person)
-    friend = create_user('coldplayfriend', :chat_status => 'dnd', :chat_status_at => DateTime.now).person
+    friend = create(:user,  :chat_status => 'dnd', :chat_status_at => DateTime.now).person
     person.add_friend(friend)
     assert_equal 1, person.user.data_hash['amount_of_friends']
   end
 
   should "data_hash status friend be described" do
     person = create(:person)
-    friend = create_user('coldplayfriend', :chat_status => 'chat', :chat_status_at => DateTime.now).person
+    person.reload
+    friend = create(:user, :chat_status => 'chat', :chat_status_at => DateTime.now).person
+    friend.reload
     person.add_friend(friend)
     assert_equal 'chat', person.user.data_hash['friends_list'][friend.identifier]['status']
   end
 
   should 'return empty list of enterprises on data_hash for newly created user' do
-    assert_equal [], create_user('testuser').data_hash['enterprises']
+    assert_equal [], create(:user).data_hash['enterprises']
   end
 
   should 'return list of enterprises in data_hash' do
-    user = create_user('testuser')
+    user = create(:user)
     enterprise = create(Enterprise, :name => "My enterprise", :identifier => 'my-enterprise')
     user.person.expects(:enterprises).returns([enterprise])
     assert_includes user.data_hash['enterprises'], {'name' => 'My enterprise', 'identifier' => 'my-enterprise'}
@@ -456,20 +458,22 @@ class UserTest < ActiveSupport::TestCase
   end
 
   should 'respond name with related person name' do
-    user = create_user('testuser')
+    user = create(:user)
     user.person.name = 'Test User'
     assert_equal 'Test User', user.name
   end
 
   should 'respond name with login, if there is no person related and name defined' do
-    user = create_user('testuser')
+    user = create(:user, :login => 'testuser')
+    user.reload
     user.person = nil
     user.name = nil
     assert_equal 'testuser', user.name
   end
 
   should 'respond name with user name attribute' do
-    user = create_user('testuser')
+    user = create(:user)
+    user.reload
     user.person = nil
     user.name = 'Another User'
     user.login = 'Login User'
@@ -477,7 +481,7 @@ class UserTest < ActiveSupport::TestCase
   end
 
   should 'respond name with related person name although user name attribute is defined' do
-    user = create_user('testuser')
+    user = create(:user)
     user.person.name = 'Person Name'
     user.name = 'Another User'
     user.login = 'Login User'
@@ -485,12 +489,12 @@ class UserTest < ActiveSupport::TestCase
   end
 
   should 'have activation code' do
-    user = create_user('testuser')
+    user = create(:user)
     assert_respond_to user, :activation_code
   end
 
   should 'have activated at' do
-    user = create_user('testuser')
+    user = create(:user)
     assert_respond_to user, :activated_at
   end
 

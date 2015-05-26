@@ -58,12 +58,6 @@ FactoryGirl.define do
     login { generate(:user_login) }
     email { "#{login}@example.com".downcase }
     crypted_password 'test'
-#    person
-#    person user: user
-#    before(:build) do |user, evaluator|
-#raise 'teste ' + evaluator.inspect 
-#      user.person = FactoryGirl.build(:person)
-#    end
     after(:create) do |user|
       user.activate
     end
