@@ -877,7 +877,7 @@ module ApplicationHelper
       end
     else
       if profile.active_fields.include?(name)
-        result = content_tag('div', field_html + profile_field_privacy_selector(profile, name), :class => 'field-with-privacy-selector')
+        result = content_tag('div', field_html + profile_field_privacy_selector(profile, name), :class => 'field-with-privacy-selector-R1')
       end
     end
 
@@ -1162,7 +1162,8 @@ module ApplicationHelper
   end
 
   def admin_link
-    user.is_admin?(environment) ? link_to('<i class="icon-menu-admin"></i><strong>' + _('Administration') + '</strong>', environment.admin_url, :title => _("Configure the environment"), :class => 'admin-link') : ''
+    admin_icon = '<i class="icon-menu-admin"></i><strong>' + _('Administration') + '</strong>'
+    user.is_admin?(environment) ? link_to(admin_icon.html_safe, environment.admin_url, :title => _("Configure the environment"), :class => 'admin-link') : ''
   end
 
   def usermenu_logged_in
@@ -1171,15 +1172,19 @@ module ApplicationHelper
     if count > 0
       pending_tasks_count = link_to(count.to_s, user.tasks_url, :id => 'pending-tasks-count', :title => _("Manage your pending tasks"))
     end
-
-    (_("<span class='welcome'>Welcome,</span> %s") % link_to("<i style='background-image:url(#{user.profile_custom_icon(gravatar_default)})'></i><strong>#{user.identifier}</strong>", user.public_profile_url, :id => "homepage-link", :title => _('Go to your homepage'))) +
-    render_environment_features(:usermenu) +
-    admin_link +
-    manage_enterprises +
-    manage_communities +
-    link_to('<i class="icon-menu-ctrl-panel"></i><strong>' + _('Control panel') + '</strong>', user.admin_url, :class => 'ctrl-panel', :title => _("Configure your personal account and content")) +
-    pending_tasks_count +
-    link_to('<i class="icon-menu-logout"></i><strong>' + _('Logout') + '</strong>', { :controller => 'account', :action => 'logout'} , :id => "logout", :title => _("Leave the system"))
+    user_identifier = "<i style='background-image:url(#{user.profile_custom_icon(gravatar_default)})'></i><strong>#{user.identifier}</strong>"
+    welcome_link = link_to(user_identifier.html_safe, user.public_profile_url, :id => "homepage-link", :title => _('Go to your homepage'))
+    welcome_span = _("<span class='welcome'>Welcome,</span> %s") % welcome_link.html_safe
+    ctrl_panel_icon = '<i class="icon-menu-ctrl-panel"></i>'
+    ctrl_panel_section = '<strong>' + ctrl_panel_icon + _('Control panel') + '</strong>'
+    ctrl_panel_link = link_to(ctrl_panel_section.html_safe, user.admin_url, :class => 'ctrl-panel', :title => _("Configure your personal account and content"))
+    logout_icon = '<i class="icon-menu-logout"></i><strong>' + _('Logout') + '</strong>'
+    logout_link = link_to(logout_icon.html_safe, { :controller => 'account', :action => 'logout'} , :id => "logout", :title => _("Leave the system"))
+    join_result = safe_join(
+      [welcome_span.html_safe, render_environment_features(:usermenu).html_safe, admin_link.html_safe, 
+        manage_enterprises.html_safe, manage_communities.html_safe, ctrl_panel_link.html_safe, 
+        pending_tasks_count.html_safe, logout_link.html_safe], "")
+    join_result
   end
 
   def usermenu_notlogged_in
