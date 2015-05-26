@@ -85,7 +85,7 @@ FactoryGirl.define do
     factory :person, class: Person do
 
       before(:create) do |person, evaluator|
-        person.user = FactoryGirl.create(:user, :person => person)
+        person.user = FactoryGirl.create(:user, person: person)
         person.visible = evaluator.visible
       end
 
@@ -96,7 +96,7 @@ FactoryGirl.define do
         end
         after(:create) do |person, evaluator|
 #FIXME see if get an existing role is better the create a new one
-          role = create(Role, :permissions => evaluator.permissions)
+          role = create(Role, permissions: evaluator.permissions)
           person.add_role(role, evaluator.target)
         end
       end
@@ -119,6 +119,12 @@ FactoryGirl.define do
   factory :category do
     environment
     name FFaker::Lorem.word
+
+    factory :product_category, class: ProductCategory do
+    end
+
+    factory :region, class: Region do
+    end
   end
 
   factory :environment do
@@ -170,6 +176,14 @@ FactoryGirl.define do
   factory :certifier do
     name FFaker::Lorem.word
     environment
+  end
+
+  factory :box do
+  end
+
+  factory :block do
+    factory :link_list_block, class: LinkListBlock do
+    end
   end
 
 end

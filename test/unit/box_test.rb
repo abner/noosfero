@@ -134,8 +134,12 @@ class BoxTest < ActiveSupport::TestCase
 
   should 'list only boxes with a postion greater than zero' do
     profile = create(Profile)
+    Box.delete_all
     box = create(Box, :owner_id => profile.id, :owner_type => 'Profile', :position => 0)
+    box.position=0
+    box.save
     box2 = create(Box, :owner_id => profile.id, :owner_type => 'Profile', :position => 1)
+
     assert_equal [box2], profile.boxes.with_position
   end
 
