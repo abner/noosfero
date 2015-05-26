@@ -5,7 +5,7 @@ class ChangePasswordTest < ActiveSupport::TestCase
   fixtures :environments
 
   def setup
-    @user = create_user('testuser', :password => 'test', :password_confirmation => 'test', :email => 'test@example.com')
+    @user = create(:user, :password => 'test', :password_confirmation => 'test', :email => 'test@example.com')
     @person = @user.person
   end
 
@@ -50,8 +50,8 @@ class ChangePasswordTest < ActiveSupport::TestCase
     e1 = Environment.default
     e2 = create(Environment)
 
-    p1 = create_user('sample-user', :password => 'test', :password_confirmation => 'test', :email => 'sample-user@test.com', :environment => e1).person
-    p2 = create_user('sample-user', :password => 'test', :password_confirmation => 'test', :email => 'sample-user@test.com', :environment => e2).person
+    p1 = create(:user, :environment => e1).person
+    p2 = create(:user, :environment => e2).person
 
     c1 = ChangePassword.create!(:requestor => p1)
     c2 = ChangePassword.create!(:requestor => p2)
