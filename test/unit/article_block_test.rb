@@ -70,10 +70,10 @@ class ArticleBlockTest < ActiveSupport::TestCase
   end
 
   should "take available articles with an environment as the box owner" do
-    env = Environment.create!(:name => 'test env')
-    env.profiles.each { |profile| profile.articles.destroy_all }
-    assert_equal [], env.articles
+    env = create(:environment)
     community = create(Community)
+    Article.delete_all
+    assert_equal [], env.articles
     a = create(TextArticle, :profile_id => community.id, :name => 'test')
     env.portal_community=community
     env.save

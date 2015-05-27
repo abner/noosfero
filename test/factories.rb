@@ -181,6 +181,8 @@ FactoryGirl.define do
   factory :block do
     factory :link_list_block, class: LinkListBlock do
     end
+    factory :article_block, class: ArticleBlock do
+    end
   end
 
 end
