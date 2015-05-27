@@ -89,6 +89,7 @@ class ApproveArticleTest < ActiveSupport::TestCase
   end
 
   should 'not notify target if group is not moderated' do
+    ActionMailer::Base.deliveries.clear
     community.moderated_articles = false
     community.save
 
@@ -253,30 +254,30 @@ class ApproveArticleTest < ActiveSupport::TestCase
   end
 
   should 'not group trackers activity of article\'s creation' do
+    a1 = create(TextileArticle)
+    a2 = create(TextileArticle)
+    a3 = create(TextileArticle)
     ActionTracker::Record.delete_all
 
-    article = create(TextileArticle)
-    a = create(ApproveArticle, :name => 'bar', :article => article, :target => community, :requestor => profile)
+    a = create(ApproveArticle, :name => 'bar', :article => a1, :target => community, :requestor => profile)
     a.finish
 
-    article = create(TextileArticle)
-    a = create(ApproveArticle, :name => 'another bar', :article => article, :target => community, :requestor => profile)
+    a = create(ApproveArticle, :name => 'another bar', :article => a2, :target => community, :requestor => profile)
     a.finish
 
-    article = create(TextileArticle)
     other_community = create(Community)
-    a = create(ApproveArticle, :name => 'another bar', :article => article, :target => other_community, :requestor => profile)
+    a = create(ApproveArticle, :name => 'another bar', :article => a3, :target => other_community, :requestor => profile)
     a.finish
     assert_equal 3, ActionTracker::Record.count
   end
 
   should 'not create trackers activity when updating articles' do
-    ActionTracker::Record.delete_all
     article1 = create(TextileArticle)
+    article2 = create(TinyMceArticle)
+    ActionTracker::Record.delete_all
     a = create(ApproveArticle, :name => 'bar', :article => article1, :target => community, :requestor => profile)
     a.finish
 
-    article2 = create(TinyMceArticle)
     other_community = create(Community)
     a = create(ApproveArticle, :name => 'another bar', :article => article2, :target => other_community, :requestor => profile)
     a.finish
