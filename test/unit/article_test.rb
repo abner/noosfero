@@ -3,12 +3,8 @@ require_relative "../test_helper"
 
 class ArticleTest < ActiveSupport::TestCase
 
-#  fixtures :environments
-
   def setup
     @profile = create(:person)
-#FIXME remove this code
-#    @profile = create(:user).person
   end
   attr_reader :profile
 
@@ -1094,20 +1090,16 @@ Person.delete_all
   should 'create the notification to organization and all organization members' do
     Profile.delete_all
     ActionTracker::Record.delete_all
-#FIXME fix this test
-#puts ActionTracker::Record.count
+    Delayed::Job.delete_all
     community = create(Community)
     member_1 = create(Person)
     community.add_member(member_1)
 
     article = TinyMceArticle.create(:name => 'Tracked Article 1', :profile => community)
     first_activity = article.activity
-#puts first_activity.inspect
     assert_equal [first_activity], ActionTracker::Record.find_all_by_verb('create_article')
 
     process_delayed_job_queue
-#puts ActionTracker::Record.count
-#puts ActionTrackerNotification.count
     assert_equal 2, ActionTrackerNotification.find_all_by_action_tracker_id(first_activity.id).count
 
     member_2 = create(Person)
