@@ -38,31 +38,20 @@ module Noosfero
       post "/register" do
         unique_attributes! User, [:email, :login]
         attrs = attributes_for_keys [:email, :login, :password]
-        attrs[:password_confirmation] = attrs[:password]
         remote_ip = (request.respond_to?(:remote_ip) && request.remote_ip) || (env && env['REMOTE_ADDR'])
         private_key = API.NOOSFERO_CONF['api_recaptcha_private_key']
         api_recaptcha_verify_uri = API.NOOSFERO_CONF['api_recaptcha_verify_uri']
-        verify_hash = {
-          "secret"    => private_key,
-          "remoteip"  => remote_ip,
-          "response"  => params['g-recaptcha-response']
-        }
-        uri = URI(api_recaptcha_verify_uri)
-        https = Net::HTTP.new(uri.host, uri.port)
-        https.use_ssl = true
-        request = Net::HTTP::Post.new(uri.path)
-        request.set_form_data(verify_hash)
-        captcha_result = JSON.parse(https.request(request).body)
+        captcha_result = verify_recaptcha_v2(remote_ip, params['g-recaptcha-response'], private_key, api_recaptcha_verify_uri)
         user = User.new(attrs)  
-        if captcha_result["success"] and user.save! 
+        if captcha_result["success"] and user.save 
           user.activate
           user.generate_private_token!
           present user, :with => Entities::UserLogin
         else
-          something_wrong!
+          message = user.errors.to_json
+          render_api_error!(message, 400)
         end
       end
-
     end
   end
 end
