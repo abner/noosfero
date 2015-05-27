@@ -37,7 +37,6 @@
   </head>
   <body class="<%= h body_classes %>">
     <a href="#content" id="link-go-content"><span><%= _("Go to the content") %></span></a>
-
     <%=
       str = (@plugins.dispatch(:body_beginning).map do |content|
               if content.respond_to?(:call) then 

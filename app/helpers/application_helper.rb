@@ -228,7 +228,7 @@ module ApplicationHelper
     if html_options[:disabled]
       content_tag('a', '&nbsp;'.html_safe+content_tag('span', label), html_options.merge(:class => the_class, :title => the_title))
     else
-      link_to('&nbsp;'.html_safe+content_tag('span', label), url, html_options.merge(:class => the_class, :title => the_title))
+      link_to('&nbsp;'.html_safe+content_tag('span', label), url_for(url).html_safe, html_options.merge(:class => the_class, :title => the_title))
     end
   end
 
@@ -624,8 +624,7 @@ module ApplicationHelper
     html_options[:class] = "" unless html_options[:class]
     html_options[:class] << " menu-submenu-trigger"
 
-    #html_options[:onclick] = "toggleSubmenu(this, '#{menu_title}', #{CGI::escapeHTML(links.to_json)}); return false"
-    html_options[:onclick] = "toggleSubmenu(this, '#{menu_title}', #{links.to_json}); return false"
+    html_options[:onclick] = "toggleSubmenu(this, '#{menu_title}', #{CGI::escapeHTML(links.to_json)}); return false"
     link_to(content_tag(:span, title), '#', html_options)
   end
 

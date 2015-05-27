@@ -706,14 +706,14 @@ class AccountControllerTest < ActionController::TestCase
   should 'merge user data with extra stuff from plugins' do
     class Plugin1 < Noosfero::Plugin
       def user_data_extras
-        {:foo => 'bar'}.html_safe
+        {:foo => 'bar'.html_safe }
       end
     end
 
     class Plugin2 < Noosfero::Plugin
       def user_data_extras
         proc do
-          {:test => 5}.html_safe
+          {:test => 5}
         end
       end
     end

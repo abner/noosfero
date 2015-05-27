@@ -26,7 +26,7 @@
     <strong><%= _('Current folder: ') %></strong>
     <%= link_to profile.identifier, :action => 'index' %>
     <% @article.hierarchy.each do |item| %>
-      <%= " / " + ((item == @article) ? item.name.html_safe : link_to(item.slug, :id => item.id).html_safe) %>
+      <%= " / ".html_safe + ((item == @article) ? item.name.html_safe : link_to(item.slug, :id => item.id).html_safe) %>
     <% end %>
   </div>
 <% end %>
@@ -44,9 +44,9 @@
     <tr>
       <td>
         <% if @article.parent %>
-          <%= link_to '.. (' + _('parent folder') + ')', {:action => 'view', :id => @article.parent.id}, :class => 'icon-parent-folder' %>
+          <%= link_to '.. ('.html_safe + _('parent folder') + ')', {:action => 'view', :id => @article.parent.id}, :class => 'icon-parent-folder' %>
         <% else %>
-          <%= link_to '.. (' + _('parent folder') + ')', {:action => 'index'}, :class => 'icon-parent-folder' %>
+          <%= link_to '.. ('.html_safe + _('parent folder') + ')', {:action => 'index'}, :class => 'icon-parent-folder' %>
         <% end %>
       </td>
       <td><%= Folder.short_description %></td>

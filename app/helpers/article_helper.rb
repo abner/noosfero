@@ -10,60 +10,61 @@ module ArticleHelper
 
   def custom_options_for_article(article, tokenized_children)
     @article = article
-
-    visibility_options(@article, tokenized_children) +
-    content_tag('h4', _('Options')) +
-    content_tag('div',
-      (article.profile.has_members? ?
+    opts = visibility_options(@article, tokenized_children)
+    ret = opts
+    ret << content_tag('h4', _('Options'))
+    inner = "".html_safe
+    inner << (article.profile.has_members? ?
       content_tag(
         'div',
         check_box(:article, :allow_members_to_edit) +
         content_tag('label', _('Allow all members to edit this article'), :for => 'article_allow_members_to_edit')
       ) :
-      '') +
-
+      '')
+    inner <<
       (article.parent && article.parent.forum? && controller.action_name == 'new' ?
       hidden_field_tag('article[accept_comments]', 1) :
       content_tag(
         'div',
         check_box(:article, :accept_comments) +
         content_tag('label', (article.parent && article.parent.forum? ? _('This topic is opened for replies') : _('I want to receive comments about this article')), :for => 'article_accept_comments')
-      )) +
-
+      ))
+    inner <<
       content_tag(
         'div',
         check_box(:article, :notify_comments) +
         content_tag('label', _('I want to receive a notification of each comment written by e-mail'), :for => 'article_notify_comments') +
         observe_field(:article_accept_comments, :function => "jQuery('#article_notify_comments')[0].disabled = ! jQuery('#article_accept_comments')[0].checked;jQuery('#article_moderate_comments')[0].disabled = ! jQuery('#article_accept_comments')[0].checked")
-      ) +
-
+      )
+    inner <<
       content_tag(
         'div',
         check_box(:article, :moderate_comments) +
         content_tag('label', _('I want to approve comments on this article'), :for => 'article_moderate_comments')
-      ) +
-
+      )
+    inner <<
       (article.can_display_hits? ?
       content_tag(
         'div',
         check_box(:article, :display_hits) +
         content_tag('label', _('I want this article to display the number of hits it received'), :for => 'article_display_hits')
-      ) : '') +
-
+      ) : '')
+    inner <<
       (article.can_display_versions? ?
       content_tag(
         'div',
         check_box(:article, :display_versions) +
         content_tag('label', _('I want this article to display a link to older versions'), :for => 'article_display_versions')
-      ) : '') +
-
+      ) : '')
+    inner <<
       (article.forum? && article.profile.community? ?
       content_tag(
         'div',
         check_box(:article, :allows_members_to_create_topics) +
         content_tag('label', _('Allow members to create topics'), :for => 'article_allows_members_to_create_topics')
         ) : '')
-    )
+    ret << content_tag('div', inner)
+    ret
   end
 
   def visibility_options(article, tokenized_children)
@@ -99,7 +100,7 @@ module ArticleHelper
   def add_option_to_followers(article, tokenized_children)
     label_message = article.profile.organization? ? _('For all community members') : _('For all your friends')
 
-    check_box(
+    ret = check_box(
       :article,
       :show_to_followers,
       {:class => "custom_privacy_option"}
@@ -129,6 +130,7 @@ module ArticleHelper
           }
         )
       ) : '')
+      ret
   end
 
   def prepare_to_token_input(array)
