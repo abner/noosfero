@@ -207,12 +207,12 @@ class ApproveCommentTest < ActiveSupport::TestCase
   end
 
   should 'requestor name be the name of the requestor' do
-    a = create(ApproveComment, :target_id => community, :requestor_id => profile)
+    a = create(ApproveComment, :target => community, :requestor => profile)
     assert_equal profile.name, a.requestor_name
   end
 
   should 'requestor name be Anonymous if there is no requestor' do
-    a = create(ApproveComment, :target_id => community)
+    a = create(ApproveComment, :target => community)
     a.comment_attributes = @comment.attributes.to_json
     assert_equal 'Anonymous', a.requestor_name
   end

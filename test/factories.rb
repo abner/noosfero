@@ -136,6 +136,9 @@ FactoryGirl.define do
 
     factory :approve_article, class: ApproveArticle do
     end
+    factory :approve_comment, class: ApproveComment do
+      comment_attributes '{}'
+    end
     factory :add_friend, class: AddFriend do
     end
     factory :add_member, class: AddMember do
