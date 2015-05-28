@@ -28,7 +28,7 @@ module ActsAsHavingSettings
         before_save :symbolize_settings_keys
         private
         def symbolize_settings_keys
-          self[:#{settings_field}] && self[:#{settings_field}].symbolize_keys!
+          self[:#{settings_field}] && self[:#{settings_field}].symbolize_keys! unless self[:#{settings_field}].kind_of?(ActiveSupport::HashWithIndifferentAccess)
         end
       CODE
       settings_items(*args)
