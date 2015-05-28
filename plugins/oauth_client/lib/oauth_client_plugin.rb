@@ -38,6 +38,9 @@ class OauthClientPlugin < Noosfero::Plugin
     },
     :noosfero_oauth2 => {
       :name => 'Noosfero'
+    },
+    :twitter => {
+      :name => 'Twitter'
     }
   }
 
