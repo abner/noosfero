@@ -12,16 +12,18 @@
   </div>
 
   <div class="strategy">
-    <%= labelled_form_field _('Strategy'), f.select(:strategy, OauthClientPlugin::PROVIDERS) %>
+    <%= labelled_form_field _('Strategy'), f.select(:strategy, OauthClientPlugin::PROVIDERS.map { |key, value| [value[:name], key]}) %>
   </div>
 
-  <div class="client-id">
-    <%= labelled_form_field _('Client Id'), f.text_field(:client_id) %>
-  </div>
-
-  <div class="client-secret">
-    <%= labelled_form_field _('Client Secret'), f.text_field(:client_secret) %>
-  </div>
+  <% if @provider.strategy.present? %>
+    <%= f.fields_for :options, OpenStruct.new(@provider.options) do |o| %>
+      <% OauthClientPlugin::PROVIDERS[@provider.strategy.to_sym][:fields].each do |field, label| %>
+        <div class="<%= field %>">
+          <%= labelled_form_field label, o.text_field(field) %>
+        </div>
+      <% end %>
+    <% end %>
+  <% end %>
 
   <% if File.exists?(File.join(File.dirname(__FILE__), "_#{@provider.strategy}.html.erb")) %>
     <%= render :partial => "#{@provider.strategy}", :locals => {:f => f, :provider => @provider} %>

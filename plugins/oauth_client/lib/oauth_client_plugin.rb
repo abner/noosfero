@@ -31,16 +31,20 @@ class OauthClientPlugin < Noosfero::Plugin
 
   PROVIDERS = {
     :facebook => {
-      :name => 'Facebook'
+      :name => 'Facebook',
+      :fields => {:client_id => _('Client Id'), :client_secret => _('Client Secret')}
     },
     :google_oauth2 => {
-      :name => 'Google'
+      :name => 'Google',
+      :fields => {:client_id => _('Client Id'), :client_secret => _('Client Secret')}
     },
     :noosfero_oauth2 => {
-      :name => 'Noosfero'
+      :name => 'Noosfero',
+      :fields => {:client_id => _('Client Id'), :client_secret => _('Client Secret')}
     },
     :twitter => {
-      :name => 'Twitter'
+      :name => 'Twitter',
+      :fields => {:consumer_key => _('Consumer Key'), :consumer_secret => _('Consumer Secret')}
     }
   }
 
