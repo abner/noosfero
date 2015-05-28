@@ -40,7 +40,7 @@ module BlogHelper
         end
       end)
     }
-    content.join("\n<hr class='sep-posts'/>\n") + (pagination or '')
+    safe_join(content, "\n<hr class='sep-posts'/>\n") + (pagination or '').html_safe
   end
 
   def display_post(article, format = 'full')
@@ -55,8 +55,8 @@ module BlogHelper
       else
         '<div class="post-pic" style="background-image:url('+img+')"></div>'
       end
-    end.to_s +
-    title + html
+    end.to_s.html_safe +
+    title.html_safe + html
   end
 
   def display_full_format(article)
