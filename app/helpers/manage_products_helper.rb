@@ -38,10 +38,11 @@ module ManageProductsHelper
   end
 
   def options_for_select_categories(categories, selected = nil)
-    categories.sort_by{|cat| cat.name.transliterate}.map do |category|
-      selected_attribute = selected.nil? ? '' : (category == selected ? "selected='selected'" : '')
-      "<option value='#{category.id}' title='#{category.name}' #{selected_attribute}>#{category.name + (category.leaf? ? '': ' &raquo;')}</option>"
-    end.join("\n")
+    safe_join(categories.sort_by{ |cat| 
+      cat.name.transliterate}.map do |category|
+        selected_attribute = selected.nil? ? '' : (category == selected ? "selected='selected'" : '')
+          "<option value='#{category.id}' title='#{category.name}' #{selected_attribute}>#{category.name + (category.leaf? ? '': ' &raquo;')}</option>".html_safe
+    end, "\n")
   end
 
   def build_selects_for_ancestors(ancestors, current_category)
@@ -75,9 +76,12 @@ module ManageProductsHelper
   end
 
   def categories_container(categories_selection_html, hierarchy_html = '')
-    hidden_field_tag('selected_category_id') +
-    content_tag('div', hierarchy_html, :id => 'hierarchy_navigation') +
-    content_tag('div', categories_selection_html, :id => 'categories_container_wrapper')
+    safe_join(
+      [
+        hidden_field_tag('selected_category_id'),
+        content_tag('div', hierarchy_html, :id => 'hierarchy_navigation'),
+        content_tag('div', categories_selection_html, :id => 'categories_container_wrapper')
+      ], '')
   end
 
   def select_for_categories(categories, level = 0)
