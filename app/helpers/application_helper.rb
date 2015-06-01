@@ -1327,8 +1327,8 @@ module ApplicationHelper
   end
 
   def render_tabs(tabs)
-    titles = tabs.inject(''){ |result, tab| result << content_tag(:li, link_to(tab[:title], '#'+tab[:id]), :class => 'tab') }
-    contents = tabs.inject(''){ |result, tab| result << content_tag(:div, tab[:content], :id => tab[:id]) }
+    titles = tabs.inject(''.html_safe){ |result, tab| result << content_tag(:li, link_to(tab[:title], '#'+tab[:id]), :class => 'tab') }
+    contents = tabs.inject(''.html_safe){ |result, tab| result << content_tag(:div, tab[:content], :id => tab[:id]) }
 
     content_tag(:div, content_tag(:ul, titles) + raw(contents), :class => 'ui-tabs')
   end
@@ -1346,7 +1346,7 @@ module ApplicationHelper
   def expirable_link_to(expired, content, url, options = {})
     if expired
       options[:class] = (options[:class] || '') + ' disabled'
-      content_tag('a', '&nbsp;'+content_tag('span', content), options)
+      content_tag('a', '&nbsp;'.html_safe+content_tag('span', content), options)
     else
       link_to content, url, options
     end
