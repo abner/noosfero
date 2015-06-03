@@ -409,7 +409,14 @@ module ApplicationHelper
   end
 
   def theme_include(template, options = {})
-    from_theme_include(nil, template, options)
+    theme_partial = from_theme_include(nil, template, options)
+
+    unless theme_partial
+      if lookup_context.template_exists?(template,'layouts', true)
+        theme_partial = render :partial => "layouts/#{template}"
+      end
+    end
+    theme_partial
   end
 
   def env_theme_include(template, options = {})
@@ -1532,5 +1539,50 @@ module ApplicationHelper
       :title=>_("Exit full screen mode")
     })
   end
+
+  def method_missing(name, *args)
+    str_name = name.to_s
+
+    if is_theme_method? str_name
+
+      self.class.send(:define_method,name) do
+        if str_name.include? '_not_logged'
+          return include_partial str_name unless logged_in?
+          return
+
+        elsif str_name.include? '_logged' and !str_name.include? '_not_'
+          return unless logged_in?
+        end
+
+        include_partial str_name
+      end
+
+      self.send(name)
+
+    else
+      super(name, args)
+    end
+
+  end
+
+  def respond_to?(symbol, include_private=false)
+    is_theme_method?(symbol.to_s) ? true : super
+  end
+
+  protected
+
+    def is_theme_method?(name)
+
+      if name.start_with? 'theme_'
+        return true
+      end
+      false
+    end
+
+    def include_partial(name)
+      theme_value = self.instance_variable_get('@'+name) || theme_include(name.gsub('theme_',''))
+
+      self.instance_variable_set('@'+name,theme_value)
+    end
 
 end
