@@ -111,10 +111,11 @@ module FormsHelper
     options_for_select = container.inject([]) do |options, element|
       text, value = option_text_and_value(element)
       selected_attribute = ' selected="selected"' if option_value_selected?(value, selected)
-      options << %(<option title="#{html_escape(text.to_s)}" value="#{html_escape(value.to_s)}"#{selected_attribute}>#{html_escape(text.to_s)}</option>)
+      opt = %(<option title="#{html_escape(text.to_s)}" value="#{html_escape(value.to_s)}"#{selected_attribute}>#{html_escape(text.to_s)}</option>)
+      options << opt.html_safe
     end
 
-    options_for_select.join("\n")
+    safe_join(options_for_select, "\n")
   end
 
   def balanced_table(items, per_row=3)
