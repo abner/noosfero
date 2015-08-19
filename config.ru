@@ -9,7 +9,7 @@ require ::File.expand_path('../config/environment',  __FILE__)
 use Rack::Cors do
   allow do
     origins '*'
-    resource '/api/*', :headers => :any, :methods => [:get, :post]
+    resource '/api/*', :headers => :any, :methods => [:get, :post, :patch, :put]
   end
 end
 
