@@ -11,7 +11,7 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 20150602142030) do
+ActiveRecord::Schema.define(:version => 20150722042714) do
 
   create_table "abuse_reports", :force => true do |t|
     t.integer  "reporter_id"
@@ -75,8 +75,8 @@ ActiveRecord::Schema.define(:version => 20150602142030) do
     t.integer  "comments_count"
     t.boolean  "advertise",            :default => true
     t.boolean  "published",            :default => true
-    t.date     "start_date"
-    t.date     "end_date"
+    t.datetime "start_date"
+    t.datetime "end_date"
     t.integer  "children_count",       :default => 0
     t.boolean  "accept_comments",      :default => true
     t.integer  "reference_article_id"
@@ -127,8 +127,8 @@ ActiveRecord::Schema.define(:version => 20150602142030) do
     t.integer  "comments_count",       :default => 0
     t.boolean  "advertise",            :default => true
     t.boolean  "published",            :default => true
-    t.date     "start_date"
-    t.date     "end_date"
+    t.datetime "start_date"
+    t.datetime "end_date"
     t.integer  "children_count",       :default => 0
     t.boolean  "accept_comments",      :default => true
     t.integer  "reference_article_id"
@@ -320,17 +320,18 @@ ActiveRecord::Schema.define(:version => 20150602142030) do
     t.text     "design_data"
     t.text     "custom_header"
     t.text     "custom_footer"
-    t.string   "theme",                        :default => "default",           :null => false
+    t.string   "theme",                        :default => "default",              :null => false
     t.text     "terms_of_use_acceptance_text"
     t.datetime "created_at"
     t.datetime "updated_at"
-    t.integer  "reports_lower_bound",          :default => 0,                   :null => false
+    t.integer  "reports_lower_bound",          :default => 0,                      :null => false
     t.string   "redirection_after_login",      :default => "keep_on_same_page"
     t.text     "signup_welcome_text"
     t.string   "languages"
     t.string   "default_language"
     t.string   "noreply_email"
     t.string   "redirection_after_signup",     :default => "keep_on_same_page"
+    t.string   "date_format",                  :default => "month_name_with_year"
   end
 
   create_table "external_feeds", :force => true do |t|
@@ -350,10 +351,16 @@ ActiveRecord::Schema.define(:version => 20150602142030) do
   add_index "external_feeds", ["enabled"], :name => "index_external_feeds_on_enabled"
   add_index "external_feeds", ["fetched_at"], :name => "index_external_feeds_on_fetched_at"
 
-  create_table "favorite_enteprises_people", :id => false, :force => true do |t|
-    t.integer "person_id"
-    t.integer "enterprise_id"
+  create_table "favorite_enterprise_people", :force => true do |t|
+    t.integer  "person_id"
+    t.integer  "enterprise_id"
+    t.datetime "created_at"
+    t.datetime "updated_at"
   end
+
+  add_index "favorite_enterprise_people", ["enterprise_id"], :name => "index_favorite_enterprise_people_on_enterprise_id"
+  add_index "favorite_enterprise_people", ["person_id", "enterprise_id"], :name => "index_favorite_enterprise_people_on_person_id_and_enterprise_id"
+  add_index "favorite_enterprise_people", ["person_id"], :name => "index_favorite_enterprise_people_on_person_id"
 
   create_table "friendships", :force => true do |t|
     t.integer  "person_id"
@@ -375,6 +382,7 @@ ActiveRecord::Schema.define(:version => 20150602142030) do
     t.integer "width"
     t.integer "height"
     t.boolean "thumbnails_processed", :default => false
+    t.string  "label",                :default => ""
   end
 
   add_index "images", ["parent_id"], :name => "index_images_on_parent_id"
@@ -487,6 +495,18 @@ ActiveRecord::Schema.define(:version => 20150602142030) do
   add_index "products", ["product_category_id"], :name => "index_products_on_product_category_id"
   add_index "products", ["profile_id"], :name => "index_products_on_profile_id"
 
+  create_table "profile_activities", :force => true do |t|
+    t.integer  "profile_id"
+    t.integer  "activity_id"
+    t.string   "activity_type"
+    t.datetime "created_at",    :null => false
+    t.datetime "updated_at",    :null => false
+  end
+
+  add_index "profile_activities", ["activity_id", "activity_type"], :name => "index_profile_activities_on_activity_id_and_activity_type"
+  add_index "profile_activities", ["activity_type"], :name => "index_profile_activities_on_activity_type"
+  add_index "profile_activities", ["profile_id"], :name => "index_profile_activities_on_profile_id"
+
   create_table "profile_suggestions", :force => true do |t|
     t.integer  "person_id"
     t.integer  "suggestion_id"
@@ -553,6 +573,8 @@ ActiveRecord::Schema.define(:version => 20150602142030) do
   add_index "profiles", ["identifier"], :name => "index_profiles_on_identifier"
   add_index "profiles", ["members_count"], :name => "index_profiles_on_members_count"
   add_index "profiles", ["region_id"], :name => "index_profiles_on_region_id"
+  add_index "profiles", ["user_id", "type"], :name => "index_profiles_on_user_id_and_type"
+  add_index "profiles", ["user_id"], :name => "index_profiles_on_user_id"
 
   create_table "qualifier_certifiers", :force => true do |t|
     t.integer "qualifier_id"
@@ -643,10 +665,12 @@ ActiveRecord::Schema.define(:version => 20150602142030) do
     t.text     "data"
     t.datetime "created_at"
     t.datetime "updated_at"
+    t.integer  "user_id"
   end
 
   add_index "sessions", ["session_id"], :name => "index_sessions_on_session_id"
   add_index "sessions", ["updated_at"], :name => "index_sessions_on_updated_at"
+  add_index "sessions", ["user_id"], :name => "index_sessions_on_user_id"
 
   create_table "suggestion_connections", :force => true do |t|
     t.integer "suggestion_id",   :null => false

@@ -102,7 +102,7 @@ class AdminPanelControllerTest < ActionController::TestCase
     post :site_info, :environment => { :terms_of_use => content }
     assert_redirected_to :action => 'index'
 
-    assert !Environment.default.has_terms_of_use?
+    refute Environment.default.has_terms_of_use?
   end
 
   should 'save subject and body of signup welcome text' do
@@ -113,7 +113,7 @@ class AdminPanelControllerTest < ActionController::TestCase
 
     assert_equal subject, Environment.default.signup_welcome_text[:subject]
     assert_equal body, Environment.default.signup_welcome_text[:body]
-    assert !Environment.default.signup_welcome_text.blank?
+    refute Environment.default.signup_welcome_text.blank?
   end
 
   should 'not save empty string as signup welcome text' do
@@ -121,13 +121,26 @@ class AdminPanelControllerTest < ActionController::TestCase
     post :site_info, :environment => { :signup_welcome_text_body => content }
     assert_redirected_to :action => 'index'
 
-    assert !Environment.default.has_signup_welcome_text?
+    refute Environment.default.has_signup_welcome_text?
   end
 
   should 'sanitize message for disabled enterprise with white_list' do
     post :site_info, :environment => { :message_for_disabled_enterprise => "This <strong>is</strong> <script>alert('alow')</script>my new environment" }
     assert_redirected_to :action => 'index'
     assert_equal "This <strong>is</strong> my new environment", Environment.default.message_for_disabled_enterprise
+  end
+
+  should 'save site article date format option' do
+    post :site_info, :environment => { :date_format => "numbers_with_year" }
+    assert_redirected_to :action => 'index'
+
+    assert_equal "numbers_with_year", Environment.default.date_format
+  end
+
+  should 'dont save site article date format option when a invalid option is passed' do
+    post :site_info, :environment => { :date_format => "invalid_format" }
+
+    assert_not_equal "invalid_format", Environment.default.date_format
   end
 
   should 'set portal community' do
@@ -377,6 +390,6 @@ class AdminPanelControllerTest < ActionController::TestCase
     assert_redirected_to :action => 'index'
 
     assert_equal body, Environment.default.signup_welcome_screen_body
-    assert !Environment.default.signup_welcome_screen_body.blank?
+    refute Environment.default.signup_welcome_screen_body.blank?
   end
 end

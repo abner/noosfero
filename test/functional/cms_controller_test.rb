@@ -141,7 +141,7 @@ class CmsControllerTest < ActionController::TestCase
     profile.description = 'a' * 600
     profile.save(:validate => false)
 
-    assert !profile.valid?
+    refute profile.valid?
     assert_not_equal a, profile.home_page
 
     post :set_home_page, :profile => profile.identifier, :id => a.id
@@ -221,6 +221,20 @@ class CmsControllerTest < ActionController::TestCase
     a.reload
 
     assert_equal profile, a.last_changed_by
+  end
+
+  should 'be able to set label to article image' do
+    login_as(profile.identifier)
+    post :new, :type => TextileArticle.name, :profile => profile.identifier,
+         :article => {
+           :name => 'adding-image-label',
+           :image_builder => {
+             :uploaded_data => fixture_file_upload('/files/tux.png', 'image/png'),
+             :label => 'test-label'
+           }
+         }
+     a = Article.last
+     assert_equal a.image.label, 'test-label'
   end
 
   should 'edit by using the correct template to display the editor depending on the mime-type' do
@@ -316,6 +330,20 @@ class CmsControllerTest < ActionController::TestCase
     assert_difference 'UploadedFile.count' do
       post :new, :type => UploadedFile.name, :profile => profile.identifier, :article => { :uploaded_data => fixture_file_upload('/files/rails.png', 'image/png')}
     end
+  end
+
+  should 'be able to edit an image label' do
+    image = fast_create(Image, :content_type => 'image/png', :filename => 'event-image.png', :label => 'test_label', :size => 1014)
+    article = fast_create(Article, :profile_id => profile.id, :name => 'test_label_article', :body => 'test_content')
+    article.image = image
+    article.save
+    assert_not_nil article
+    assert_not_nil article.image
+    assert_equal 'test_label', article.image.label
+
+    post :edit, :profile => profile.identifier, :id => article.id, :article => {:image_builder => { :label => 'test_label_modified'}}
+    article.reload
+    assert_equal 'test_label_modified', article.image.label
   end
 
    should 'be able to upload more than one file at once' do
@@ -751,9 +779,9 @@ class CmsControllerTest < ActionController::TestCase
     post :new, :profile => profile.identifier, :type => 'TextileArticle', :parent_id => folder.id, :article => { :name => 'new-private-article'}
     folder.reload
 
-    assert !assigns(:article).published?
+    refute assigns(:article).published?
     assert_equal 'new-private-article', folder.children[0].name
-    assert !folder.children[0].published?
+    refute folder.children[0].published?
   end
 
   should 'publish the article in the selected community if community is not moderated' do
@@ -1282,7 +1310,7 @@ class CmsControllerTest < ActionController::TestCase
 
     UploadedFile.attachment_options[:thumbnails].each do |suffix, size|
       assert File.exists?(UploadedFile.find(file_1.id).public_filename(suffix))
-      assert !File.exists?(UploadedFile.find(file_2.id).public_filename(suffix))
+      refute File.exists?(UploadedFile.find(file_2.id).public_filename(suffix))
     end
     file_1.destroy
     file_2.destroy
@@ -1525,7 +1553,7 @@ class CmsControllerTest < ActionController::TestCase
     profile.articles << Blog.new(:name => 'Blog for test', :profile => profile, :display_posts_in_current_language => true)
     post :edit, :profile => profile.identifier, :id => profile.blog.id, :article => { :display_posts_in_current_language => false }
     profile.blog.reload
-    assert !profile.blog.display_posts_in_current_language?
+    refute profile.blog.display_posts_in_current_language?
   end
 
   should 'update to true blog display posts in current language setting' do
@@ -1863,8 +1891,8 @@ class CmsControllerTest < ActionController::TestCase
   end
 
   should 'return tags found' do
-    tag = mock; tag.stubs(:name).returns('linux')
-    ActsAsTaggableOn::Tag.stubs(:find).returns([tag])
+    a = profile.articles.create(:name => 'blablabla')
+    a.tags.create! name: 'linux'
     get :search_tags, :profile => profile.identifier, :term => 'linux'
     assert_equal '[{"label":"linux","value":"linux"}]', @response.body
   end

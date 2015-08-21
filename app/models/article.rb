@@ -8,7 +8,8 @@ class Article < ActiveRecord::Base
                   :accept_comments, :feed, :published, :source, :source_name,
                   :highlighted, :notify_comments, :display_hits, :slug,
                   :external_feed_builder, :display_versions, :external_link,
-                  :image_builder, :show_to_followers
+                  :image_builder, :show_to_followers,
+                  :author
 
   acts_as_having_image
 
@@ -28,7 +29,7 @@ class Article < ActiveRecord::Base
   def initialize(*params)
     super
 
-    if !params.blank? && params.first.has_key?(:profile)
+    if !params.blank? && params.first.has_key?(:profile) && !params.first[:profile].blank?
       profile = params.first[:profile]
       self.published = false unless profile.public?
     end
@@ -131,7 +132,7 @@ class Article < ActiveRecord::Base
 
   scope :by_range, lambda { |range| {
     :conditions => [
-      'published_at BETWEEN :start_date AND :end_date', { :start_date => range.first, :end_date => range.last }
+      'articles.published_at BETWEEN :start_date AND :end_date', { :start_date => range.first, :end_date => range.last }
     ]
   }}
 
@@ -504,9 +505,9 @@ class Article < ActiveRecord::Base
     where(
       [
        "published = ? OR last_changed_by_id = ? OR profile_id = ? OR ?
-        OR  (show_to_followers = ? AND ? AND profile_id = ?)", true, user.id, user.id,
+        OR  (show_to_followers = ? AND ? AND profile_id IN (?))", true, user.id, user.id,
         profile.nil? ?  false : user.has_permission?(:view_private_content, profile),
-        true, user.follows?(profile), (profile.nil? ? nil : profile.id)
+        true, (profile.nil? ? true : user.follows?(profile)),  ( profile.nil? ? (user.friends.select('profiles.id')) : [profile.id])
       ]
     )
   }
@@ -724,8 +725,9 @@ class Article < ActiveRecord::Base
     paragraphs.empty? ? '' : paragraphs.first.to_html
   end
 
-  def lead
-    abstract.blank? ? first_paragraph.html_safe : abstract.html_safe
+  def lead(length = nil)
+    content = abstract.blank? ? first_paragraph.html_safe : abstract.html_safe
+    length.present? ? content.truncate(length) : content
   end
 
   def short_lead
@@ -741,9 +743,10 @@ class Article < ActiveRecord::Base
   end
 
   def body_images_paths
-    require 'uri'
     Nokogiri::HTML.fragment(self.body.to_s).css('img[src]').collect do |i|
-      (self.profile && self.profile.environment) ? URI.join(self.profile.environment.top_url, URI.escape(i['src'])).to_s : i['src']
+      src = i['src']
+      src = URI.escape src if self.new_record? # xss_terminate runs on save
+      (self.profile && self.profile.environment) ? URI.join(self.profile.environment.top_url, src).to_s : src
     end
   end
 

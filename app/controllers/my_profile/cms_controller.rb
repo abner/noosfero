@@ -6,7 +6,7 @@ class CmsController < MyProfileController
 
   def search_tags
     arg = params[:term].downcase
-    result = ActsAsTaggableOn::Tag.find(:all, :conditions => ['LOWER(name) LIKE ?', "%#{arg}%"])
+    result = ActsAsTaggableOn::Tag.where('name ILIKE ?', "%#{arg}%").limit(10)
     render :text => prepare_to_token_input_by_label(result).to_json, :content_type => 'application/json'
   end
 
@@ -92,9 +92,6 @@ class CmsController < MyProfileController
 
     @article.article_privacy_exceptions = params[:q].split(/,/).map{|n| environment.people.find n.to_i} unless params[:q].nil?
 
-    @escaped_body = CGI::escapeHTML(@article.body || '')
-    @escaped_abstract = CGI::escapeHTML(@article.abstract || '')
-
     @tokenized_children = prepare_to_token_input(
                             profile.members.includes(:articles_with_access).find_all{ |m|
                               m.articles_with_access.include?(@article)
@@ -104,6 +101,11 @@ class CmsController < MyProfileController
     record_coming
     if request.post?
       @article.image = nil if params[:remove_image] == 'true'
+      if @article.image.present? && params[:article][:image_builder] &&
+        params[:article][:image_builder][:label]
+        @article.image.label = params[:article][:image_builder][:label]
+        @article.image.save!
+      end
       @article.last_changed_by = user
       if @article.update_attributes(params[:article])
         if !continue
@@ -114,6 +116,11 @@ class CmsController < MyProfileController
           end
         end
       end
+    end
+
+    unless @article.kind_of?(RssFeed)
+      @escaped_body = CGI::escapeHTML(@article.body || '')
+      @escaped_abstract = CGI::escapeHTML(@article.abstract || '')
     end
   end
 

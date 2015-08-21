@@ -1,8 +1,6 @@
 /*
  * thidparty libraries
  *= require colorbox
- *= require selectordie
- *= require selectordie-theme
  *= require inputosaurus
  *= require token-input
  *= require token-input-facebook
@@ -1052,6 +1050,11 @@ code input {
   margin-top: 10px;
   display: none;
 }
+
+#change-image {
+  display: table-caption;
+}
+
 .zoomable-image {
   position: relative;
   display: inline-block;
@@ -1518,13 +1521,13 @@ a.comment-picture {
   text-align: right;
   color: gray;
 }
-#content .created-at {
+#content .publishing-info {
   color: gray;
   font-size: 12px;
   display: block;
   text-align: right;
 }
-#content .blog-post .created-at {
+#content .blog-post .publishing-info {
   text-align: left;
 }
 #content #article .pagination .prev_page {
@@ -1559,6 +1562,32 @@ div.article-body p img {
 #content .blog-post .read-more a {
   margin: 0 10px;
 }
+
+#content #article .blog-posts .blog-post .article-compact-abstract{
+  position: relative;
+  float:left;
+  margin-left: 10px;
+  width: 100%;
+  word-wrap: break-word;
+}
+
+#content #article .blog-posts .blog-post .article-compact-image{
+  position:relative;
+  float:left;
+  width: 27%;
+  display: table-cell;
+  vertical-align: middle;
+  text-align: center;
+  margin-top: 15px;
+}
+
+#content #article .blog-posts .blog-post .article-compact-abstract-with-image{
+  position: relative;
+  float:left;
+  margin-left: 10px;
+  width: 70%;
+  word-wrap: break-word;
+}
 /* NOT PUBLISHED BLOG POSTS */
 
 .blog-post.not-published {
@@ -1570,7 +1599,7 @@ div.article-body p img {
 .blog-post.not-published a {
   text-decoration: none;
 }
-#content .blog-post.not-published .created-at {
+#content .blog-post.not-published .publishing-info {
   text-align: left;
 }
 .blog-post.not-published .metadata {
@@ -2034,9 +2063,6 @@ a.button.disabled, input.disabled {
 }
 .new_link_row li {
   margin-left: 7px;
-}
-#content .link-list-block {
-  padding: 10px 0px 10px 10px;
 }
 .link-list-block ul {
   padding: 0px;
@@ -3459,9 +3485,6 @@ table.cms-articles .icon:hover {
   color: #888a85;
   font-size: smaller;
 }
-.article-types .icon-newrss-feed, #content .icon-rss-feed {
-  background-image: url(../images/icons-mime/rss-feed-16.png);
-}
 .article-types a {
   text-decoration: none;
   color: black;
@@ -3830,6 +3853,11 @@ table.cms-articles .icon:hover {
 
 /* Folders */
 
+.article-body ul.folder-content {
+  list-style-type: none;
+  padding: 0;
+}
+
 .folder-content .folder-item img {
   vertical-align: middle;
   position: relative;
@@ -3895,6 +3923,62 @@ table.cms-articles .icon:hover {
   right: auto;
   left: auto;
 }
+
+/**************Folder Style**********************/
+
+.list-item{
+  font-family: arial;
+  color: #172738;
+}
+
+div.folder-description {
+  padding-bottom: 15px;
+}
+
+.list-item h2{
+  border-bottom:1px solid #ccc;
+  margin:0px;
+}
+
+.item-info{
+  border-top: 1px solid #ccc;
+  line-height: 25px;
+  padding:25px 20px;
+}
+
+.item-info a{
+  text-decoration: none !important;
+  font-size: 16px;
+  font-weight: bold;
+}
+
+.item-icon a {
+  float: left;
+  width: 50px;
+  height: 50px;
+  background-repeat: no-repeat;
+  background-position: center center;
+}
+
+span.item-type {
+  font-size: 12px;
+}
+
+.item-description{
+  display: block;
+  position:relative;
+  margin-left: 15%;
+  padding-left: 10px;
+}
+
+.item-date{
+  display:block;
+  position:relative;
+  font-size: 12px;
+  margin-left: 15%;
+  padding-left: 10px;
+}
+
 /************* enterprise homepage style *****************/
 
 div.event-info {
@@ -3932,10 +4016,6 @@ div#article-parent {
   text-align: right;
   font-style: italic;
 }
-.article-body-uploaded-file {
-  text-align: center;
-}
-
 /* ==> public/stylesheets/controller_events.css <== */
 #agenda {
   position: relative;
@@ -4540,7 +4620,7 @@ h1#agenda-title {
   width: 140px;
   background-repeat: no-repeat;
   background-position: 0px 50%;
-  height: 48px;
+  height: 70px;
   padding: 4px 5px 0px 55px;
   margin-bottom: 30px;
   margin-right: 10px;

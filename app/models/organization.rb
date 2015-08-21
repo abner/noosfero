@@ -35,6 +35,10 @@ class Organization < Profile
 
   validate :presence_of_required_fieds, :unless => :is_template
 
+  def self.notify_activity tracked_action
+    Delayed::Job.enqueue NotifyActivityToProfilesJob.new(tracked_action.id)
+  end
+
   def presence_of_required_fieds
     self.required_fields.each do |field|
       if self.send(field).blank?
@@ -145,6 +149,12 @@ class Organization < Profile
       Blog.new(:name => _('Blog')),
       Gallery.new(:name => _('Gallery')),
     ]
+  end
+
+  def short_name chars = 40
+    s = self.display_name
+    s = super(chars) if s.blank?
+    s
   end
 
   def notification_emails

@@ -61,10 +61,15 @@ setup_rubygems_path() {
   fi
 }
 
+
 skip_translations=false
 if test "$1" = '--skip-translations'; then
   skip_translations=true
 fi
+
+# change current directory to the noosfero's root
+cd "$(dirname $0)/../"
+
 
 force_install=false
 if test "$1" = '--force-install'; then
