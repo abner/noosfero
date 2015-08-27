@@ -1,4 +1,4 @@
-FROM debian:stable
+FROM debian:wheezy
 
 WORKDIR /usr/share/noosfero
 

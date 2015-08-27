@@ -123,7 +123,7 @@ else
   rails runner 'Environment.default.enable("skip_new_user_email_confirmation")'
 fi
 
-if [ ! -d locale ]; then
+if [ ! -d locale && test "$skip_translations" = 'false']; then
   run quiet rake noosfero:translations:compile
 fi
 
