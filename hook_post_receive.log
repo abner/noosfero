@@ -1,0 +1,6 @@
+# Logfile created on 2015-08-31 11:29:12 -0300 by logger.rb/31641
+E, [2015-08-31T11:30:39.166893 #3737] ERROR -- : 128 - message
+E, [2015-08-31T11:31:05.613479 #3954] ERROR -- : 128 - 
+E, [2015-08-31T11:36:39.699518 #6760] ERROR -- : 128 - fatal: 'a' does not appear to be a git repository
+fatal: The remote end hung up unexpectedly
+
